@@ -1,0 +1,97 @@
+{
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.fontFamily": "'Cascadia Code', Consolas, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 16,
+  "editor.tabSize": 2,
+  "editor.renderLineHighlight": "none",
+  "editor.occurrencesHighlight": false,
+  "editor.renderWhitespace": "all",
+  "editor.detectIndentation": false,
+  "editor.renderIndentGuides": false,
+  "editor.folding": false,
+  "editor.glyphMargin": false,
+  "editor.cursorStyle": "line-thin",
+  "editor.cursorBlinking": "blink",
+  "editor.hideCursorInOverviewRuler": true,
+  "editor.matchBrackets": "never",
+  "editor.colorDecorators": false,
+  "editor.suggestSelection": "first",
+  "editor.minimap.enabled": true,
+  "editor.snippetSuggestions": "top",
+  "editor.semanticHighlighting.enabled": true,
+  "editor.wordWrap": "on",
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.associations": {
+    "*.mdx": "markdown"
+  },
+  "workbench.colorTheme": "One Dark Pro",
+  "workbench.iconTheme": "helium-icon-theme",
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.sideBar.location": "left",
+  "explorer.sortOrder": "type",
+  "explorer.autoReveal": false,
+  "explorer.openEditors.visible": 0,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+  "terminal.integrated.fontSize": 15,
+  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\wsl.exe",
+  "breadcrumbs.enabled": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "markdown.preview.fontFamily": "Victor Mono",
+  "oneDarkPro.bold": true,
+  "oneDarkPro.vivid": true,
+  "helium-icon-theme.folders.color": "#42a5f5",
+  "todo-tree.tree.showScanModeButton": false,
+  "codesnap.boxShadow": "0", // Remueve la sombra de la imagen
+  "codesnap.containerPadding": "0", // Remueve el padding externo de la imagen
+  "codesnap.transparentBackground": true, // Define que el fondo sea transparente,
+  "typescript.implementationsCodeLens.enabled": true,
+  "javascript.implicitProjectConfig.checkJs": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.format.enable": false,
+  "javascript.validate.enable": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint",
+    "editor.formatOnSave": true
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint",
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false,
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+  },
+  "prettier.disableLanguages": ["javascript", "javascriptreact"],
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  }
+}
