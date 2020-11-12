@@ -91,7 +91,7 @@ SPACESHIP_CHAR_SUFFIX=" "
 plugins=(git nvm zsh-autosuggestions zsh-syntax-highlighting)
 
 # Change ls colors
-LS_COLORS="ow=01;36;40" && export LS_COLORS
+export LSCOLORS=GxFxCxDxBxegedabagaced
 
 # Make cd use the ls colors
 zstyle ':completion:*' list-colors "${(@s.:.)LS_COLORS}"
@@ -109,6 +109,28 @@ alias ohmyzsh="code ~/.oh-my-zsh"
 alias bashconfig="code ~/.bashrc"
 alias chrome="open -a \"Google Chrome\""
 alias gitconfig="code ~/.gitconfig"
+
+# Aliases
+alias c='code .'
+alias ns='npm start'
+alias nr='npm run'
+alias l="ls" # List files in current directory
+alias ll="ls -al" # List all files in current directory in long list format
+alias la="ls -al" # List all files in current directory in long list format
+alias o="explorer.exe ." # Open the current directory in Finder
+
+# Git Aliases
+alias gaa='git add .'
+alias gcm='git commit -m'
+alias gi='git init'
+alias gl='git log'
+alias gp='git pull'
+alias gpsh='git push'
+
+# Functions
+function mkcd(){
+  mkdir $1 && cd $1
+}
 
 # FileSearch
 function f() { find . -iname "*$1*" ${@:2} }
