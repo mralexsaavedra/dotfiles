@@ -33,9 +33,9 @@
     "*.mdx": "markdown"
   },
   "workbench.colorTheme": "One Dark Pro",
-  "workbench.iconTheme": "helium-icon-theme",
   "workbench.startupEditor": "newUntitledFile",
   "workbench.sideBar.location": "left",
+  "workbench.iconTheme": "material-icon-theme",
   "explorer.sortOrder": "type",
   "explorer.autoReveal": false,
   "explorer.openEditors.visible": 0,
@@ -45,14 +45,12 @@
   "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\wsl.exe",
   "breadcrumbs.enabled": false,
   "diffEditor.ignoreTrimWhitespace": false,
-  "markdown.preview.fontFamily": "Victor Mono",
   "oneDarkPro.bold": true,
   "oneDarkPro.vivid": true,
-  "helium-icon-theme.folders.color": "#42a5f5",
   "todo-tree.tree.showScanModeButton": false,
-  "codesnap.boxShadow": "0", // Remueve la sombra de la imagen
-  "codesnap.containerPadding": "0", // Remueve el padding externo de la imagen
-  "codesnap.transparentBackground": true, // Define que el fondo sea transparente,
+  "codesnap.boxShadow": "0",
+  "codesnap.containerPadding": "0",
+  "codesnap.transparentBackground": true,
   "typescript.implementationsCodeLens.enabled": true,
   "javascript.implicitProjectConfig.checkJs": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
@@ -87,8 +85,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[markdown]": {
-    "files.trimTrailingWhitespace": false,
-    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+    "files.trimTrailingWhitespace": false
   },
   "prettier.disableLanguages": ["javascript", "javascriptreact"],
   "eslint.codeAction.showDocumentation": {
