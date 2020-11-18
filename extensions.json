@@ -1,0 +1,33 @@
+{
+  // code --list-extensions
+  "recommendations": [
+    "adpyke.codesnap",
+    "blanu.vscode-styled-jsx",
+    "bradlc.vscode-tailwindcss",
+    "christian-kohler.path-intellisense",
+    "CoenraadS.bracket-pair-colorizer-2",
+    "dbaeumer.vscode-eslint",
+    "dsznajder.es7-react-js-snippets",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    "Gruntfuggly.todo-tree",
+    "jpoissonnier.vscode-styled-components",
+    "mikestead.dotenv",
+    "ms-vscode-remote.remote-wsl",
+    "ms-vsliveshare.vsliveshare",
+    "msjsdiag.vscode-react-native",
+    "naumovs.color-highlight",
+    "octref.vetur",
+    "PKief.material-icon-theme",
+    "ritwickdey.LiveServer",
+    "sdras.vue-vscode-snippets",
+    "shyykoserhiy.vscode-spotify",
+    "SirTori.indenticator",
+    "stylelint.vscode-stylelint",
+    "usernamehw.errorlens",
+    "wix.vscode-import-cost",
+    "zhuangtongfa.material-theme"
+  ]
+}

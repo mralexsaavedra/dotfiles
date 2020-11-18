@@ -85,22 +85,22 @@ module.exports = {
     // including the 6 x 6 color cubes and the grayscale map, just provide
     // an array here instead of a color map object
     colors: {
-      black: "#000000",
-      red: "#C51E14",
-      green: "#1DC121",
-      yellow: "#C7C329",
-      blue: "#0A2FC4",
-      magenta: "#C839C5",
-      cyan: "#20C5C6",
-      white: "#C7C7C7",
-      lightBlack: "#686868",
-      lightRed: "#FD6F6B",
-      lightGreen: "#67F86F",
-      lightYellow: "#FFFA72",
-      lightBlue: "#6A76FB",
-      lightMagenta: "#FD7CFC",
-      lightCyan: "#68FDFE",
-      lightWhite: "#FFFFFF",
+      black: "#1a1a1a",
+      red: "#f4005f",
+      green: "#98e024",
+      yellow: "#fa8419",
+      blue: "#9d65ff",
+      magenta: "#f4005f",
+      cyan: "#58d1eb",
+      white: "#c4c5b5",
+      lightBlack: "#625e4c",
+      lightRed: "#f4005f",
+      lightGreen: "#98e024",
+      lightYellow: "#e0d561",
+      lightBlue: "#9d65ff",
+      lightMagenta: "#f4005f",
+      lightCyan: "#58d1eb",
+      lightWhite: "#f6f6ef",
     },
 
     // the shell to run when spawning a new session (i.e. /usr/local/bin/fish)
@@ -133,6 +133,10 @@ module.exports = {
     // if `true` (without backticks and without quotes), hyper will be set as the default protocol client for SSH
     defaultSSHApp: true,
 
+    hypercwd: {
+      initialWorkingDirectory: '~'
+    },
+
     // if `true` (without backticks and without quotes), on right click selected text will be copied or pasted if no
     // selection is present (`true` by default on Windows and disables the context menu feature)
     quickEdit: false,
@@ -158,13 +162,8 @@ module.exports = {
   //   `hyperpower`
   //   `@company/project`
   //   `project#1.0.1`
-  plugins: [
-    "hyper-electron-highlighter",
-    "hypercwd",
-    "hyper-search",
-    "hyper-pane",
-    "hyper-snazzy ",
-  ],
+  plugins: [// "hyper-statusline",
+  "hyper-tabs-enhanced", "hyper-electron-highlighter", "hyper-search", "hyper-pane", "hypercwd"],
 
   // in development, you can create a directory under
   // `~/.hyper_plugins/local/` and include it here
@@ -179,7 +178,6 @@ module.exports = {
       "ctrl+q",
       "alt+f4"
     ],
-    "tab:new":"ctrl+t",
     "pane:close":"ctrl+w",
     "editor:undo":"ctrl+z",
     "editor:redo":"ctrl+y",

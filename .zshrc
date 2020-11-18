@@ -18,6 +18,7 @@ SPACESHIP_PROMPT_ORDER=(
   host          # Hostname section
   git           # Git section (git_branch + git_status)
   hg            # Mercurial section (hg_branch  + hg_status)
+  node
   exec_time     # Execution time
   line_sep      # Line break
   vi_mode       # Vi-mode indicator
@@ -27,7 +28,7 @@ SPACESHIP_PROMPT_ORDER=(
 )
 SPACESHIP_USER_SHOW=always
 SPACESHIP_PROMPT_ADD_NEWLINE=false
-SPACESHIP_CHAR_SYMBOL="->"
+SPACESHIP_CHAR_SYMBOL="❯"
 SPACESHIP_CHAR_SUFFIX=" "
 
 # Set list of themes to pick from when loading at random
@@ -89,14 +90,6 @@ SPACESHIP_CHAR_SUFFIX=" "
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git nvm zsh-autosuggestions zsh-syntax-highlighting)
-
-# Change ls colors
-export LSCOLORS=GxFxCxDxBxegedabagaced
-
-# Make cd use the ls colors
-zstyle ':completion:*' list-colors "${(@s.:.)LS_COLORS}"
-autoload -Uz compinit
-compinit
 
 # become root #
 alias root='sudo -i'
