@@ -151,11 +151,24 @@ module.exports = {
 
     // for advanced config flags please refer to https://hyper.is/#cfg
 
+    paneNavigation: {
+      hotkeys: {
+        navigation: {
+          up: 'alt+up',
+          down: 'alt+down',
+          left: 'alt+left',
+          right: 'alt+right'
+        },
+        maximize: 'alt+enter'
+      },
+      showIndicators: false,
+      inactivePaneOpacity: .5
+    },
+
     hyperTabs: {
       trafficButtons: true,
       border: true,
-      tabIconsColored: true,
-      closeAlign: 'right'
+      tabIconsColored: true
     }
   },
 
@@ -165,8 +178,13 @@ module.exports = {
   //   `hyperpower`
   //   `@company/project`
   //   `project#1.0.1`
-  plugins: [// "hyper-statusline",
-  "hyper-tabs-enhanced", "hyper-electron-highlighter", "hyper-search", "hyper-pane", "hyper-cwd-wsl"],
+  plugins: [
+    "hyper-tabs-enhanced",
+    "hyper-electron-highlighter",
+    "hyper-search",
+    "hyper-pane",
+    "hyper-cwd-wsl"
+  ],
 
   // in development, you can create a directory under
   // `~/.hyper_plugins/local/` and include it here
