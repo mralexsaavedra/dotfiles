@@ -1,61 +1,11 @@
 {
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "editor.formatOnType": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
   },
-  "editor.fontFamily": "'Cascadia Code', Consolas, 'Courier New', monospace",
-  "editor.fontLigatures": true,
-  "editor.fontSize": 16,
-  "editor.tabSize": 2,
-  "editor.renderLineHighlight": "none",
-  "editor.occurrencesHighlight": false,
-  "editor.renderWhitespace": "all",
-  "editor.detectIndentation": false,
-  "editor.renderIndentGuides": false,
-  "editor.folding": false,
-  "editor.glyphMargin": false,
-  "editor.cursorStyle": "line-thin",
-  "editor.cursorBlinking": "blink",
-  "editor.hideCursorInOverviewRuler": true,
-  "editor.matchBrackets": "never",
-  "editor.colorDecorators": false,
-  "editor.suggestSelection": "first",
-  "editor.minimap.enabled": true,
-  "editor.snippetSuggestions": "top",
-  "editor.semanticHighlighting.enabled": true,
-  "editor.wordWrap": "on",
-  "files.trimFinalNewlines": true,
-  "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true,
-  "files.associations": {
-    "*.mdx": "markdown"
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "workbench.colorTheme": "One Dark Pro",
-  "workbench.startupEditor": "newUntitledFile",
-  "workbench.sideBar.location": "left",
-  "workbench.iconTheme": "material-icon-theme",
-  "explorer.sortOrder": "type",
-  "explorer.autoReveal": false,
-  "explorer.openEditors.visible": 0,
-  "explorer.confirmDragAndDrop": false,
-  "explorer.confirmDelete": false,
-  "terminal.integrated.fontSize": 15,
-  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\wsl.exe",
-  "breadcrumbs.enabled": false,
-  "diffEditor.ignoreTrimWhitespace": false,
-  "oneDarkPro.bold": true,
-  "oneDarkPro.vivid": true,
-  "todo-tree.tree.showScanModeButton": false,
-  "codesnap.boxShadow": "0",
-  "codesnap.containerPadding": "0",
-  "codesnap.transparentBackground": true,
-  "typescript.implementationsCodeLens.enabled": true,
-  "javascript.implicitProjectConfig.checkJs": true,
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "javascript.format.enable": false,
-  "javascript.validate.enable": false,
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
@@ -70,25 +20,68 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "stylelint.vscode-stylelint",
-    "editor.formatOnSave": true
-  },
-  "[scss]": {
-    "editor.defaultFormatter": "stylelint.vscode-stylelint",
-    "editor.formatOnSave": true
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "[markdown]": {
     "files.trimTrailingWhitespace": false
   },
-  "prettier.disableLanguages": ["javascript", "javascriptreact"],
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "breadcrumbs.enabled": true,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.colorDecorators": false,
+  "editor.cursorBlinking": "blink",
+  "editor.cursorStyle": "line-thin",
+  "editor.detectIndentation": false,
+  "editor.folding": false,
+  "editor.fontFamily": "'Cascadia Code', Consolas, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 16,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.glyphMargin": false,
+  "editor.hideCursorInOverviewRuler": true,
+  "editor.minimap.enabled": true,
+  "editor.occurrencesHighlight": false,
+  "editor.renderLineHighlight": "none",
+  "editor.renderWhitespace": "all",
+  "editor.semanticHighlighting.enabled": true,
+  "editor.snippetSuggestions": "top",
+  "editor.suggestSelection": "first",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
   "eslint.codeAction.showDocumentation": {
     "enable": true
-  }
+  },
+  "explorer.autoReveal": false,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.openEditors.visible": 0,
+  "explorer.sortOrder": "type",
+  "files.associations": {
+    "*.mdx": "markdown"
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "javascript.format.enable": false,
+  "javascript.implicitProjectConfig.checkJs": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.validate.enable": false,
+  "oneDarkPro.bold": true,
+  "oneDarkPro.vivid": true,
+  "prettier.disableLanguages": ["javascript", "javascriptreact"],
+  "terminal.integrated.fontSize": 15,
+  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\wsl.exe",
+  "typescript.implementationsCodeLens.enabled": true,
+  "workbench.colorTheme": "One Dark Pro",
+  "workbench.sideBar.location": "left",
+  "workbench.startupEditor": "newUntitledFile"
 }
