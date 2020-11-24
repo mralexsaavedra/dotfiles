@@ -123,7 +123,6 @@ alias zshconfig="code ~/.zshrc"
 alias sourcezsh="source ~/.zshrc"
 alias ohmyzsh="code ~/.oh-my-zsh"
 alias bashconfig="code ~/.bashrc"
-alias chrome="open -a \"Google Chrome\""
 alias gitconfig="code ~/.gitconfig"
 
 # become root #
@@ -137,7 +136,6 @@ alias nr='npm run'
 alias l="ls" # List files in current directory
 alias ll="ls -al" # List all files in current directory in long list format
 alias la="ls -al" # List all files in current directory in long list format
-alias o="explorer.exe ." # Open the current directory in Finder
 
 # Git Aliases
 alias gaa='git add .'
@@ -146,15 +144,6 @@ alias gi='git init'
 alias gl='git log'
 alias gp='git pull'
 alias gpsh='git push'
-
-# Functions
-function mkcd(){
-  mkdir $1 && cd $1
-}
-
-# FileSearch
-function f() { find . -iname "*$1*" ${@:2} }
-function r() { grep "$1" ${@:2} -R . }
 
 # winget
 function winget { cmd.exe /c "winget $1 $2 $3";}
