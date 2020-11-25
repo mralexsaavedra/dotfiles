@@ -1,0 +1,10 @@
+[user]
+	name = Alexander Saavedra
+	username = mralexsaavedra
+	email = mralexsaavedra@gmail.com
+[github]
+  name = mralexsaavedra
+[init]
+	defaultBranch = main
+[credential]
+	helper = store

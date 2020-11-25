@@ -8,29 +8,7 @@ export ZSH="/home/mralexsaavedra/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="robbyrussell"
 ZSH_THEME="spaceship"
-
-# Prompt
-SPACESHIP_PROMPT_ORDER=(
-  user          # Username section
-  dir           # Current directory section
-  host          # Hostname section
-  git           # Git section (git_branch + git_status)
-  hg            # Mercurial section (hg_branch  + hg_status)
-  # package
-  # node
-  exec_time     # Execution time
-  # line_sep      # Line break
-  vi_mode       # Vi-mode indicator
-  jobs          # Background jobs indicator
-  exit_code     # Exit code section
-  char          # Prompt character
-)
-# SPACESHIP_USER_SHOW=always
-SPACESHIP_PROMPT_ADD_NEWLINE=false
-SPACESHIP_CHAR_SYMBOL="❯"
-SPACESHIP_CHAR_SUFFIX=" "
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -92,6 +70,8 @@ SPACESHIP_CHAR_SUFFIX=" "
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git nvm zsh-autosuggestions zsh-syntax-highlighting)
 
+source $ZSH/oh-my-zsh.sh
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -115,17 +95,13 @@ plugins=(git nvm zsh-autosuggestions zsh-syntax-highlighting)
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# Configuration
 alias zshconfig="code ~/.zshrc"
 alias sourcezsh="source ~/.zshrc"
 alias ohmyzsh="code ~/.oh-my-zsh"
 alias bashconfig="code ~/.bashrc"
 alias gitconfig="code ~/.gitconfig"
 
-# become root #
+# become root
 alias root='sudo -i'
 alias su='sudo -i'
 
@@ -145,10 +121,8 @@ alias gl='git log'
 alias gp='git pull'
 alias gpsh='git push'
 
-# winget
 function winget { cmd.exe /c "winget $1 $2 $3";}
 
-# git
 function gitall() {
   git add .
   if [ "$1" != "" ]
@@ -160,4 +134,27 @@ function gitall() {
   git push
 }
 
-source $ZSH/oh-my-zsh.sh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Prompt
+SPACESHIP_PROMPT_ORDER=(
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  hg            # Mercurial section (hg_branch  + hg_status)
+  # package
+  # node
+  exec_time     # Execution time
+  # line_sep      # Line break
+  vi_mode       # Vi-mode indicator
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+)
+# SPACESHIP_USER_SHOW=always
+SPACESHIP_PROMPT_ADD_NEWLINE=false
+SPACESHIP_CHAR_SYMBOL="❯"
+SPACESHIP_CHAR_SUFFIX=" "
