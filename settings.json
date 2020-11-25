@@ -79,9 +79,11 @@
   "oneDarkPro.vivid": true,
   "prettier.disableLanguages": ["javascript", "javascriptreact"],
   "terminal.integrated.fontSize": 15,
-  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\wsl.exe",
+  "terminal.integrated.shell.osx": "/bin/zsh",
+  "terminal.integrated.shell.windows": "C:\\Windows\\System32\\bash.exe",
   "typescript.implementationsCodeLens.enabled": true,
-  "workbench.colorTheme": "One Dark Pro",
   "workbench.sideBar.location": "left",
-  "workbench.startupEditor": "newUntitledFile"
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "One Dark Pro"
 }
