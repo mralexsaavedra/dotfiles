@@ -105,6 +105,11 @@ alias gitconfig="code ~/.gitconfig"
 alias root='sudo -i'
 alias su='sudo -i'
 
+# List files
+alias l="ls"
+alias ll="ls -al"
+alias la="ls -al"
+
 # Aliases
 alias c='code .'
 alias nb='npm run build'
@@ -124,9 +129,6 @@ alias yr='yarn run'
 alias ys='yarn start'
 alias yt='yarn test'
 alias yw='yarn web'
-alias l="ls" # List files in current directory
-alias ll="ls -al" # List all files in current directory in long list format
-alias la="ls -al" # List all files in current directory in long list format
 
 # Git Aliases
 alias gaa='git add .'
