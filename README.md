@@ -1,5 +1,5 @@
 # dotfiles
-💻 My personal dotfiles for Windows 10.
+💻 My personal dotfiles 
 
 ## VSCode Settings
 - `settings.json`: [gist](https://gist.github.com/mralexsaavedra/308595efcbb466e8333806aa2ccb4978)

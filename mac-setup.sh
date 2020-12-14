@@ -57,44 +57,45 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications --fontdir=/Library/Fonts"
 brew install yarn
 
 # Core casks
-brew cask install alfred
-brew cask install android-studio
-brew cask install appcleaner
-# brew cask install cakebrew
-brew cask install copyclip
-# brew cask install couleurs
-# brew cask install discord
-# brew cask install dropbox
-brew cask install github
-brew cask install google-chrome
-brew cask install hyper
-brew cask install iterm2
-# brew cask install kap
-brew cask install keka
-# brew cask install keycastr
-# brew cask install mounty
-# brew cask install muzzle
-brew cask install notion
-# brew cask install numi
-# brew cask install qbittorrent
-brew cask install react-native-debugger
-brew cask install rectangle
-# brew cask install responsively
-brew cask install rocket
-brew cask install sip
-brew cask install slack
-# brew cask install skype
-brew cask install spotify
-brew cask install the-unarchiver
-brew cask install visual-studio-code
-brew cask install vlc
+brew install --cask alfred
+brew install --cask android-studio
+brew install --cask appcleaner
+# brew install --cask cakebrew
+# brew install --cask canon-eos-utility
+brew install --cask copyclip
+# brew install --cask couleurs
+# brew install --cask discord
+# brew install --cask dropbox
+brew install gh
+brew install --cask github
+brew install --cask google-chrome
+brew install --cask hyper
+brew install --cask iterm2
+# brew install --cask kap
+# brew install --cask keycastr
+brew install --cask logitech-options
+# brew install --cask mounty
+# brew install --cask muzzle
+brew install --cask notion
+# brew install --cask numi
+# brew install --cask qbittorrent
+brew install --cask react-native-debugger
+brew install --cask rectangle
+# brew install --cask responsively
+brew install --cask rocket
+brew install --cask slack
+# brew install --cask skype
+brew install --cask spotify
+brew install --cask the-unarchiver
+brew install --cask visual-studio-code
+brew install --cask vlc
 
 brew tap "homebrew/cask-drivers"
 brew tap "homebrew/cask-fonts"
 brew tap "homebrew/cask-versions"
 
-brew cask install "font-fira-code"
-brew cask install "font-cascadia-code"
+brew install --cask "font-fira-code"
+brew install --cask "font-cascadia-code"
 
 # Remove outdated versions from the cellar.
 brew cleanup
