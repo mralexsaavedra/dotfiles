@@ -58,33 +58,30 @@ brew install yarn
 
 # Core casks
 brew install --cask alfred
+brew install --cask amphetamine-enhancer
 brew install --cask android-studio
 brew install --cask appcleaner
-# brew install --cask cakebrew
-# brew install --cask canon-eos-utility
+brew install --cask canon-eos-utility
 brew install --cask copyclip
-# brew install --cask couleurs
-# brew install --cask discord
-# brew install --cask dropbox
+brew install --cask discord
+brew install --cask dropbox
 brew install gh
 brew install --cask github
 brew install --cask google-chrome
 brew install --cask hyper
 brew install --cask iterm2
-# brew install --cask kap
-# brew install --cask keycastr
+brew install --cask kap
+brew install --cask keka
 brew install --cask logitech-options
-# brew install --cask mounty
-# brew install --cask muzzle
+brew install --cask maccy
 brew install --cask notion
-# brew install --cask numi
-# brew install --cask qbittorrent
+brew install --cask numi
 brew install --cask react-native-debugger
 brew install --cask rectangle
-# brew install --cask responsively
+brew install --cask responsively
 brew install --cask rocket
 brew install --cask slack
-# brew install --cask skype
+brew install --cask skype
 brew install --cask spotify
 brew install --cask the-unarchiver
 brew install --cask visual-studio-code
