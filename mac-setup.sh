@@ -62,15 +62,13 @@ brew install --cask amphetamine-enhancer
 brew install --cask android-studio
 brew install --cask appcleaner
 brew install --cask canon-eos-utility
-brew install --cask copyclip
 brew install --cask discord
-brew install --cask dropbox
+brew install --cask folx
 brew install gh
 brew install --cask github
 brew install --cask google-chrome
 brew install --cask hyper
 brew install --cask iterm2
-brew install --cask kap
 brew install --cask keka
 brew install --cask logitech-options
 brew install --cask maccy
