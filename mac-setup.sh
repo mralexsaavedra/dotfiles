@@ -72,6 +72,7 @@ brew install --cask iterm2
 brew install --cask keka
 brew install --cask logitech-options
 brew install --cask maccy
+brew install --cask mounty
 brew install --cask notion
 brew install --cask numi
 brew install --cask react-native-debugger
@@ -82,6 +83,7 @@ brew install --cask slack
 brew install --cask skype
 brew install --cask spotify
 brew install --cask the-unarchiver
+brew install --cask twitch
 brew install --cask visual-studio-code
 brew install --cask vlc
 
