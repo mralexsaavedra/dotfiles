@@ -27,8 +27,7 @@ brew install zsh zsh-autosuggestions zsh-syntax-highlighting
 chsh -s /bin/zsh
 sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
-git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+git clone --depth=1 https://gitee.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
 ##################
 # NODE USING NVM #
@@ -61,7 +60,7 @@ brew install --cask alfred
 brew install --cask amphetamine-enhancer
 brew install --cask android-studio
 brew install --cask appcleaner
-brew install --cask canon-eos-utility
+brew install --cask canon-eos-webcam-utility
 brew install --cask discord
 brew install --cask folx
 brew install gh

@@ -8,7 +8,7 @@ export ZSH="/home/mralexsaavedra/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="spaceship"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -101,77 +101,8 @@ alias ohmyzsh="code ~/.oh-my-zsh"
 alias bashconfig="code ~/.bashrc"
 alias gitconfig="code ~/.gitconfig"
 
-# become root
-alias root='sudo -i'
-alias su='sudo -i'
-
-# List files
-alias l="ls"
-alias ll="ls -al"
-alias la="ls -al"
-
-# Aliases
-alias c='code .'
-alias nb='npm run build'
-alias nd='npm run dev'
-alias ne='npm run eject'
-alias ni='npm install'
-alias nl='npm run lint'
-alias nr='npm run'
-alias ns='npm run start'
-alias nt='npm run test'
-alias ya='yarn android'
-alias yd='yarn dev'
-alias ye='yarn eject'
-alias yi='yarn ios'
-alias yl='yarn lint'
-alias yr='yarn run'
-alias ys='yarn start'
-alias yt='yarn test'
-alias yw='yarn web'
-
-# Git Aliases
-alias gaa='git add .'
-alias gcm='git commit -m'
-alias gi='git init'
-alias gl='git log'
-alias gp='git pull'
-alias gpsh='git push'
-
-function winget { cmd.exe /c "winget $1 $2 $3";}
-
-function gitall() {
-  git add .
-  if [ "$1" != "" ]
-  then
-      git commit -m "$1"
-  else
-      git commit -m update
-  fi
-  git push
-}
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Prompt
-SPACESHIP_PROMPT_ORDER=(
-  user          # Username section
-  dir           # Current directory section
-  host          # Hostname section
-  git           # Git section (git_branch + git_status)
-  hg            # Mercurial section (hg_branch  + hg_status)
-  # package
-  # node
-  exec_time     # Execution time
-  # line_sep      # Line break
-  vi_mode       # Vi-mode indicator
-  jobs          # Background jobs indicator
-  exit_code     # Exit code section
-  char          # Prompt character
-)
-# SPACESHIP_USER_SHOW=always
-SPACESHIP_PROMPT_ADD_NEWLINE=false
-SPACESHIP_CHAR_SYMBOL="❯"
-SPACESHIP_CHAR_SUFFIX=" "
+function winget { cmd.exe /c "winget $1 $2 $3";}
