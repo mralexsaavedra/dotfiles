@@ -6,7 +6,6 @@ winget install CPUID.CPU-Z
 winget install CPUID.HWMonitor
 winget install CrystalDewWorld.CrystalDiskMark
 winget install Discord.Discord
-winget install Dropbox.Dropbox
 winget install GitHub.GitHubDesktop
 winget install Google.Chrome
 winget install Logitech.LGH
@@ -16,7 +15,6 @@ winget install Microsoft.VisualStudioCode
 winget install Notion.Notion
 winget install Nvidia.GeForceExperience
 winget install qBittorrent.qBittorrent
-winget install ResponsivelyApp.ResponsivelyApp
 winget install SlackTechnologies.Slack
 winget install Spotify.Spotify
 winget install VideoLAN.VLC
