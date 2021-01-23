@@ -76,13 +76,11 @@ brew install --cask notion
 brew install --cask numi
 brew install --cask react-native-debugger
 brew install --cask rectangle
-brew install --cask responsively
 brew install --cask rocket
 brew install --cask slack
 brew install --cask skype
 brew install --cask spotify
 brew install --cask the-unarchiver
-brew install --cask twitch
 brew install --cask visual-studio-code
 brew install --cask vlc
 
