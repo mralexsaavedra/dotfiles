@@ -81,6 +81,7 @@ brew install --cask notion
 brew install --cask rectangle
 brew install --cask robo-3t
 brew install --cask runjs
+# brew install --cask sip
 brew install --cask slack
 brew install --cask spotify
 brew install --cask the-unarchiver
