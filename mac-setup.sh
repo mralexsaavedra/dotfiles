@@ -61,7 +61,7 @@ brew install --cask android-studio
 brew install --cask appcleaner
 # brew install --cask cleanmymac
 brew install --cask discord
-brew install docker
+brew install --cask docker
 # brew install --cask fig
 brew install --cask figma
 brew install --cask firefox
