@@ -56,10 +56,9 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications --fontdir=/Library/Fonts"
 brew install yarn
 
 # Core casks
-brew install --cask amphetamine-enhancer
+# brew install --cask amphetamine
 brew install --cask android-studio
 brew install --cask appcleaner
-brew install --cask canon-eos-webcam-utility
 # brew install --cask cleanmymac
 brew install --cask discord
 brew install docker
