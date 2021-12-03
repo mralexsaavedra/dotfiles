@@ -75,12 +75,12 @@ brew install --cask iterm2
 brew install --cask logitech-options
 brew install --cask microsoft-edge
 brew install --cask notion
-# brew install --cask numi
+brew install --cask numi
 # brew install --cask pasta
+brew install --cask pika
 brew install --cask rectangle
 brew install --cask robo-3t
 brew install --cask runjs
-# brew install --cask sip
 brew install --cask slack
 brew install --cask spotify
 brew install --cask the-unarchiver
