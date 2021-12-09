@@ -62,7 +62,7 @@ brew install --cask appcleaner
 # brew install --cask cleanmymac
 brew install --cask discord
 brew install --cask docker
-# brew install --cask fig
+brew install --cask fig
 brew install --cask figma
 brew install --cask firefox
 brew install --cask flipper
@@ -71,6 +71,7 @@ brew install gh
 brew install --cask github
 brew install --cask google-chrome
 brew install --cask google-cloud-sdk
+brew install --cask grids
 brew install --cask iterm2
 brew install --cask logitech-options
 brew install --cask microsoft-edge
@@ -88,6 +89,7 @@ brew install --cask the-unarchiver
 brew install --cask visual-studio-code
 brew install --cask vlc
 # brew install --cask xcode
+brew install --cask zoom
 
 brew tap "homebrew/cask-drivers"
 brew tap "homebrew/cask-fonts"
