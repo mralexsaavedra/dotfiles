@@ -56,39 +56,28 @@ export HOMEBREW_CASK_OPTS="--appdir=/Applications --fontdir=/Library/Fonts"
 brew install yarn
 
 # Core casks
-# brew install --cask amphetamine
 brew install --cask android-studio
 brew install --cask appcleaner
-# brew install --cask cleanmymac
+brew install --cask brave-browser
 brew install --cask discord
-brew install --cask docker
 brew install --cask fig
-brew install --cask figma
 brew install --cask firefox
-brew install --cask flipper
-brew install --cask folx
 brew install gh
 brew install --cask github
 brew install --cask google-chrome
-brew install --cask google-cloud-sdk
-brew install --cask grids
 brew install --cask iterm2
 brew install --cask logitech-options
 brew install --cask microsoft-edge
 brew install --cask notion
 brew install --cask numi
-# brew install --cask pasta
 brew install --cask pika
+brew install --cask raycast
 brew install --cask rectangle
-brew install --cask robo-3t
 brew install --cask runjs
 brew install --cask slack
 brew install --cask spotify
 brew install --cask the-unarchiver
-# brew install --cask twitter
 brew install --cask visual-studio-code
-brew install --cask vlc
-# brew install --cask xcode
 brew install --cask zoom
 
 brew tap "homebrew/cask-drivers"
