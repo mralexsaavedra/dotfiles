@@ -50,35 +50,30 @@ nvm install node
 
 export HOMEBREW_CASK_OPTS="--appdir=/Applications --fontdir=/Library/Fonts"
 
-########
-# YARN #
-########
-brew install yarn
-
 # Core casks
 brew install --cask android-studio
 brew install --cask appcleaner
 brew install --cask brave-browser
 brew install --cask discord
-brew install --cask fig
+brew install --cask expo-orbit
 brew install --cask firefox
 brew install gh
-brew install --cask github
 brew install --cask google-chrome
-brew install --cask iterm2
-brew install --cask logitech-options
+brew install --cask logi-options+
 brew install --cask microsoft-edge
-brew install --cask notion
-brew install --cask numi
-brew install --cask pika
+brew install --cask openmtp
+brew install --cask postman
 brew install --cask raycast
-brew install --cask rectangle
+brew install --cask raycast
+brew install --cask react-native-debugger
 brew install --cask runjs
 brew install --cask slack
-brew install --cask spotify
 brew install --cask the-unarchiver
+brew install --cask transmission
 brew install --cask visual-studio-code
-brew install --cask zoom
+brew install --cask vlc
+brew install --cask warp
+brew install --cask whatsapp
 
 brew tap "homebrew/cask-drivers"
 brew tap "homebrew/cask-fonts"
