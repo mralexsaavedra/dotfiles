@@ -38,7 +38,7 @@ Once the installation process finishes, you will be asked for a restart, some ch
 To track installed dependencies and source every installed packages we use a `Brewfile` so keeping it updated is important. To make sure `Brewfile` is up to date we can periodically run:
 
 ```bash
-brew bundle dump --force --file=brew/Brewfile 
+brew bundle dump --force --file=brew/Brewfile
 ```
 
 As an alternative to installing packages and then dumping, can we directly install with `install` and uninstall with `remove`:
