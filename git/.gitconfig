@@ -42,11 +42,11 @@
 
   # github
   web = !gh repo view --web
-  pr = !gh pr create -a javivelasco
+  pr = !gh pr create -a mralexsaavedra
   bpr = !gh pr view --web
   cis = !gh pr checks
   pco = !gh pr checkout
-  pr-bug = !hub pull-request -a javivelasco -l bug
+  pr-bug = !hub pull-request -a mralexsaavedra -l bug
   issue = !hub issue create
 
   # fetch
@@ -122,29 +122,15 @@
 
 [core]
 	autocrlf = input
-  editor = nvim
-	excludesfile = /Users/javivelasco/.gitignore
+  editor = code
+	excludesfile = /Users/mralexsaavedra/.gitignore
   pager = delta --side-by-side
 
 [advice]
   statusHints = false
 
-[diff]
-    tool = vimdiff
-
-[difftool]
-    prompt = false
-
-[difftool "vimdiff"]
-    prompt = false
-    cmd = nvim -d  $LOCAL $REMOTE
-
 [include]
   path = .gitconfig.user
-
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
