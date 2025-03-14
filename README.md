@@ -27,17 +27,11 @@ The **setup process** will :
 * Install [Homebrew](http://brew.sh) (brew)
 * Install packages and software through [software and packages list](https://github.com/mralexsaavedra/dotfiles/blob/main/brew/Brewfile).
 * Install [NVM](https://github.com/nvm-sh/nvm)
+* Stow should create all symlinks to all require configuration so then we can bootstrap the dependencies detailed below.
 * Set ZSH shell and [Oh-My-Zsh](https://github.com/robbyrussell/oh-my-zsh).
 	* Customize ZSH with Oh-My-Zsh.
 
 Once the installation process finishes, you will be asked for a restart, some changes may require a restart to apply it.
-
-
-```bash
-stow -t $HOME -v aerospace ghostty git zsh
-```
-
-This should create all symlinks to all require configuration so then we can bootstrap the dependencies detailed below.
 
 ## A note on Homebrew
 
