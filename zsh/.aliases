@@ -9,6 +9,3 @@ alias c='clear' # Clear terminal display
 alias editHosts='sudo $EDITOR /etc/hosts' # Edit /etc/hosts file
 alias myip='curl ip.appspot.com' # Public facing IP Address
 alias gbcopy="git branch --show-current | pbcopy"
-alias python="$(pyenv which python)"
-alias pip="$(pyenv which pip)"
-alias python2="python"
