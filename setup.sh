@@ -17,6 +17,5 @@ chmod u+x ./scripts/*.sh
 ./scripts/brew-packages.sh
 ./scripts/zsh-ohmyzsh.sh
 ./scripts/nvm.sh
-./scripts/stow.sh
 
 ./scripts/restart.sh
