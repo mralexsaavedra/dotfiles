@@ -11,7 +11,9 @@ I’ve made a script to make the setup process easy.
 Copy this command into the terminal, and the setup will start.
 
 ```bash
-git clone https://github.com/mralexsaavedra/dotfiles && cd dotfiles && ./setup.sh
+git clone https://github.com/mralexsaavedra/dotfiles && cd dotfiles
+chmod u+x ./setup.sh
+./setup.sh
 ```
 
 And that’s all! :thumbsup:
