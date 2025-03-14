@@ -1,0 +1,14 @@
+alias lock="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend" # lock mac
+alias cleanup="find . -name '*.DS_Store' -type f -ls -delete" # clean recursively all .DS_Store files
+alias ..='cd ../' # Go back 1 directory level
+alias ...='cd ../../' # Go back 2 directory levels
+alias edit='$EDITOR' # Opens any file in sublime editor
+alias f='open -a Finder ./' # Opens current directory in MacOS Finder
+alias ~="cd ~" # Go Home
+alias c='clear' # Clear terminal display
+alias editHosts='sudo $EDITOR /etc/hosts' # Edit /etc/hosts file
+alias myip='curl ip.appspot.com' # Public facing IP Address
+alias gbcopy="git branch --show-current | pbcopy"
+alias python="$(pyenv which python)"
+alias pip="$(pyenv which pip)"
+alias python2="python"
