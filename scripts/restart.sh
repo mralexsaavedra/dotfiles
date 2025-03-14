@@ -1,4 +1,4 @@
-source './osx/utils.sh'
+source './scripts/utils.sh'
 
 # restart : asks for a reboot of the system.
 
