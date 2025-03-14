@@ -1,9 +1,11 @@
-yarn-error.log
-node_modules/
-dump.rdb
-.env
-.next/
+# OS X files
+
+.DS_Store
+.Trashes
+.Spotlight-V100
+
+# Misc
+*.log
+
+# VSCode
 .vscode
-spikes/
-spike.*
-.luarc.json
