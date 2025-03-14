@@ -10,7 +10,7 @@ ask_for_sudo
 
 chmod u+x ./scripts/*.sh
 
-# ./scripts/computer-info.sh
+./scripts/computer-info.sh
 ./scripts/osx-preferences.sh
 ./scripts/xcode-install.sh
 ./scripts/brew-install.sh
