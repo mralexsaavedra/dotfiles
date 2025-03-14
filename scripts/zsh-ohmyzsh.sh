@@ -9,14 +9,9 @@ ZShell() {
 
 	chsh -s /bin/zsh
 
-	directory_backup "$HOME/.oh-my-zsh"
-
 	# Installing Oh-My-ZSH
 	cd ~
 	curl -L http://install.ohmyz.sh | sh &> /dev/null
-
-	file_exists "$HOME/.zshrc"
-	# execute "curl -L -o ~/.oh-my-zsh/custom/themes/materialshell.zsh-theme https://raw.githubusercontent.com/carloscuesta/materialshell/master/materialshell.zsh"
 
   execute "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 
