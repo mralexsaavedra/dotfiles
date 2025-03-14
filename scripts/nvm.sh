@@ -8,20 +8,14 @@ nvm_install() {
   
   if answer_is_yes; then
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh)"
-		if cmd_exists "nvm"; then
-			print_success 'NVM has been succesfully installed!'
+		print_success 'NVM has been succesfully installed!'
 
-			print_in_blue "install node"
-      nvm install node
+		print_in_blue "install node"
+		execute "nvm install node"
 
-			node --version
-      print_success "Node has been installed!"
+		node --version
 
-			npm --version
-			print_success "NPM has been installed!"
-		else
-			print_error 'NVM not installed.'
-		fi
+		npm --version
 	else
 		print_error 'NVM not installed.'
 	fi
