@@ -16,6 +16,9 @@ chmod u+x ./scripts/*.sh
 ./scripts/brew-install.sh
 ./scripts/brew-packages.sh
 ./scripts/zsh-ohmyzsh.sh
+
+stow -t $HOME -v ghostty git zsh --adopt
+
 ./scripts/nvm.sh
 
 ./scripts/restart.sh
