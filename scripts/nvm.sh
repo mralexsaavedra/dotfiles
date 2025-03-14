@@ -2,7 +2,7 @@ source './scripts/utils.sh'
 
 # nvm : Install nvm and node
 
-nvm() {
+nvm_install() {
   
   ask_for_confirmation "Would you like to install NVM ?"
   
@@ -27,4 +27,4 @@ nvm() {
 	fi
 }
 
-nvm
+nvm_install
