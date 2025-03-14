@@ -1,4 +1,4 @@
-source './osx/utils.sh'
+source './scripts/utils.sh'
 
 # Zshell : Sets ZSH as a OS X shell and installs Oh-My-ZSH
 
