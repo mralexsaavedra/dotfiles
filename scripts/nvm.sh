@@ -11,10 +11,6 @@ nvm() {
 		if cmd_exists "nvm"; then
 			print_success 'NVM has been succesfully installed!'
 
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
       print_in_blue "install node"
       execute "nvm install node"
 		else
