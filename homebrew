@@ -28,8 +28,8 @@ sed 's/^/  /' < "$BREWFILE"
 
 brew bundle check "--file=$BREWFILE" || brew bundle install "--file=$BREWFILE"
 
-echo " --> Setting Fisher as the default shell"
-chsh -s $(which fish)
+# echo " --> Setting Fisher as the default shell"
+# chsh -s $(which fish)
 
 echo " --> Remove outdated versions from the cellar"
 brew cleanup
