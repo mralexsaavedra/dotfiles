@@ -90,6 +90,39 @@ osxprefs() {
   defaults write com.apple.dock show-recents -bool false
   print_success "Don’t show recent applications in Dock."
 
+	# set keyboard repeat rate to 0, so instant
+	defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
+	defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
+	print_success "Keyboard repeat rate set to 0."
+
+	# instant quick look animation
+	defaults write -g QLPanelAnimationDuration -float 0
+	print_success "Quick look animation set to 0."
+
+	# increase speed of animation when resizing window of Cocoa apps
+	defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+	print_success "Speed of animation when resizing window of Cocoa apps set to 0.001."
+
+	# avoid animation when opening apps from dock
+	defaults write com.apple.dock launchanim -bool false
+	print_success "Avoid animation when opening apps from dock."
+
+	# bye delay when hiding dock
+	defaults write com.apple.Dock autohide-delay -float 0
+	print_success "Bye delay when hiding dock."
+
+	# and speed up animation for Dock on hide and show
+	defaults write com.apple.dock autohide-time-modifier -float 0.25;killall Dock
+	print_success "Speed up animation for Dock on hide and show."
+
+	# speed up animations for Mission Control
+	defaults write com.apple.dock expose-animation-duration -float 0.1
+	print_success "Speed up animations for Mission Control."
+
+	# maximize window faster
+	defaults write -g NSWindowResizeTime -float 0.003
+	print_success "Maximize window faster."
+
   # Wipe all (default) app icons from the Dock
   # This is only really useful when setting up a new Mac, or if you don’t use
   # the Dock to launch apps.
