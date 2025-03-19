@@ -7,5 +7,5 @@ alias f='open -a Finder ./' # Opens current directory in MacOS Finder
 alias ~="cd ~" # Go Home
 alias c='clear' # Clear terminal display
 alias editHosts='sudo $EDITOR /etc/hosts' # Edit /etc/hosts file
-alias myip='curl ip.appspot.com' # Public facing IP Address
 alias gbcopy="git branch --show-current | pbcopy"
+alias expoCache="rm -rf node_modules/.cache/web && rm -rf .expo"
