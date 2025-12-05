@@ -1,0 +1,40 @@
+# ~/.config/starship.toml
+
+add_newline = true
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+
+[package]
+disabled = true # Desactiva mostrar la versión del package.json siempre (reduce ruido)
+
+[nodejs]
+symbol = "⬢ "
+style = "bold green"
+
+[git_branch]
+symbol = " "
+style = "bold purple"
+
+[git_status]
+style = "red"
+deleted = "x"
+
+[directory]
+truncation_length = 3
+style = "bold blue"
+read_only = " 🔒"
+
+[docker_context]
+symbol = " "
+style = "blue dimmed"
+
+# Estética general
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$docker_context\
+\n$character"""
