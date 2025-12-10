@@ -4,7 +4,14 @@
 .LSOverride
 .Trashes
 .Spotlight-V100
+# OS X files
+.DS_Store
+.AppleDouble
+.LSOverride
+.Trashes
+.Spotlight-V100
 ._*
+.config/configstore/
 
 # Logs and Databases
 *.log

@@ -17,7 +17,7 @@ chmod u+x ./scripts/*.sh
 ./scripts/brew-packages.sh
 ./scripts/zsh-ohmyzsh.sh
 
-stow -t $HOME -v ghostty git zsh starship gh raycast configstore --adopt
+stow -t $HOME -v ghostty git zsh starship gh raycast --adopt
 
 
 
