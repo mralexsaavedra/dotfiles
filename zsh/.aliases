@@ -1,21 +1,19 @@
-alias lock="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend" # lock mac
-alias cleanup="find . -name '*.DS_Store' -type f -ls -delete" # clean recursively all .DS_Store files
-alias ..='cd ../' # Go back 1 directory level
-alias ...='cd ../../' # Go back 2 directory levels
-alias edit='$EDITOR' # Opens any file in default editor
-alias f='open -a Finder ./' # Opens current directory in MacOS Finder
-alias ~="cd ~" # Go Home
-alias c='clear' # Clear terminal display
-alias editHosts='sudo $EDITOR /etc/hosts' # Edit /etc/hosts file
-alias gbcopy="git branch --show-current | pbcopy"
-alias expoCache="rm -rf node_modules/.cache/web && rm -rf .expo"
+# Aliases
 
-# Alias para herramientas modernas
-alias cat='bat --paging=never'
-alias ls='eza --icons'
-alias l='eza --icons -l'
-alias ll='eza --icons -la'
+# General
+alias ls="eza --icons --group-directories-first"
+alias ll="eza --icons --group-directories-first -l"
+alias cat="bat"
+alias edit="windsurf"
 
-# Maintenance
+# Git
+alias g="git"
+alias lg="lazygit"
+
+# Directories
+alias dotfiles="cd ~/Developer/dotfiles"
+alias dev="cd ~/Developer"
+
+# ZSH
 alias reload="source ~/.zshrc && echo 'ZSH config reloaded!'"
-alias zconf="edit ~/.zshrc"
+alias zconf="code ~/.zshrc"
