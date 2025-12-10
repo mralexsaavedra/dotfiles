@@ -1,19 +1,19 @@
 {
-  // --- VISUALIZACIÓN & ZEN MODE (Tu estilo hardcore) ---
+  // --- VISUALIZATION & ZEN MODE (Hardcore Style) ---
   "window.zoomLevel": 0.5,
   "window.titleBarStyle": "custom",
   "workbench.startupEditor": "newUntitledFile",
-  "workbench.activityBar.location": "top", // O "hidden" si quieres extremismo
-  "workbench.statusBar.visible": false, // Muy limpio
+  "workbench.activityBar.location": "top", // Or "hidden" for extreme minimalism
+  "workbench.statusBar.visible": false, // Very clean
   "breadcrumbs.enabled": false,
   "editor.minimap.enabled": false,
   "workbench.layoutControl.enabled": false,
   "window.commandCenter": false,
   "telemetry.telemetryLevel": "off",
 
-  // --- EDITOR & FUENTES (CaskaydiaCove Nerd Font + Ligaduras) ---
+  // --- EDITOR & FONTS (CaskaydiaCove Nerd Font + Ligatures) ---
   "editor.fontFamily": "'CaskaydiaCove Nerd Font', monospace",
-  // Activamos las cursivas bonitas (ss01) y ligaduras (calt)
+  // Enable fancy italics (ss01) and ligatures (calt)
   "editor.fontLigatures": "'calt', 'ss01'", 
   "editor.fontSize": 14,
   "editor.cursorBlinking": "expand",
@@ -21,35 +21,35 @@
   "editor.wordWrap": "on",
   "editor.tabSize": 2,
   
-  // --- MEJORAS DE NAVEGACIÓN (El toque 10/10) ---
-  "editor.stickyScroll.enabled": true, // IMPRESCINDIBLE: Mantiene el nombre de la func/clase arriba
-  "editor.bracketPairColorization.enabled": true, // Nativo y rápido
+  // --- NAVIGATION IMPROVEMENTS (The 10/10 Touch) ---
+  "editor.stickyScroll.enabled": true, // ESSENTIAL: Keeps func/class name at top
+  "editor.bracketPairColorization.enabled": true, // Native and fast
   "editor.guides.bracketPairs": true,
   "editor.guides.indentation": true,
-  "editor.renderWhitespace": "selection", // Solo muestra los puntos de espacio si seleccionas texto
+  "editor.renderWhitespace": "selection", // Only show whitespace dots on selection
 
-  // --- SUGESTIONES E INTELIGENCIA ---
-  "editor.inlayHints.enabled": "offUnlessPressed", // Menos ruido visual: solo aparecen si mantienes pulsado Ctrl/Cmd
+  // --- SUGGESTIONS & INTELLIGENCE ---
+  "editor.inlayHints.enabled": "offUnlessPressed", // Less visual noise: only show if holding Ctrl/Cmd
   "editor.inlineSuggest.enabled": true,
   "editor.semanticHighlighting.enabled": true,
   "editor.quickSuggestions": {
     "other": true,
     "comments": false,
-    "strings": true // Vital para Tailwind dentro de strings en React
+    "strings": true // Vital for Tailwind inside strings in React
   },
 
-  // --- TEMA E ICONOS ---
+  // --- THEME & ICONS ---
   "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
-  // NOTA: Si instalaste Material Icon Theme, cambia "symbols" por "material-icon-theme"
+  // NOTE: If you installed Material Icon Theme, change "symbols" to "material-icon-theme"
   "workbench.iconTheme": "symbols", 
-  // NOTA: Si instalaste Carbon Product Icons, cambia "fluent-icons" por "carbon-product-icons"
+  // NOTE: If you installed Carbon Product Icons, change "fluent-icons" to "carbon-product-icons"
   "workbench.productIconTheme": "fluent-icons",
   "workbench.colorCustomizations": {
-    "editor.lineHighlightBackground": "#00000044", // Resalte sutil
+    "editor.lineHighlightBackground": "#00000044", // Subtle highlight
     "editor.lineHighlightBorder": "#ffffff11"
   },
   
-  // --- FUENTES PREMIUM (Estilo Operator Mono) ---
+  // --- PREMIUM FONTS (Operator Mono Style) ---
   "editor.tokenColorCustomizations": {
     "textMateRules": [
       {
@@ -69,8 +69,8 @@
     ]
   },
 
-  // --- LIMPIEZA DE EXPLORADOR (Nesting) ---
-  "explorer.fileNesting.enabled": true, // AGRUPA archivos relacionados
+  // --- EXPLORER CLEANUP (Nesting) ---
+  "explorer.fileNesting.enabled": true, // GROUPS related files
   "explorer.fileNesting.patterns": {
     "package.json": "package-lock.json, .npmrc, yarn.lock, pnpm-lock.yaml",
     "*.ts": "${capture}.js",
@@ -87,15 +87,15 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
-    "**/__pycache__": true, // Oculta basura de Python
+    "**/__pycache__": true, // Hide Python garbage
     "**/*.pyc": true
   },
 
-  // --- AUTOMATIZACIÓN FRONTEND ---
+  // --- FRONTEND AUTOMATION ---
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit" // "Explicit" es más seguro que "always" para evitar loops
+    "source.fixAll.eslint": "explicit" // "Explicit" is safer than "always" to avoid loops
   },
   "prettier.requireConfig": true,
   "prettier.semi": false,
@@ -104,9 +104,9 @@
   "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
   "git.confirmSync": false,
-  "git.autofetch": true, // Mantén tu Git actualizado solo
+  "git.autofetch": true, // Keep your Git updated automatically
 
-  // --- RENDIMIENTO ---
+  // --- PERFORMANCE ---
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -121,7 +121,7 @@
     "**/.venv/**": true
   },
 
-  // --- TERMINAL INTEGRADA (Tu estilo Warp) ---
+  // --- INTEGRATED TERMINAL (Warp Style) ---
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.fontFamily": "'CaskaydiaCove Nerd Font', 'Cascadia Code', monospace",
   "terminal.integrated.fontSize": 13,
@@ -133,7 +133,7 @@
   "terminal.integrated.scrollback": 5000,
   "terminal.integrated.suggest.enabled": true,
 
-  // --- CONFIGURACIONES ESPECÍFICAS ---
+  // --- SPECIFIC CONFIGURATIONS ---
   "[dockercompose]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
@@ -143,7 +143,7 @@
   "security.workspace.trust.untrustedFiles": "open",
   "extensions.ignoreRecommendations": true,
 
-  // --- PYTHON & RUFF (Velocidad Pura) ---
+  // --- PYTHON & RUFF (Pure Speed) ---
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,
