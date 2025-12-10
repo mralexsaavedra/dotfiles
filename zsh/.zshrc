@@ -11,36 +11,7 @@ plugins=(git z sudo)
 
 source $ZSH/oh-my-zsh.sh
 
-# --- 3. VARIABLES DE ENTORNO Y PATHS ---
-export LANG=en_US.UTF-8
-export EDITOR="windsurf --wait"
-export VISUAL="windsurf --wait"
-
-# Definir Brew Prefix una sola vez para optimizar carga
-if type brew &>/dev/null; then
-  export BREW_PREFIX="$(brew --prefix)"
-else
-  # Fallback comun en Apple Silicon / Intel
-  if [ -d "/opt/homebrew" ]; then
-    export BREW_PREFIX="/opt/homebrew"
-  else
-    export BREW_PREFIX="/usr/local"
-  fi
-fi
-
-# Pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init --path)"
-  eval "$(pyenv init -)"
-fi
-
-# Antigravity & Windsurf
-export PATH="/Users/mralexsaavedra/.antigravity/antigravity/bin:$PATH"
-export PATH="/Users/mralexsaavedra/.codeium/windsurf/bin:$PATH"
-
-# --- 4. CONFIGURACIÓN EXTRA ---
+# --- 3. CONFIGURACIÓN EXTRA ---
 
 # Cargar alias externos
 [ -f "$HOME/.aliases" ] && source $HOME/.aliases
