@@ -48,6 +48,26 @@
     "editor.lineHighlightBackground": "#00000044", // Resalte sutil
     "editor.lineHighlightBorder": "#ffffff11"
   },
+  
+  // --- FUENTES PREMIUM (Estilo Operator Mono) ---
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": [
+          "comment",
+          "keyword",
+          "storage",
+          "storage.type",
+          "entity.other.attribute-name",
+          "variable.language.this",
+          "variable.language.super"
+        ],
+        "settings": {
+          "fontStyle": "italic"
+        }
+      }
+    ]
+  },
 
   // --- LIMPIEZA DE EXPLORADOR (Nesting) ---
   "explorer.fileNesting.enabled": true, // AGRUPA archivos relacionados
