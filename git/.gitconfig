@@ -67,6 +67,8 @@
   # push
   ps = push                         # push
   pf = push --force-with-lease      # push force
+  please = push --force-with-lease  # polite force push
+  nuke = !git reset --hard HEAD && git clean -fd # destroy all changes
 
   # rebase
   rc = rebase --continue            # continue rebase
@@ -126,6 +128,7 @@
   autocrlf = input
   editor = windsurf --wait
   excludesfile = /Users/mralexsaavedra/.gitignore
+  attributesfile = /Users/mralexsaavedra/.gitattributes
   pager = delta
 
 [advice]
@@ -144,6 +147,16 @@
   name = Alexander Saavedra
   username = mralexsaavedra
   email = mralexsaavedra@gmail.com
+  signingkey = /Users/mralexsaavedra/.ssh/id_ed25519.pub
+
+[gpg]
+  format = ssh
+
+[commit]
+  gpgsign = true
+
+[tag]
+  gpgsign = true
 
 [pager]
   branch = false

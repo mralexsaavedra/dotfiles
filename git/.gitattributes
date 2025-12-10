@@ -1,0 +1,10 @@
+# Avoid diffing lock files as they are huge and machine generated
+*.lock -diff
+package-lock.json -diff
+yarn.lock -diff
+pnpm-lock.yaml -diff
+bun.lockb -diff
+
+# Linguistics - Detect languages properly
+*.rb linguist-language=Ruby
+*.js linguist-language=JavaScript
