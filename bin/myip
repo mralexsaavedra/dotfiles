@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Public IP
+echo "🌐 Public IP :"
+curl -s https://ifconfig.me/ip
+echo ""
+
+# Local IP
+echo "🏠 Local IP  :"
+ipconfig getifaddr en0

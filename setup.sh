@@ -17,7 +17,11 @@ chmod u+x ./scripts/*.sh
 ./scripts/brew-packages.sh
 ./scripts/zsh-ohmyzsh.sh
 
-stow -t $HOME -v ghostty git zsh starship gh --adopt
+stow -t $HOME -v ghostty git zsh starship gh vim --adopt
+
+# Ensure ~/bin exists before stowing to verify proper linking or link directly
+mkdir -p $HOME/bin
+stow -t $HOME -v bin --adopt
 
 # GitHub CLI Extensions
 if cmd_exists "gh"; then

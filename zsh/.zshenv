@@ -36,3 +36,4 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"
 # 8. AI Assistants (Antigravity & Windsurf)
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
