@@ -36,3 +36,6 @@ yarn-error.log
 *.swp
 *.swo
 *~
+
+# GH CLI Auth
+**/gh/hosts.yml
