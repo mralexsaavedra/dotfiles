@@ -1,4 +1,4 @@
-theme = GitHub-Dark-Default
+# theme = GitHub-Dark-Default
 
 font-family = FiraCode Nerd Font Mono Ret
 font-feature = ss03
@@ -31,6 +31,6 @@ adjust-cell-width = -3%
 # selection-background=#e5d3a2
 
 shell-integration = zsh
-fullscreen = true
+fullscreen = false
 window-save-state = always
 auto-update = download
