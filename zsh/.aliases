@@ -9,3 +9,9 @@ alias c='clear' # Clear terminal display
 alias editHosts='sudo $EDITOR /etc/hosts' # Edit /etc/hosts file
 alias gbcopy="git branch --show-current | pbcopy"
 alias expoCache="rm -rf node_modules/.cache/web && rm -rf .expo"
+
+# Alias para herramientas modernas
+alias cat='bat --paging=never'
+alias ls='eza --icons'
+alias l='eza --icons -l'
+alias ll='eza --icons -la'

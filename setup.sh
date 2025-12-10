@@ -19,6 +19,6 @@ chmod u+x ./scripts/*.sh
 
 stow -t $HOME -v ghostty git zsh --adopt
 
-./scripts/nvm.sh
+
 
 ./scripts/restart.sh

@@ -13,7 +13,7 @@ ZShell() {
 	cd ~
 	curl -L http://install.ohmyz.sh | sh &> /dev/null
 
-  execute "git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+
 
 	print_success 'Oh-My-Zsh Installed.'
 }

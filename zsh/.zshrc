@@ -14,6 +14,18 @@ source $ZSH/oh-my-zsh.sh
 # --- 3. VARIABLES DE ENTORNO Y PATHS ---
 export LANG=en_US.UTF-8
 
+# Definir Brew Prefix una sola vez para optimizar carga
+if type brew &>/dev/null; then
+  export BREW_PREFIX="$(brew --prefix)"
+else
+  # Fallback comun en Apple Silicon / Intel
+  if [ -d "/opt/homebrew" ]; then
+    export BREW_PREFIX="/opt/homebrew"
+  else
+    export BREW_PREFIX="/usr/local"
+  fi
+fi
+
 # Pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
@@ -44,17 +56,27 @@ zle -N down-line-or-beginning-search
 bindkey "^[[A" up-line-or-beginning-search
 bindkey "^[[B" down-line-or-beginning-search
 
-# --- 5. NVM (Node Version Manager) ---
-# Nota: NVM es un poco lento al arrancar. Está bien aquí, pero fnm es más rápido.
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# --- 5. HERRAMIENTAS MODERNAS (FNM & ZOXIDE) ---
+# FNM (Fast Node Manager) - Reemplazo de NVM
+if command -v fnm 1>/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd)"
+fi
+
+# Zoxide - Reemplazo inteligente de cd
+if command -v zoxide 1>/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
 # --- 6. PLUGINS VISUALES Y STARSHIP (AL FINAL) ---
 
 # Autosuggestions & Syntax Highlighting (Vía Homebrew)
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if [ -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+  source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+
+if [ -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+  source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
 
 # Esto fuerza a que los comentarios (# texto) usen la cursiva 'ss01' de Cascadia
 ZSH_HIGHLIGHT_STYLES[comment]='fg=gray,italic'
