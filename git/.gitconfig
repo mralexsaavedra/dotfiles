@@ -113,11 +113,20 @@
   # the usual default is to push all branches
   default = current
 
+[init]
+  defaultBranch = main
+
+[pull]
+  rebase = true
+
+[credential]
+  helper = osxkeychain
+
 [core]
-	autocrlf = input
-  editor = code
-	excludesfile = /Users/mralexsaavedra/.gitignore
-  pager = delta --side-by-side
+  autocrlf = input
+  editor = code --wait
+  excludesfile = /Users/mralexsaavedra/.gitignore
+  pager = delta
 
 [advice]
   statusHints = false
@@ -126,34 +135,37 @@
   path = .gitconfig.user
 
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
 
 [user]
-	name = Alexander Saavedra
-	username = mralexsaavedra
-	email = mralexsaavedra@gmail.com
+  name = Alexander Saavedra
+  username = mralexsaavedra
+  email = mralexsaavedra@gmail.com
 
 [pager]
   branch = false
 
 [interactive]
-    diffFilter = delta --color-only
+  diffFilter = delta --color-only
 
 [add.interactive]
-    useBuiltin = false
+  useBuiltin = false
 
 [delta]
-    navigate = true    # use n and N to move between diff sections
-    light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+  navigate = true
+  light = false
+  line-numbers = true
+  side-by-side = true
+  syntax-theme = Dracula
 
 [merge]
-    conflictstyle = diff3
+  conflictstyle = diff3
 
 [diff]
-    colorMoved = default
-		
+  colorMoved = default
+
 [submodule]
-	recurse = true
+  recurse = true
