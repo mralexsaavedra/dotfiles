@@ -63,5 +63,4 @@ symbol = "🦀 "
 [nix_shell]
 symbol = "❄️ "
 
-[cond]
-symbol = "💍"
+
