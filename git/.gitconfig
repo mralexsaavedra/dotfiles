@@ -124,7 +124,7 @@
 
 [core]
   autocrlf = input
-  editor = code --wait
+  editor = windsurf --wait
   excludesfile = /Users/mralexsaavedra/.gitignore
   pager = delta
 

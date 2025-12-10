@@ -13,6 +13,8 @@ source $ZSH/oh-my-zsh.sh
 
 # --- 3. VARIABLES DE ENTORNO Y PATHS ---
 export LANG=en_US.UTF-8
+export EDITOR="windsurf --wait"
+export VISUAL="windsurf --wait"
 
 # Definir Brew Prefix una sola vez para optimizar carga
 if type brew &>/dev/null; then
