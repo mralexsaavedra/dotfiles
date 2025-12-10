@@ -1,12 +1,12 @@
 # ~/.zshenv
-# Variable de entorno se cargan aqui (siempre)
+# Environment variables are loaded here (always)
 
-# 1. Configuración Básica
+# 1. Basic Configuration
 export LANG=en_US.UTF-8
 export EDITOR="windsurf --wait"
 export VISUAL="windsurf --wait"
 
-# 2. Homebrew Prefix (Optimizado)
+# 2. Homebrew Prefix (Optimized)
 if [ -d "/opt/homebrew" ]; then
   export BREW_PREFIX="/opt/homebrew"
 else
@@ -36,4 +36,5 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"
 # 8. AI Assistants (Antigravity & Windsurf)
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
+# 9. Personal Binaries
 export PATH="$HOME/bin:$PATH"
