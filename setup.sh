@@ -19,8 +19,6 @@ chmod u+x ./scripts/*.sh
 
 stow -t $HOME -v ghostty git zsh starship gh --adopt
 
-./scripts/nvm.sh
-
 # GitHub CLI Extensions
 if cmd_exists "gh"; then
     print_in_purple "\n • Installing GitHub CLI extensions...\n"
