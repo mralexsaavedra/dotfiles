@@ -42,8 +42,8 @@ osxprefs() {
 	# print_success "Right click mapped to the bottom right corner at the trackpad."
 
 	# Always show scrollbars
-	defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
-	print_success "Scroll bars showing"
+	defaults write NSGlobalDomain AppleShowScrollBars -string "Automatic"
+	print_success "Scroll bars set to Automatic behavior"
 	# Possible values: `WhenScrolling`, `Automatic` and `Always`
 
 	# Finder: show all filename extensions
@@ -126,8 +126,8 @@ osxprefs() {
   # Wipe all (default) app icons from the Dock
   # This is only really useful when setting up a new Mac, or if you don’t use
   # the Dock to launch apps.
-  defaults write com.apple.dock persistent-apps -array
-  print_success "Wipe all app icons from the Dock."
+  # defaults write com.apple.dock persistent-apps -array
+  # print_success "Wipe all app icons from the Dock."
 
 	# SSD Specific (If you don't have SSD remove that lines.)
 

@@ -17,6 +17,7 @@ brew_packages() {
 
     print_in_blue "Remove outdated versions from the cellar"
 		brew cleanup
+    brew bundle cleanup --force --file="$BREWFILE"
 	else
 		print_error 'brew not installed, the packages cannot be installed without brew.'
 		./scripts/brew-install.sh
