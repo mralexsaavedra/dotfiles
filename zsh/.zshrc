@@ -14,7 +14,9 @@ source $ZSH/oh-my-zsh.sh
 # --- 3. CONFIGURACIÓN EXTRA ---
 
 # Cargar alias externos
+# Cargar alias y funciones externas
 [ -f "$HOME/.aliases" ] && source $HOME/.aliases
+[ -f "$HOME/.functions" ] && source $HOME/.functions
 
 # Cargar variables .env (si existe)
 if [ -f "$HOME/.env" ]; then
