@@ -53,24 +53,33 @@ sync_config() {
     fi
 }
 
-# Función para instalar extensiones
+# Función para instalar extensiones de forma segura
 install_extensions() {
     local app_name=$1
     local binary=$2
 
     if cmd_exists "$binary"; then
-        print_in_blue "  Instalando extensiones para $app_name..."
+        print_in_blue "  Verificando extensiones para $app_name..."
+        
+        # Obtener lista de extensiones ya instaladas (para no machacar Electron)
+        local installed_extensions=$($binary --list-extensions)
+
         while IFS= read -r extension || [ -n "$extension" ]; do
             # Ignorar líneas vacías o comentarios
             [[ -z "$extension" || "$extension" =~ ^# ]] && continue
             
-            # Instalar (silenciosamente si ya existe)
-            # Nota: Windsurf y Cursor a veces usan flags distintos, pero suelen respetar --install-extension
-            $binary --install-extension "$extension" --force &> /dev/null
+            # Comprobar si ya está instalada (grep silencioso)
+            if echo "$installed_extensions" | grep -qi "^$extension$"; then
+                # Ya instalada, no hacemos nada (ahorra crashes de Electron)
+                :
+            else
+                print_in_purple "    + Instalando $extension..."
+                $binary --install-extension "$extension" --force &> /dev/null
+            fi
         done < "$DOTFILES_IDES/extensions.txt"
         print_success "Extensiones sincronizadas."
     else
-        print_in_yellow "  CLI '$binary' no encontrado en el PATH. No se pueden instalar extensiones auto."
+        print_in_yellow "  CLI '$binary' no encontrado en el PATH."
     fi
 }
 
