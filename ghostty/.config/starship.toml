@@ -1,40 +1,67 @@
-# ~/.config/starship.toml
+# Starship Configuration
+# Modern, Minimalist, Pastel
 
 add_newline = true
 
 [character]
 success_symbol = "[➜](bold green)"
-error_symbol = "[✗](bold red)"
+error_symbol = "[➜](bold red)"
 
 [package]
-disabled = true # Desactiva mostrar la versión del package.json siempre (reduce ruido)
-
-[nodejs]
-symbol = "⬢ "
-style = "bold green"
+disabled = true
 
 [git_branch]
-symbol = " "
-style = "bold purple"
+symbol = "🌱 "
+style = "purple"
+
+[git_commit]
+tag_symbol = "🔖 "
+
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
 
 [git_status]
-style = "red"
-deleted = "x"
+conflicted = "🏳"
+ahead = "🏎💨"
+behind = "😰"
+diverged = "😵"
+up_to_date = "✓"
+untracked = "🤷"
+stashed = "📦"
+modified = "📝"
+staged = '[++\($count\)](green)'
+renamed = "👅"
+deleted = "🗑"
 
 [directory]
+style = "blue"
 truncation_length = 3
-style = "bold blue"
-read_only = " 🔒"
+truncation_symbol = "…/"
+
+[aws]
+symbol = "  "
 
 [docker_context]
 symbol = " "
-style = "blue dimmed"
 
-# Estética general
-format = """
-$directory\
-$git_branch\
-$git_status\
-$nodejs\
-$docker_context\
-\n$character"""
+[golang]
+symbol = " "
+
+[nodejs]
+symbol = " "
+version_format = "v${major}.${minor}"
+
+[python]
+symbol = "🐍 "
+
+[ruby]
+symbol = "💎 "
+
+[rust]
+symbol = "🦀 "
+
+[nix_shell]
+symbol = "❄️ "
+
+[cond]
+symbol = "💍"
