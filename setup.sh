@@ -29,4 +29,7 @@ if cmd_exists "gh"; then
     gh extension install seachicken/gh-poi
 fi
 
+# Sync IDEs (VSCode, Cursor, Windsurf)
+./scripts/sync-ides.sh
+
 ./scripts/restart.sh
