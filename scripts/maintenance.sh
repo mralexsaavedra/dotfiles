@@ -12,6 +12,8 @@ brew upgrade
 # 2. Update Brewfile
 print_in_purple "   - Updating Brewfile..."
 brew bundle dump --force --file=brew/Brewfile
+# Remove vscode extensions from Brewfile (managed via Settings Sync)
+sed -i '' '/^vscode/d' brew/Brewfile
 
 # 3. Clean up
 print_in_purple "   - Cleaning up old versions..."

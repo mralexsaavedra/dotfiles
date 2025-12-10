@@ -25,6 +25,7 @@ clean: ## Clean up old brew versions
 
 dump: ## Dump current brew packages to Brewfile
 	brew bundle dump --force --file=brew/Brewfile
+	sed -i '' '/^vscode/d' brew/Brewfile
 
 reload: ## Reload zsh config
 	source ~/.zshrc
