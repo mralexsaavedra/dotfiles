@@ -34,3 +34,10 @@ shell-integration = zsh
 fullscreen = false
 window-save-state = always
 auto-update = download
+
+# Aesthetics
+window-padding-x = 10
+window-padding-y = 10
+macos-titlebar-style = hidden
+cursor-style = block
+mouse-hide-while-typing = true

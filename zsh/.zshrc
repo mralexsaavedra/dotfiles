@@ -67,6 +67,11 @@ if command -v zoxide 1>/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi
 
+# FZF - Búsqueda borrosa
+if command -v fzf 1>/dev/null 2>&1; then
+  source <(fzf --zsh)
+fi
+
 # --- 6. PLUGINS VISUALES Y STARSHIP (AL FINAL) ---
 
 # Autosuggestions & Syntax Highlighting (Vía Homebrew)
