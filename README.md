@@ -1,14 +1,22 @@
-# Alexander Saavedra dotfiles.
+# Alexander Saavedra dotfiles
 
-> Alexander Saavedra's personal dotfiles, that contains all the OS X sensible defaults that I use, must have software and packages, and of course my .files for my OS X system.
+> Alexander Saavedra's personal dotfiles. A robust, modular, and modern configuration for macOS development.
 
-We use [Homebrew](https://brew.sh/) as dependency manager for Mac and [GNU Stow](https://www.gnu.org/software/stow/) to manage dotfiles. The very first step to source all configuration consists of installing both and then using `stow` to generate symlinks to the home folder.
+This repository manages all system configurations using [GNU Stow](https://www.gnu.org/software/stow/) for symlinking and [Homebrew](https://brew.sh/) for package management.
 
-## Setup
+## ✨ Features
 
-I’ve made a script to make the setup process easy.
+- **Shell**: [ZSH](https://www.zsh.org/) + [Starship](https://starship.rs/) (Fast, minimal, info-rich prompt).
+- **Terminal**: [Ghostty](https://ghostty.org/) configuration with custom themes and performance tweaks.
+- **Package Manager**: Homebrew (Brewfile maintained automatically).
+- **Node.js**: [FNM](https://github.com/Schniz/fnm) (Fast Node Manager) instead of NVM.
+- **Git**: Signed commits (SSH), modern alias (`nuke`, `please`), and Windsurf integration.
+- **IDEs**: Unique synchronization system for **VSCode**, **Cursor**, and **Windsurf** (settings & extensions shared).
+- **Navigation**: `zoxide` (smart cd), `eza` (better ls), `bat` (better cat).
 
-Copy this command into the terminal, and the setup will start.
+## 🚀 Setup
+
+The setup process is fully automated. Ideally, run this on a fresh macOS installation.
 
 ```bash
 git clone https://github.com/mralexsaavedra/dotfiles && cd dotfiles
@@ -16,46 +24,37 @@ chmod u+x ./setup.sh
 ./setup.sh
 ```
 
-And that’s all! :thumbsup:
+This will:
+1. Set macOS defaults (UI, Finder, Dock).
+2. Install Homebrew and all packages from `Brewfile`.
+3. Configure ZSH, Starship, and CLI tools.
+4. Symlink all dotfiles using `stow`.
+5. Sync configuration across all IDEs.
 
-The **setup process** will :
+## 🛠 Usage & Maintenance
 
-* Set up OS X computer info (ComputerName, HostName, LocalHostName).
-* Set custom OS X preferences and defaults.
-* Install Xcode Command Line Tools (vcs’s like git and compilers).
-* Help you to start with setup of Git.
-* Install [Homebrew](http://brew.sh) (brew)
-* Install packages and software through [software and packages list](https://github.com/mralexsaavedra/dotfiles/blob/main/brew/Brewfile).
-* Install [FNM](https://github.com/Schniz/fnm) (Fast Node Manager) via Homebrew.
-* Stow should create all symlinks to all require configuration so then we can bootstrap the dependencies detailed below.
-* Set ZSH shell and [Oh-My-Zsh](https://github.com/robbyrussell/oh-my-zsh).
-	* Customize ZSH with Oh-My-Zsh.
+We use a `Makefile` to simplify common tasks:
 
-Once the installation process finishes, you will be asked for a restart, some changes may require a restart to apply it.
+| Command | Description |
+| :--- | :--- |
+| `make update` | Update Homebrew, system packages, and **sync IDEs**. |
+| `make install` | Install dependencies from `Brewfile`. |
+| `make dump` | Save current Brew packages to `Brewfile` (cleans VSCode extensions). |
+| `make sync-ides` | Force sync settings/extensions to VSCode, Cursor, and Windsurf. |
+| `make clean` | Remove old Brew versions to save space. |
 
-## Maintenance
+## 📂 Structure
 
-To keep the system updated (Homebrew, formulas, and Brewfile), run the maintenance script:
-
-```bash
-./scripts/maintenance.sh
-```
-
-This script will update Homebrew, upgrade packages, clean up, and regenerate the `Brewfile`. If there are changes, it will also commit and push them to the repository.
-
-As an alternative to installing packages and then dumping, can we directly install with `install` and uninstall with `remove`:
-
-```bash
-brew bundle --global install <formula>
-```
+- **`brew/`**: `Brewfile` with all apps and tools.
+- **`gh/`**: GitHub CLI config + extensions.
+- **`ghostty/`**: Terminal configuration.
+- **`git/`**: Global gitconfig, gitignore, and attributes.
+- **`ides/`**: Centralized settings for VSCode-based editors.
+- **`raycast/`**: Instructions for backup.
+- **`scripts/`**: Automation scripts.
+- **`starship/`**: Prompt configuration (TOML).
+- **`zsh/`**: Shell config (`.zshrc`, `.zshenv`, `.functions`).
 
 ## Acknowledgements
 
-Inspiration and code was taken from many sources, including:
-
-* [@carloscuesta](https://github.com/carloscuesta) (Carlos Cuesta)
-  [https://github.com/carloscuesta/dotfiles](https://github.com/carloscuesta/dotfiles)
-* [@javivelasco](https://github.com/javivelasco) (Javi Velasco)
-  [https://github.com/javivelasco/dotfiles](https://github.com/javivelasco/dotfiles)
-* [@Kikobeats](https://github.com/Kikobeats) (Kiko Beats)
-  [https://github.com/Kikobeats/dotfiles](https://github.com/Kikobeats/dotfiles)
+Built with ❤️ by Alexander Saavedra.

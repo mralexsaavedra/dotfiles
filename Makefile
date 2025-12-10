@@ -14,8 +14,9 @@ help: ## Show this help message
 setup: ## Run the full setup script (fresh install)
 	./setup.sh
 
-update: ## Update system, brew, and dotfiles
+update: ## Update system, brew, dotfiles and IDEs
 	./scripts/maintenance.sh
+	./scripts/sync-ides.sh
 
 install: ## Install dependencies from Brewfile
 	brew bundle --file=brew/Brewfile
@@ -29,3 +30,6 @@ dump: ## Dump current brew packages to Brewfile
 
 reload: ## Reload zsh config
 	source ~/.zshrc
+
+sync-ides: ## Sync settings and extensions for VSCode, Cursor, and Windsurf
+	./scripts/sync-ides.sh
