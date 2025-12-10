@@ -21,4 +21,14 @@ stow -t $HOME -v ghostty git zsh starship gh raycast --adopt
 
 
 
+./scripts/nvm.sh
+
+# GitHub CLI Extensions
+if cmd_exists "gh"; then
+    print_in_purple "\n • Installing GitHub CLI extensions...\n"
+    gh extension install dlvhdr/gh-dash
+    gh extension install github/gh-copilot
+    gh extension install seachicken/gh-poi
+fi
+
 ./scripts/restart.sh

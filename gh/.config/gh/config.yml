@@ -17,6 +17,9 @@ aliases:
     prc: pr create
     prs: pr list --assignee "@me"
     in: issue list --assignee "@me"
+    dash: extension exec gh-dash
+    clean: extension exec gh-poi
+    ask: extension exec gh-copilot suggest
 # The path to a unix socket through which send HTTP connections. If blank, HTTP traffic will be handled by net/http.DefaultTransport.
 http_unix_socket:
 # What web browser gh should use when opening URLs. If blank, will refer to environment.
