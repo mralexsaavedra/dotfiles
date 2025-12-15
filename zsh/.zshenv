@@ -41,7 +41,11 @@ export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 # Loads .zshenv.local if it exists (for tokens like NPM_TOKEN)
 if [ -f "$HOME/.zshenv.local" ]; then
     source "$HOME/.zshenv.local"
-elif [ -f "${0:a:h}/.zshenv.local" ]; then
+else
     # Fallback to looking in the same directory as this file (useful for symlinks)
-    source "${0:a:h}/.zshenv.local"
+    # ${(%):-%x} gives the path to the sourced file, :A resolves symlinks, :h gets directory
+    ZSHENV_DIR="${${(%):-%x}:A:h}"
+    if [ -f "$ZSHENV_DIR/.zshenv.local" ]; then
+        source "$ZSHENV_DIR/.zshenv.local"
+    fi
 fi
