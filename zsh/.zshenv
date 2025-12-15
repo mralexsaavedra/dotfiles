@@ -36,5 +36,12 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"
 # 8. AI Assistants (Antigravity & Windsurf)
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
-# 9. Personal Binaries
-export PATH="$HOME/bin:$PATH"
+
+# 10. Local Secrets (Tokens, API Keys)
+# Loads .zshenv.local if it exists (for tokens like NPM_TOKEN)
+if [ -f "$HOME/.zshenv.local" ]; then
+    source "$HOME/.zshenv.local"
+elif [ -f "${0:a:h}/.zshenv.local" ]; then
+    # Fallback to looking in the same directory as this file (useful for symlinks)
+    source "${0:a:h}/.zshenv.local"
+fi

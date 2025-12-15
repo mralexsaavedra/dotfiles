@@ -2,3 +2,6 @@
 .env
 # Ignore GitHub Auth Token
 gh/.config/gh/hosts.yml
+
+# Local secrets
+*.local
