@@ -21,7 +21,8 @@ update: ## Update system, brew, dotfiles and IDEs
 install: ## Install dependencies from Brewfile
 	brew bundle --file=brew/Brewfile
 
-clean: ## Clean up old brew versions
+clean: ## Clean up old brew versions and unlisted packages
+	brew bundle cleanup --force --file=brew/Brewfile
 	brew cleanup
 
 dump: ## Dump current brew packages to Brewfile
