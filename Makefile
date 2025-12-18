@@ -30,7 +30,8 @@ dump: ## Dump current brew packages to Brewfile
 	sed -i '' '/^vscode/d' brew/Brewfile
 
 reload: ## Reload zsh config
-	source ~/.zshrc
+	@echo "⚠️  Make runs in a subshell and cannot reload your current terminal."
+	@echo "👉 Please run this command manually: source ~/.zshrc"
 
 sync-ides: ## Sync settings and extensions for VSCode, Cursor, and Windsurf
 	./scripts/sync-ides.sh
