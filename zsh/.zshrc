@@ -78,4 +78,6 @@ ZSH_HIGHLIGHT_STYLES[alias]='fg=blue,italic'
 ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=magenta,italic'
 
 # Initialize Starship (The visual prompt)
-eval "$(starship init zsh)"
+if [[ $TERM != "dumb" ]]; then
+  eval "$(starship init zsh)"
+fi
