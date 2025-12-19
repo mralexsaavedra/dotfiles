@@ -50,6 +50,11 @@ if $SW_AUDIO -a -t output | grep -q "$SONY_NAME"; then
         else
             log "Configuración correcta ya establecida (In: $CURRENT_INPUT)."
         fi
+        
+        # 3. Forzar volumen de entrada al 100% (Siempre)
+        # Esto asegura que el micro se escuche bien fuerte
+        osascript -e "set volume input volume 100"
+        log "Volumen de micrófono forzado al 100%"
     fi
 
 else
