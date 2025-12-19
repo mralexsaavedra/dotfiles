@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Hardcoded paths para evitar problemas de PATH en LaunchAgents
+SWITCH_AUDIO="/opt/homebrew/bin/SwitchAudioSource"
+
+# Variables
+OUTPUT_NAME="WH-1000XM4"
+INPUT_NAME="External Microphone"
+
+# Pequeño sleep para que el stack de audio de macOS se estabilice tras el evento
+sleep 1
+
+# Forzar configuración
+$SWITCH_AUDIO -s "$OUTPUT_NAME" -t output
+$SWITCH_AUDIO -s "$INPUT_NAME" -t input
