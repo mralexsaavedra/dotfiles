@@ -1,7 +1,20 @@
 #!/bin/bash
 
-# Path absoluto para evitar líos con LaunchAgents
-SW_AUDIO="/opt/homebrew/bin/SwitchAudioSource"
+# Path dinámico para SwitchAudioSource (Apple Silicon vs Intel)
+if [ -f "/opt/homebrew/bin/SwitchAudioSource" ]; then
+    SW_AUDIO="/opt/homebrew/bin/SwitchAudioSource"
+elif [ -f "/usr/local/bin/SwitchAudioSource" ]; then
+    SW_AUDIO="/usr/local/bin/SwitchAudioSource"
+else
+    # Fallback: intentar encontrarlo en el PATH
+    SW_AUDIO=$(command -v SwitchAudioSource)
+fi
+
+# Dependency Check
+if [ -z "$SW_AUDIO" ]; then
+    echo "Error: SwitchAudioSource no encontrado. Instálalo con: brew install switchaudio-osx"
+    exit 1
+fi
 
 # --- CONFIGURACIÓN ---
 SONY_NAME="WH-1000XM4"
