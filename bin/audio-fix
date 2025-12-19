@@ -4,29 +4,54 @@
 SW_AUDIO="/opt/homebrew/bin/SwitchAudioSource"
 
 # --- CONFIGURACIÓN ---
-# Sustituye estos nombres por los que obtuviste en el Paso 1
 SONY_NAME="WH-1000XM4"
 JACK_MIC_NAME="Micrófono externo"
+INTERNAL_MIC_NAME="Micrófono del MacBook Pro"
 # ---------------------
 
-# 1. Pequeño delay para que el stack de audio de macOS termine de cargar
-sleep 1.5
+# 1. Pequeño delay para estabilizar
+sleep 2
 
-# 2. Comprobar si los Sony están conectados realmente
+# Función para loguear con timestamp
+log() { echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"; }
+
+# 2. Comprobar si los Sony están disponibles
 if $SW_AUDIO -a -t output | grep -q "$SONY_NAME"; then
-    echo "Sony detectados. Forzando configuración..."
     
-    # Forzar salida a los Sony
-    $SW_AUDIO -s "$SONY_NAME" -t output
-    
-    # Forzar entrada al Jack (si está disponible)
-    if $SW_AUDIO -a -t input | grep -q "$JACK_MIC_NAME"; then
-        $SW_AUDIO -s "$JACK_MIC_NAME" -t input
-        # Notificación opcional (puedes comentarla si te molesta)
-        osascript -e "display notification \"Audio: Sony + Jack Mic\" with title \"AudioFixer\""
-    else
-        echo "Error: El micro del Jack no está conectado."
+    # --- LOGICA DE SALIDA ---
+    CURRENT_OUTPUT=$($SW_AUDIO -c -t output)
+    if [ "$CURRENT_OUTPUT" != "$SONY_NAME" ]; then
+        log "Cambiando Salida: $CURRENT_OUTPUT -> $SONY_NAME"
+        $SW_AUDIO -s "$SONY_NAME" -t output
     fi
+
+    # --- LOGICA DE ENTRADA ---
+    # Objetivo: Evitar que se active el micro de los Sony (baja calidad de audio)
+    
+    # Determinamos cual es el mejor micro disponible
+    TARGET_INPUT=""
+    if $SW_AUDIO -a -t input | grep -q "$JACK_MIC_NAME"; then
+        TARGET_INPUT="$JACK_MIC_NAME"
+    elif $SW_AUDIO -a -t input | grep -q "$INTERNAL_MIC_NAME"; then
+        TARGET_INPUT="$INTERNAL_MIC_NAME"
+    fi
+
+    # Si encontramos un micro válido que NO sea el de los Sony
+    if [ -n "$TARGET_INPUT" ]; then
+        CURRENT_INPUT=$($SW_AUDIO -c -t input)
+        
+        # Solo cambiamos si no estamos ya en el micro deseado
+        if [ "$CURRENT_INPUT" != "$TARGET_INPUT" ]; then
+            log "Cambiando Entrada: $CURRENT_INPUT -> $TARGET_INPUT"
+            $SW_AUDIO -s "$TARGET_INPUT" -t input
+            
+            # Notificación solo cuando hay cambio real
+            osascript -e "display notification \"Salida: Sony\nEntrada: $TARGET_INPUT\" with title \"Audio Fix\""
+        else
+            log "Configuración correcta ya establecida (In: $CURRENT_INPUT)."
+        fi
+    fi
+
 else
-    echo "Los Sony no están conectados. No se hace nada."
+    log "Sony no detectados."
 fi
