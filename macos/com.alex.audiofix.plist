@@ -14,5 +14,11 @@
     </array>
     <key>RunAtLoad</key>
     <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+    <key>StandardOutPath</key>
+    <string>/tmp/com.alex.audiofix.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/com.alex.audiofix.err</string>
 </dict>
 </plist>
