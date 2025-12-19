@@ -1,15 +1,32 @@
 #!/bin/bash
 
-# Hardcoded paths para evitar problemas de PATH en LaunchAgents
-SWITCH_AUDIO="/opt/homebrew/bin/SwitchAudioSource"
+# Path absoluto para evitar líos con LaunchAgents
+SW_AUDIO="/opt/homebrew/bin/SwitchAudioSource"
 
-# Variables
-OUTPUT_NAME="WH-1000XM4"
-INPUT_NAME="External Microphone"
+# --- CONFIGURACIÓN ---
+# Sustituye estos nombres por los que obtuviste en el Paso 1
+SONY_NAME="WH-1000XM4"
+JACK_MIC_NAME="Micrófono externo"
+# ---------------------
 
-# Pequeño sleep para que el stack de audio de macOS se estabilice tras el evento
-sleep 1
+# 1. Pequeño delay para que el stack de audio de macOS termine de cargar
+sleep 1.5
 
-# Forzar configuración
-$SWITCH_AUDIO -s "$OUTPUT_NAME" -t output
-$SWITCH_AUDIO -s "$INPUT_NAME" -t input
+# 2. Comprobar si los Sony están conectados realmente
+if $SW_AUDIO -a -t output | grep -q "$SONY_NAME"; then
+    echo "Sony detectados. Forzando configuración..."
+    
+    # Forzar salida a los Sony
+    $SW_AUDIO -s "$SONY_NAME" -t output
+    
+    # Forzar entrada al Jack (si está disponible)
+    if $SW_AUDIO -a -t input | grep -q "$JACK_MIC_NAME"; then
+        $SW_AUDIO -s "$JACK_MIC_NAME" -t input
+        # Notificación opcional (puedes comentarla si te molesta)
+        osascript -e "display notification \"Audio: Sony + Jack Mic\" with title \"AudioFixer\""
+    else
+        echo "Error: El micro del Jack no está conectado."
+    fi
+else
+    echo "Los Sony no están conectados. No se hace nada."
+fi
