@@ -35,4 +35,8 @@ fi
 # Sync IDEs (VSCode, Cursor, Windsurf)
 ./scripts/sync-ides.sh
 
+# System Services
+./scripts/setup-services.sh
+
+# Restart
 ./scripts/restart.sh
