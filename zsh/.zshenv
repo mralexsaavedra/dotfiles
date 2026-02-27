@@ -3,6 +3,7 @@
 
 # 1. Basic Configuration
 export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 export EDITOR="windsurf --wait"
 export VISUAL="windsurf --wait"
 
@@ -37,9 +38,11 @@ export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools"
 # 8. Java
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"
 
-# 9. AI Assistants (Antigravity & Windsurf)
+# 9. AI Assistants
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # 10. Local Secrets (Tokens, API Keys)
 # Loads .zshenv.local if it exists (for tokens like NPM_TOKEN)
