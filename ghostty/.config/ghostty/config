@@ -10,7 +10,7 @@ adjust-cell-width = -3%
 
 # Window Behavior
 window-inherit-working-directory = true
-macos-option-as-alt = true
+macos-option-as-alt = false
 quit-after-last-window-closed = true
 
 shell-integration = zsh
