@@ -44,7 +44,12 @@ export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 
-# 10. Local Secrets (Tokens, API Keys)
+# 10 Bun
+[ -s "/Users/mralexsaavedra/.bun/_bun" ] && source "/Users/mralexsaavedra/.bun/_bun"
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# 11. Local Secrets (Tokens, API Keys)
 # Loads .zshenv.local if it exists (for tokens like NPM_TOKEN)
 if [ -f "$HOME/.zshenv.local" ]; then
     source "$HOME/.zshenv.local"
