@@ -9,7 +9,8 @@
   "workbench.statusBar.visible": false,
   "workbench.layoutControl.enabled": false,
   "workbench.colorTheme": "GitHub Dark High Contrast",
-  "workbench.preferredLightColorTheme": "GitHub Dark High Contrast",
+  "workbench.preferredLightColorTheme": "GitHub Light",
+  "workbench.preferredDarkColorTheme": "GitHub Dark High Contrast",
   // If you install Material Icon Theme, switch to "material-icon-theme".
   "workbench.iconTheme": "symbols",
   // If you install Carbon Product Icons, switch to "carbon-product-icons".
