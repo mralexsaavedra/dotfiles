@@ -33,7 +33,8 @@
   "editor.fontFamily": "'CaskaydiaCove Nerd Font', monospace",
   // Enable ligatures (calt) and stylistic italics (ss01).
   "editor.fontLigatures": "'calt', 'ss01'",
-  "editor.fontSize": 14,
+  "editor.fontSize": 15,
+  "editor.lineHeight": 24,
   "editor.semanticHighlighting.enabled": true,
   "editor.inlayHints.enabled": "offUnlessPressed",
   "editor.inlineSuggest.enabled": true,
