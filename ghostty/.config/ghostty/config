@@ -1,9 +1,9 @@
-theme = GitHub Dark
+theme = light:GitHub Light Default,dark:GitHub Dark High Contrast
 
 # Fonts
 font-family = CaskaydiaCove Nerd Font
 font-feature = ss01 # For cursive italics
-font-size = 14.5
+font-size = 15
 
 # Stretch font rendering
 adjust-cell-width = -3%
