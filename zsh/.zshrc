@@ -1,83 +1,104 @@
-# --- 1. BASIC CONFIGURATION ---
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 export ZSH="$HOME/.oh-my-zsh"
 
-# Disable OMZ theme because we use Starship (faster to load nothing here)
-ZSH_THEME=""
+# Detect Termux
+IS_TERMUX=0
+if [[ -n "$TERMUX_VERSION" ]] || [[ -d "/data/data/com.termux" ]]; then
+    IS_TERMUX=1
+fi
 
-# --- 2. OH MY ZSH PLUGINS ---
-# Added 'z' (fast navigation) and 'sudo' (double Esc adds sudo to current command)
-# 'git' was already there.
-plugins=(git z sudo)
+# Set PATH based on platform
+if [[ $IS_TERMUX -eq 1 ]]; then
+    # Termux - use PREFIX for binaries
+    export PATH="$PREFIX/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+else
+    export PATH="$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/.volta/bin:$HOME/.bun/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:$HOME/.config:$HOME/.cargo/bin:/usr/local/lib/*:$PATH"
+fi
+
+# Set nvim as default editor for opencode and other tools
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+if [[ $- == *i* ]]; then
+    # Commands to run in interactive sessions can go here
+fi
+
+export LS_COLORS="di=38;5;67:ow=48;5;60:ex=38;5;132:ln=38;5;144:*.tar=38;5;180:*.zip=38;5;180:*.jpg=38;5;175:*.png=38;5;175:*.mp3=38;5;175:*.wav=38;5;175:*.txt=38;5;223:*.sh=38;5;132"
+if [[ "$(uname)" == "Darwin" ]]; then
+  alias ls='ls --color=auto'
+else
+  alias ls='gls --color=auto'
+fi
+
+# Homebrew setup (skip on Termux)
+if [[ $IS_TERMUX -eq 0 ]]; then
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS - check for Apple Silicon vs Intel
+        if [[ -f "/opt/homebrew/bin/brew" ]]; then
+            # Apple Silicon (M1/M2/M3)
+            BREW_BIN="/opt/homebrew/bin"
+        elif [[ -f "/usr/local/bin/brew" ]]; then
+            # Intel Mac
+            BREW_BIN="/usr/local/bin"
+        fi
+    else
+        # Linux
+        BREW_BIN="/home/linuxbrew/.linuxbrew/bin"
+    fi
+
+    # Only eval brew shellenv if brew is installed
+    if [[ -n "$BREW_BIN" && -f "$BREW_BIN/brew" ]]; then
+        eval "$($BREW_BIN/brew shellenv)"
+    fi
+fi
+
+# Zsh plugins - different paths for Termux vs Homebrew
+if [[ $IS_TERMUX -eq 1 ]]; then
+    # Termux - plugins installed via pkg
+    [[ -f "$PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]] && source "$PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+    [[ -f "$PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && source "$PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    [[ -f "$PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    # Powerlevel10k on Termux - may need manual install
+    [[ -f "$PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && source "$PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+else
+    source $(dirname $BREW_BIN)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+    source $(dirname $BREW_BIN)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    source $(dirname $BREW_BIN)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+    source $(dirname $BREW_BIN)/share/powerlevel10k/powerlevel10k.zsh-theme
+fi
+
+export PROJECT_PATHS="/home/alanbuscaglia/work"
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_DEFAULT_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exlude .git"
+
+
+
+# alias
+alias fzfbat='fzf --preview="bat --theme=gruvbox-dark --color=always {}"'
+alias fzfnvim='nvim $(fzf --preview="bat --theme=gruvbox-dark --color=always {}")'
+
+#plugins
+plugins=(
+  command-not-found
+)
 
 source $ZSH/oh-my-zsh.sh
 
-# --- 3. EXTRA CONFIGURATION ---
+export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
+zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+source <(carapace _carapace)
 
-# Load external aliases and functions
-[ -f "$HOME/.aliases" ] && source $HOME/.aliases
-[ -f "$HOME/.functions" ] && source $HOME/.functions
+eval "$(fzf --zsh)"
+eval "$(zoxide init zsh)"
+eval "$(atuin init zsh)"
 
-# Load .env variables (if exists)
-if [ -f "$HOME/.env" ]; then
-  export $(grep -v '^#' "$HOME/.env" | xargs)
-fi
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# --- 4. HISTORY CONFIGURATION ---
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=100000
-SAVEHIST=100000
-setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
-setopt SHARE_HISTORY             # Share history between all sessions.
-setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
-setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
-setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
-setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
-setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
-setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
-setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
-
-# Smart History Navigation (Up/Down arrow searches what you typed)
-autoload -U up-line-or-beginning-search
-autoload -U down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-bindkey "^[[A" up-line-or-beginning-search
-bindkey "^[[B" down-line-or-beginning-search
-
-# --- 5. MODERN TOOLS (FNM & ZOXIDE) ---
-# FNM (Fast Node Manager) - NVM replacement
-if command -v fnm 1>/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd)"
-fi
-
-# Zoxide - Smart cd replacement
-if command -v zoxide 1>/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
-
-# FZF - Fuzzy Finder
-if command -v fzf 1>/dev/null 2>&1; then
-  source <(fzf --zsh)
-fi
-
-# --- 6. VISUAL PLUGINS & STARSHIP (AT THE END) ---
-
-# Autosuggestions & Syntax Highlighting (Via Homebrew)
-if [ -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
-  source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-fi
-
-if [ -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
-  source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-
-# Force comments (# text) to use 'ss01' italic variant of Cascadia
-ZSH_HIGHLIGHT_STYLES[comment]='fg=gray,italic'
-# Optional: keywords in italic too
-ZSH_HIGHLIGHT_STYLES[alias]='fg=blue,italic'
-ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=magenta,italic'
-
-# Initialize Starship (The visual prompt)
-if [[ $TERM != "dumb" ]]; then
-  eval "$(starship init zsh)"
-fi
