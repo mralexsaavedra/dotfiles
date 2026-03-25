@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # carloscuesta utils.sh (https://github.com/carloscuesta/dotfiles/blob/master/scripts/utils.sh) from his dotfiles repo
 
 answer_is_yes() {
@@ -139,6 +141,10 @@ mkd() {
 
 print_error() {
     print_in_red "  [✖] $1 $2\n"
+}
+
+print_warning() {
+    print_in_yellow "  [!] $1 $2\n"
 }
 
 print_in_green() {

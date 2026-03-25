@@ -1,4 +1,10 @@
-source './scripts/utils.sh'
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 # brew_packages : Asks to install packages and software
 
@@ -11,7 +17,7 @@ brew_packages() {
 		execute "brew upgrade"
 
 		print_in_blue "Installing Brewfile"
-    ROOT_DIRECTORY="$(dirname "$0")/.."
+    ROOT_DIRECTORY="$SCRIPT_DIR/.."
     BREWFILE="$ROOT_DIRECTORY/brew/Brewfile"
     brew bundle check "--file=$BREWFILE" || brew bundle install "--file=$BREWFILE"
 
@@ -20,7 +26,7 @@ brew_packages() {
     brew bundle cleanup --force --file="$BREWFILE"
 	else
 		print_error 'brew not installed, the packages cannot be installed without brew.'
-		./scripts/brew-install.sh
+		"$SCRIPT_DIR/brew-install.sh"
 	fi
 }
 

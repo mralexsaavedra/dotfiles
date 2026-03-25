@@ -1,4 +1,10 @@
-source './scripts/utils.sh'
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 # xcode_install : Installing Xcode Command Line Tools (Git, compilers and other stuff)
 

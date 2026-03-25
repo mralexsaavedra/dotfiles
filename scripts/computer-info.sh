@@ -1,4 +1,10 @@
-source './scripts/utils.sh'
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 # set_computer_info : Allows you to set ComputerName, HostName
 # and LocalHostName through the keyboard
@@ -8,11 +14,11 @@ set_computer_info() {
 
 	print_in_blue "Computer Information\n\n"
 	print_question "Computer Name : "
-	read computer_name
+	read -r computer_name
 	print_question "Host Name : "
-	read host_name
+	read -r host_name
 	print_question "LocalHostName : "
-	read local_host_name
+	read -r local_host_name
 
 	sudo scutil --set ComputerName "$computer_name"
 	sudo scutil --set HostName "$host_name"

@@ -1,7 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
 # ssh-setup.sh: Generates SSH key for Git verification if not present
 
-source './scripts/utils.sh'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 SSH_KEY_PATH="$HOME/.ssh/id_ed25519"
 
