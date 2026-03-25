@@ -16,9 +16,9 @@ DOTFILES_IDES="$DOTFILES_DIR/ides"
 
 # Function to perform the sync
 sync_config() {
-    local app_name=$1
-    local config_dir=$2
-    local binary=$3
+    local app_name="$1"
+    local config_dir="$2"
+    local binary="$3"
 
     print_in_purple "\n🔎 Syncing $app_name..."
 
@@ -59,26 +59,29 @@ sync_config() {
 
 # Function to install extensions efficiently
 install_extensions() {
-    local app_name=$1
-    local binary=$2
+    local app_name="$1"
+    local binary="$2"
 
     if cmd_exists "$binary"; then
         print_in_blue "  Verifying extensions for $app_name..."
-        
+
         # Get list of currently installed extensions (to avoid re-installing and crashing Electron)
-        local installed_extensions=$($binary --list-extensions)
+        local installed_extensions=""
+        if ! installed_extensions="$("$binary" --list-extensions 2>/dev/null)"; then
+            print_warning "Could not list installed extensions for $app_name. Continuing with install attempts."
+        fi
 
         while IFS= read -r extension || [ -n "$extension" ]; do
             # Ignore empty lines or comments
             [[ -z "$extension" || "$extension" =~ ^# ]] && continue
-            
-            # Check if already installed (silent grep)
-            if echo "$installed_extensions" | grep -qi "^$extension$"; then
+
+            # Check if already installed (exact, case-insensitive match)
+            if grep -Fxiq -- "$extension" <<< "$installed_extensions"; then
                 # Already installed, skip
                 :
             else
                 print_in_purple "    + Installing $extension..."
-                $binary --install-extension "$extension" --force &> /dev/null
+                "$binary" --install-extension "$extension" --force &> /dev/null
             fi
         done < "$DOTFILES_IDES/extensions.txt"
         print_success "Extensions synced."

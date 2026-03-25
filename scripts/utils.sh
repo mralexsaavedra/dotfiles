@@ -3,19 +3,17 @@
 # carloscuesta utils.sh (https://github.com/carloscuesta/dotfiles/blob/master/scripts/utils.sh) from his dotfiles repo
 
 answer_is_yes() {
-    [[ "$REPLY" =~ ^[Yy]$ ]] \
-        && return 0 \
-        || return 1
+    [[ "${REPLY:-}" =~ ^[Yy]$ ]]
 }
 
 ask() {
     print_question "$1"
-    read
+    read -r
 }
 
 ask_for_confirmation() {
     print_question "$1 (y/n) "
-    read -n 1
+    read -r -n 1
     printf "\n"
 }
 
@@ -35,27 +33,26 @@ ask_for_sudo() {
 }
 
 directory_exists() {
-    if [ -d $1 ]; then
-        execute "mv $1 $1-backup/"
-        print_in_blue "  Your $1 folder is backed-up in $1-backup/\n"
-        execute "mkdir $1"
+    if [ -d "$1" ]; then
+        execute_cmd "$1 backed up" mv -- "$1" "$1-backup"
+        print_in_blue "  Your $1 folder is backed-up in $1-backup\n"
+        execute_cmd "$1 directory created at $1" mkdir -p -- "$1"
     else
-        execute "mkdir $1"
-        print_success "$1 directory created at $1"
+        execute_cmd "$1 directory created at $1" mkdir -p -- "$1"
     fi
 }
 
 directory_backup() {
-    if [ -d $1 ]; then
-        execute "mv $1 $1-backup/"
-        print_in_blue "  Your $1 folder is backed-up in $1-backup/\n"
+    if [ -d "$1" ]; then
+        execute_cmd "$1 backed up" mv -- "$1" "$1-backup"
+        print_in_blue "  Your $1 folder is backed-up in $1-backup\n"
     fi
 }
 
 brew_install() {
    ask_for_confirmation "Would you like to install $1 ?"
     if answer_is_yes; then
-        execute "brew install $1"
+        execute_cmd "brew install $1" brew install "$1"
         print_success "$1 installed."
     else
         print_error "$1 not installed."
@@ -65,7 +62,7 @@ brew_install() {
 brew_cask_install() {
     ask_for_confirmation "Would you like to install $1 ?"
     if answer_is_yes; then
-        execute "brew cask install $1"
+        execute_cmd "brew cask install $1" brew cask install "$1"
         print_success "$1 installed."
     else
         print_error "$1 not installed."
@@ -75,7 +72,7 @@ brew_cask_install() {
 npm_install() {
     ask_for_confirmation "Would you like to install $1 ?"
     if answer_is_yes; then
-        execute "npm install -g $1"
+        execute_cmd "npm install -g $1" npm install -g "$1"
         print_success "$1 installed."
     else
         print_error "$1 not installed."
@@ -83,8 +80,8 @@ npm_install() {
 }
 
 file_exists() {
-    if [ -f $1 ]; then
-        execute "mv $1 $1-backup"
+    if [ -f "$1" ]; then
+        execute_cmd "$1 backed up" mv -- "$1" "$1-backup"
         print_in_blue "$1 backed up $1-backup\n"
     fi
 }
@@ -95,12 +92,28 @@ cmd_exists() {
 }
 
 execute() {
-    eval "$1" &> /dev/null
-    print_result $? "${2:-$1}"
+    local command_string="${1:-}"
+    local description="${2:-$command_string}"
+
+    if [ -z "$command_string" ]; then
+        print_error "No command provided."
+        return 1
+    fi
+
+    bash -c "$command_string" &> /dev/null
+    print_result $? "$description"
+}
+
+execute_cmd() {
+    local description="${1:-}"
+    shift
+
+    "$@" &> /dev/null
+    print_result $? "${description:-$*}"
 }
 
 get_answer() {
-    printf "$REPLY"
+    printf "%s" "${REPLY:-}"
 }
 
 get_os() {
@@ -134,7 +147,7 @@ mkd() {
                 print_success "$1"
             fi
         else
-            execute "mkdir -p $1" "$1"
+            execute_cmd "$1" mkdir -p -- "$1"
         fi
     fi
 }
@@ -148,23 +161,23 @@ print_warning() {
 }
 
 print_in_green() {
-    printf "\e[0;32m$1\e[0m"
+    printf "\e[0;32m%b\e[0m" "$1"
 }
 
 print_in_purple() {
-    printf "\e[0;35m$1\e[0m"
+    printf "\e[0;35m%b\e[0m" "$1"
 }
 
 print_in_red() {
-    printf "\e[0;31m$1\e[0m"
+    printf "\e[0;31m%b\e[0m" "$1"
 }
 
 print_in_yellow() {
-    printf "\e[0;33m$1\e[0m"
+    printf "\e[0;33m%b\e[0m" "$1"
 }
 
 print_in_blue() {
-    printf "  \e[0;34m$1\e[0m\n"
+    printf "  \e[0;34m%b\e[0m\n" "$1"
 }
 
 print_info() {
@@ -176,7 +189,7 @@ print_question() {
 }
 
 print_result() {
-    [ $1 -eq 0 ] \
+    [ "$1" -eq 0 ] \
         && print_success "$2" \
         || print_error "$2"
 

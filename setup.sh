@@ -7,6 +7,21 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$SCRIPT_DIR/scripts/utils.sh"
 
+install_gh_extension() {
+    local extension="$1"
+
+    if gh extension list 2>/dev/null | grep -Fq "$extension"; then
+        print_success "GitHub extension already present: $extension"
+        return 0
+    fi
+
+    if gh extension install "$extension" &>/dev/null; then
+        print_success "Installed GitHub extension: $extension"
+    else
+        print_warning "Could not install GitHub extension: $extension"
+    fi
+}
+
 clear
 print_in_purple '\nOS X Config Dotfiles - Alexander Saavedra\n\n'
 ask_for_sudo
@@ -30,9 +45,9 @@ stow -t "$HOME" -v bin --adopt
 # GitHub CLI Extensions
 if cmd_exists "gh"; then
     print_in_purple "\n • Installing GitHub CLI extensions...\n"
-    gh extension install dlvhdr/gh-dash
-    gh extension install github/gh-copilot
-    gh extension install seachicken/gh-poi
+    install_gh_extension "dlvhdr/gh-dash"
+    install_gh_extension "github/gh-copilot"
+    install_gh_extension "seachicken/gh-poi"
 fi
 
 # Sync IDEs (VSCode, Cursor, Windsurf)
