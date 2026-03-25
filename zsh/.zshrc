@@ -9,8 +9,6 @@ fi
 
 # [Gentleman Dots base / bootstrap] Core shell base.
 export ZSH="$HOME/.oh-my-zsh"
-export EDITOR="nvim"
-export VISUAL="nvim"
 
 # [Gentleman Dots base / bootstrap] Termux detection.
 IS_TERMUX=0
