@@ -45,7 +45,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 
 # 10 Bun
-[ -s "/Users/mralexsaavedra/.bun/_bun" ] && source "/Users/mralexsaavedra/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 

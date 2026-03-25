@@ -1,0 +1,8 @@
+# Local secrets template (do NOT commit real values)
+# Copy to ~/.zshenv.local or zsh/.zshenv.local and replace placeholders.
+
+# NPM token for private registries
+export NPM_TOKEN="<replace-with-your-npm-token>"
+
+# Jira API token
+export JIRA_API_TOKEN="<replace-with-your-jira-api-token>"
