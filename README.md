@@ -1,59 +1,72 @@
 # Alexander Saavedra dotfiles
 
-> Alexander Saavedra's personal dotfiles. A robust, modular, and modern configuration for macOS development.
+> Personal dotfiles for a modular macOS dev setup, managed with Stow + Homebrew.
 
-This repository manages all system configurations using [GNU Stow](https://www.gnu.org/software/stow/) for symlinking and [Homebrew](https://brew.sh/) for package management.
+This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to symlink configs into `$HOME` and [Homebrew](https://brew.sh/) as the package source of truth (`brew/Brewfile`).
 
-## ✨ Features
+## ✨ Current Stack
 
-- **Shell**: [ZSH](https://www.zsh.org/) + [Starship](https://starship.rs/) (Fast, minimal, info-rich prompt).
-- **Terminal**: [Ghostty](https://ghostty.org/) configuration with custom themes and performance tweaks.
-- **Package Manager**: Homebrew (Brewfile maintained automatically).
-- **Node.js**: [FNM](https://github.com/Schniz/fnm) (Fast Node Manager) instead of NVM.
-- **Git**: Signed commits (SSH), modern alias (`nuke`, `please`), and Windsurf integration.
-- **IDEs**: Unique synchronization system for **VSCode**, **Cursor**, and **Windsurf** (settings & extensions shared).
-- **Navigation**: `zoxide` (smart cd), `eza` (better ls), `bat` (better cat).
+- **Shell**: Zsh + Oh My Zsh.
+- **Prompt**: **Powerlevel10k** (`.p10k.zsh`), loaded from `zsh/.zshrc`.
+- **Node.js**: **fnm** with automatic version switching (`fnm env --use-on-cd`).
+- **Terminal**: Ghostty config included.
+- **Navigation/tools**: `zoxide`, `eza`, `bat`, `fzf`, etc.
+- **Editors**: VSCode/Cursor/Windsurf sync flow via `scripts/sync-ides.sh`.
 
 ## 🚀 Setup
 
-The setup process is fully automated. Ideally, run this on a fresh macOS installation.
-
 ```bash
-git clone https://github.com/mralexsaavedra/dotfiles && cd dotfiles
+git clone https://github.com/mralexsaavedra/dotfiles
+cd dotfiles
 chmod u+x ./setup.sh
 ./setup.sh
 ```
 
-This will:
-1. Set macOS defaults (UI, Finder, Dock).
-2. Install Homebrew and all packages from `Brewfile`.
-3. Configure ZSH, Starship, and CLI tools.
-4. Symlink all dotfiles using `stow`.
-5. Sync configuration across all IDEs.
+`setup.sh` runs macOS defaults + Homebrew bootstrap, then stows the managed folders and syncs IDE configs.
 
-## 🛠 Usage & Maintenance
+## 🛠 Maintenance (real workflow)
 
-We use a `Makefile` to simplify common tasks:
+Useful commands:
 
 | Command | Description |
 | :--- | :--- |
-| `make update` | Update Homebrew, system packages, and **sync IDEs**. |
-| `make install` | Install dependencies from `Brewfile`. |
-| `make dump` | Save current Brew packages to `Brewfile` (cleans VSCode extensions). |
-| `make sync-ides` | Force sync settings/extensions to VSCode, Cursor, and Windsurf. |
-| `make clean` | Remove old Brew versions to save space. |
+| `make update` | Runs maintenance + IDE sync (`scripts/maintenance.sh` + `scripts/sync-ides.sh`). |
+| `make install` | Installs dependencies from `brew/Brewfile`. |
+| `make dump` | Rebuilds `brew/Brewfile` from current brew state (removes vscode lines). |
+| `make clean` | Homebrew cleanup. |
+| `make sync-ides` | Syncs settings/extensions to VSCode, Cursor and Windsurf. |
 
-## 📂 Structure
+> `scripts/maintenance.sh` **does not auto-commit or auto-push**. If changes are detected, it only prints suggested git commands. Review and commit manually.
 
-- **`brew/`**: `Brewfile` with all apps and tools.
-- **`gh/`**: GitHub CLI config + extensions.
-- **`ghostty/`**: Terminal configuration.
-- **`git/`**: Global gitconfig, gitignore, and attributes.
-- **`ides/`**: Centralized settings for VSCode-based editors.
-- **`raycast/`**: Instructions for backup.
-- **`scripts/`**: Automation scripts.
-- **`starship/`**: Prompt configuration (TOML).
-- **`zsh/`**: Shell config (`.zshrc`, `.zshenv`, `.functions`).
+## 🐚 `zsh/` layout and load order
+
+The shell config is intentionally split by responsibility:
+
+1. **`.zshenv`** → minimal env for *all* zsh instances (locale, editor, `DOTFILES_DIR`, lightweight PATH, secrets hook).
+2. **`.zprofile`** → login/session setup (toolchain PATH additions, Java/Android/Python/Bun env).
+3. **`.zshrc`** → interactive shell behavior (plugins, history, completions, fnm auto-switch, Powerlevel10k).
+4. **`.aliases`** / **`.functions`** → user commands loaded by `.zshrc`.
+5. **`*.local` files** (optional, machine-specific) loaded last as overrides.
+
+## 🔒 Local (non-versioned) overrides
+
+Local/secrets files are ignored via `*.local` in `.gitignore`.
+
+- `zsh/.zshenv.local.example` is the template.
+- Recommended local files:
+  - `~/.zshenv.local` (tokens/secrets)
+  - `~/.zprofile.local` (machine login/session overrides)
+  - `~/.zshrc.local` (interactive shell overrides)
+
+Prefer keeping shared defaults in tracked files and machine-specific values in `*.local`.
+
+## 📂 Structure (high level)
+
+- `brew/` — Homebrew bundle (`Brewfile`).
+- `zsh/` — split shell config and local override templates.
+- `scripts/` — setup/maintenance automation.
+- `ides/` — shared editor settings/extensions.
+- `git/`, `gh/`, `ghostty/`, `vim/`, `raycast/` — tool-specific configs.
 
 ## Acknowledgements
 
