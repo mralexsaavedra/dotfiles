@@ -36,7 +36,7 @@ chmod u+x "$SCRIPT_DIR"/scripts/*.sh
 "$SCRIPT_DIR/scripts/brew-packages.sh"
 "$SCRIPT_DIR/scripts/zsh-ohmyzsh.sh"
 
-stow -t "$HOME" -v ghostty git zsh starship gh vim --adopt
+stow -t "$HOME" -v ghostty git zsh gh vim --adopt
 
 # Ensure ~/bin exists before stowing to verify proper linking or link directly
 mkdir -p "$HOME/bin"
