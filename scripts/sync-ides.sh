@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # sync-ides.sh: Unifies configuration across VSCode, Cursor, and Windsurf
 
-source './scripts/utils.sh'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+
+source "$SCRIPT_DIR/utils.sh"
 
 # Standard macOS IDE Configuration Paths
 VSCODE_PATH="$HOME/Library/Application Support/Code/User"
@@ -9,7 +12,7 @@ CURSOR_PATH="$HOME/Library/Application Support/Cursor/User"
 WINDSURF_PATH="$HOME/Library/Application Support/Windsurf/User"
 
 # Source of Truth (Git Repo)
-DOTFILES_IDES="$HOME/Developer/dotfiles/ides"
+DOTFILES_IDES="$DOTFILES_DIR/ides"
 
 # Function to perform the sync
 sync_config() {

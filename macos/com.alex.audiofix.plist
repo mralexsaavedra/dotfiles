@@ -6,7 +6,7 @@
     <string>com.alex.audiofix</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/mralexsaavedra/Developer/dotfiles/bin/audio-fix</string>
+        <string>__DOTFILES_DIR__/bin/audio-fix</string>
     </array>
     <key>WatchPaths</key>
     <array>

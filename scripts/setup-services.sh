@@ -1,18 +1,30 @@
 #!/bin/bash
-source "$(dirname "$0")/utils.sh"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+source "$SCRIPT_DIR/utils.sh"
 
 print_in_purple "\n • Setting up LaunchAgents...\n"
 
 # Ensure LaunchAgents directory exists
 mkdir -p "$HOME/Library/LaunchAgents"
 
-DOTFILES_DIR="$HOME/Developer/dotfiles"
 PLIST_SRC="$DOTFILES_DIR/macos/com.alex.audiofix.plist"
 PLIST_DEST="$HOME/Library/LaunchAgents/com.alex.audiofix.plist"
 
 # 1. Audio Fix Agent
 if [ -f "$PLIST_SRC" ]; then
-    ln -sf "$PLIST_SRC" "$PLIST_DEST"
+    # launchd needs absolute paths in ProgramArguments.
+    # We generate a machine-local plist from the template instead of symlinking it.
+    ESCAPED_DOTFILES_DIR=$(printf '%s\n' "$DOTFILES_DIR" | sed 's/[\/&]/\\&/g')
+    sed "s|__DOTFILES_DIR__|$ESCAPED_DOTFILES_DIR|g" "$PLIST_SRC" > "$PLIST_DEST"
+    chmod 644 "$PLIST_DEST"
+
+    if ! plutil -lint "$PLIST_DEST" >/dev/null; then
+        print_error "Generated plist is invalid: $PLIST_DEST"
+        exit 1
+    fi
     
     # Reload it to ensure latest config is active
     launchctl unload "$PLIST_DEST" 2>/dev/null

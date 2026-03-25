@@ -11,7 +11,7 @@ alias g="git"
 alias lg="lazygit"
 
 # Directories
-alias dotfiles="cd ~/Developer/dotfiles"
+alias dotfiles='cd "${DOTFILES_DIR:-$HOME/Developer/dotfiles}"'
 alias dev="cd ~/Developer"
 
 # ZSH
