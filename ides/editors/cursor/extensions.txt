@@ -1,0 +1,2 @@
+# Cursor-specific extension deltas
+# Keep empty unless a package is truly Cursor-only.

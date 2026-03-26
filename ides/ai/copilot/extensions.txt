@@ -1,0 +1,2 @@
+github.copilot
+github.copilot-chat

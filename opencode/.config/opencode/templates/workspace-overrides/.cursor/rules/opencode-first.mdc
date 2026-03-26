@@ -1,0 +1,13 @@
+---
+description: OpenCode-first workspace rule
+globs:
+  - "**/*"
+alwaysApply: false
+---
+
+Use OpenCode as canonical policy source:
+
+- `~/.config/opencode/AGENTS.md`
+- `~/.config/opencode/rules/shared-ai-conventions.md`
+
+Keep this file workspace-specific and concise.

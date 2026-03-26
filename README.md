@@ -11,7 +11,8 @@ This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to symlink configs
 - **Node.js**: **fnm** with automatic version switching (`fnm env --use-on-cd`).
 - **Terminal**: Ghostty config included.
 - **Navigation/tools**: `zoxide`, `eza`, `bat`, `fzf`, etc.
-- **Editors**: VSCode/Cursor/Windsurf sync flow via `scripts/sync-ides.sh`.
+- **Editors**: layered sync flow for VSCode/Cursor/Windsurf + Copilot integration via `scripts/sync-ides.sh`.
+- **AI tooling**: canonical OpenCode + symlinked consumers (Claude/Gemini/Codex) and Antigravity under `ides/ai`.
 
 ## 🚀 Setup
 
@@ -65,8 +66,13 @@ Prefer keeping shared defaults in tracked files and machine-specific values in `
 - `brew/` — Homebrew bundle (`Brewfile`).
 - `zsh/` — split shell config and local override templates.
 - `scripts/` — setup/maintenance automation.
-- `ides/` — shared editor settings/extensions.
+- `ides/` — layered editor config (`base` + per-editor deltas + `ai/copilot`).
 - `git/`, `gh/`, `ghostty/`, `vim/`, `raycast/` — tool-specific configs.
+- `opencode/` — canonical AI source (`AGENTS.md`, `rules/`, `skills/`, templates).
+- `claude-code/` — `~/.claude` package consuming OpenCode via symlinks.
+- `gemini-cli/` — `~/.gemini` package consuming OpenCode via symlinks.
+- `ides/ai/antigravity/` — `~/.agent` package consuming OpenCode via symlinks + local examples.
+- `codex/` — `~/.codex` package consuming OpenCode via symlinks.
 
 ## Acknowledgements
 

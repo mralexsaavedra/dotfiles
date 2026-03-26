@@ -1,0 +1,2 @@
+# Windsurf-specific extension deltas
+# Keep empty unless a package is truly Windsurf-only.

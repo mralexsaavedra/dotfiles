@@ -1,0 +1,1 @@
+../../../opencode/.config/opencode/rules/shared-ai-conventions.md

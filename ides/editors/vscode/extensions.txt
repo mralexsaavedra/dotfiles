@@ -1,0 +1,2 @@
+# VSCode-specific extension deltas
+# Keep empty unless a package is truly VSCode-only.

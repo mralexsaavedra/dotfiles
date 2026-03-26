@@ -1,0 +1,1 @@
+../../../../../opencode/.config/opencode/rules/opencode-bridge-contract.md
