@@ -58,7 +58,7 @@ Auto-labels: `bug`, `status:needs-review`
 | **Expected Behavior** | What should have happened |
 | **Actual Behavior** | What happened instead (include errors/logs) |
 | **Operating System** | Dropdown: macOS, Linux variants, Windows, WSL |
-| **Agent / Client** | Dropdown: Claude Code, OpenCode, Gemini CLI, Cursor, Windsurf, Codex, Other |
+| **Agent / Client** | Dropdown: Claude Code, OpenCode, Gemini CLI, Cursor, Codex, Other |
 | **Shell** | Dropdown: bash, zsh, fish, Other |
 
 #### Optional Fields

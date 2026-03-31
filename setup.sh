@@ -51,7 +51,7 @@ if cmd_exists "gh"; then
     install_gh_extension "seachicken/gh-poi"
 fi
 
-# Sync IDEs (VSCode, Cursor, Windsurf)
+# Sync IDEs (VSCode, Cursor)
 "$SCRIPT_DIR/scripts/sync-ides.sh"
 
 # System Services

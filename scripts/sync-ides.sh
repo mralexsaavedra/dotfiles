@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync-ides.sh: Sync layered config across VSCode, Cursor, and Windsurf
+# sync-ides.sh: Sync layered config across VSCode and Cursor
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
@@ -9,7 +9,6 @@ source "$SCRIPT_DIR/utils.sh"
 # Standard macOS IDE configuration paths
 VSCODE_PATH="$HOME/Library/Application Support/Code/User"
 CURSOR_PATH="$HOME/Library/Application Support/Cursor/User"
-WINDSURF_PATH="$HOME/Library/Application Support/Windsurf/User"
 
 # Layered Source of Truth (Git Repo)
 DOTFILES_IDES="$DOTFILES_DIR/ides"
@@ -140,6 +139,4 @@ print_in_blue "Model: base (canonical) + editors/<name> deltas + ai/copilot laye
 
 sync_config "VSCode" "vscode" "$VSCODE_PATH" "code"
 sync_config "Cursor" "cursor" "$CURSOR_PATH" "cursor"
-sync_config "Windsurf" "windsurf" "$WINDSURF_PATH" "windsurf"
-
-print_success "\n✨ Sync Complete. VSCode/Cursor/Windsurf now use layered config."
+print_success "\n✨ Sync Complete. VSCode/Cursor now use layered config."

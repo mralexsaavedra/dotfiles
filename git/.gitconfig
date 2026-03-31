@@ -126,7 +126,7 @@
 
 [core]
   autocrlf = input
-  editor = windsurf --wait
+  editor = code --wait
   excludesfile = ~/.gitignore
   attributesfile = ~/.gitattributes
   pager = delta

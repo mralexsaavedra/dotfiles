@@ -11,7 +11,7 @@ This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to symlink configs
 - **Node.js**: **fnm** with automatic version switching (`fnm env --use-on-cd`).
 - **Terminal**: Ghostty config included.
 - **Navigation/tools**: `zoxide`, `eza`, `bat`, `fzf`, etc.
-- **Editors**: layered sync flow for VSCode/Cursor/Windsurf + Copilot integration via `scripts/sync-ides.sh`.
+- **Editors**: layered sync flow for VSCode/Cursor + Copilot integration via `scripts/sync-ides.sh`.
 - **AI tooling**: canonical OpenCode + symlinked consumers (Claude/Gemini/Codex) and Antigravity under `ides/ai`.
 
 ## 🚀 Setup
@@ -35,7 +35,7 @@ Useful commands:
 | `make install` | Installs dependencies from `brew/Brewfile`. |
 | `make dump` | Rebuilds `brew/Brewfile` from current brew state (removes vscode lines). |
 | `make clean` | Homebrew cleanup. |
-| `make sync-ides` | Syncs settings/extensions to VSCode, Cursor and Windsurf. |
+| `make sync-ides` | Syncs settings/extensions to VSCode and Cursor. |
 
 > `scripts/maintenance.sh` **does not auto-commit or auto-push**. If changes are detected, it only prints suggested git commands. Review and commit manually.
 

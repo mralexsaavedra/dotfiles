@@ -13,4 +13,3 @@ Design goal:
 - `.vscode/opencode-first.instructions.md`
 - `.vscode/settings.json`
 - `.cursor/rules/opencode-first.mdc`
-- `.windsurf/rules/opencode-first.md`

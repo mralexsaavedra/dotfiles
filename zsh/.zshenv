@@ -4,7 +4,7 @@
 # 1) Locale + default editors (must be global and consistent)
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
-export EDITOR="nvim"
+export EDITOR="code --wait"
 export VISUAL="$EDITOR"
 
 # 2) Resolve dotfiles location (stow/symlink safe)

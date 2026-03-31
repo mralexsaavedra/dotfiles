@@ -33,5 +33,5 @@ reload: ## Reload zsh config
 	@echo "⚠️  Make runs in a subshell and cannot reload your current terminal."
 	@echo "👉 Please run this command manually: source ~/.zshrc"
 
-sync-ides: ## Sync settings and extensions for VSCode, Cursor, and Windsurf
+sync-ides: ## Sync settings and extensions for VSCode and Cursor
 	./scripts/sync-ides.sh
