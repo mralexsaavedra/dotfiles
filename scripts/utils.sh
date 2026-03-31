@@ -32,7 +32,7 @@ ask_for_sudo() {
 
 }
 
-directory_exists() {
+ensure_directory_with_backup() {
     if [ -d "$1" ]; then
         execute_cmd "$1 backed up" mv -- "$1" "$1-backup"
         print_in_blue "  Your $1 folder is backed-up in $1-backup\n"
@@ -40,6 +40,10 @@ directory_exists() {
     else
         execute_cmd "$1 directory created at $1" mkdir -p -- "$1"
     fi
+}
+
+directory_exists() {
+    ensure_directory_with_backup "$1"
 }
 
 directory_backup() {
@@ -62,7 +66,7 @@ brew_install() {
 brew_cask_install() {
     ask_for_confirmation "Would you like to install $1 ?"
     if answer_is_yes; then
-        execute_cmd "brew cask install $1" brew cask install "$1"
+        execute_cmd "brew install $1" brew install "$1"
         print_success "$1 installed."
     else
         print_error "$1 not installed."
@@ -79,11 +83,15 @@ npm_install() {
     fi
 }
 
-file_exists() {
+backup_file_if_exists() {
     if [ -f "$1" ]; then
         execute_cmd "$1 backed up" mv -- "$1" "$1-backup"
         print_in_blue "$1 backed up $1-backup\n"
     fi
+}
+
+file_exists() {
+    backup_file_if_exists "$1"
 }
 
 cmd_exists() {
