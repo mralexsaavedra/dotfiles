@@ -1,6 +1,5 @@
 astro-build.astro-vscode
 bradlc.vscode-tailwindcss
-charliermarsh.ruff
 christian-kohler.path-intellisense
 clinyong.vscode-css-modules
 dbaeumer.vscode-eslint
@@ -14,17 +13,14 @@ kisstkondoros.vscode-gutter-preview
 meganrogge.template-string-converter
 mguellsegarra.highlight-on-copy
 mhutchie.git-graph
+midudev.better-svg
 miguelsolorio.fluent-icons
 miguelsolorio.symbols
 mikestead.dotenv
-ms-python.debugpy
-ms-python.python
-ms-python.vscode-pylance
-ms-python.vscode-python-envs
+ms-azuretools.vscode-containers
+ms-azuretools.vscode-docker
 pflannery.vscode-versionlens
 redhat.vscode-yaml
-streetsidesoftware.code-spell-checker
-tamasfe.even-better-toml
 usernamehw.errorlens
 waderyan.gitblame
 wix.vscode-import-cost
