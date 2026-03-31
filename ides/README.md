@@ -1,21 +1,22 @@
-# IDEs (layered model)
+# IDEs (simplified model)
 
-`ides/` is organized in layers to keep OpenCode-first AI policy and editor config maintainable.
+`ides/` is organized with a direct editor layout: VSCode is canonical, Cursor is delta-only.
 
-## Layers
+## Structure
 
-- `base/` → **canonical shared config** (`settings.json`, `keybindings.json`, `extensions.txt`).
-- `editors/{vscode,cursor}/` → **real deltas only** (add editor-specific overrides only when needed).
+- `vscode/` → **canonical editor config** (`settings.json`, `keybindings.json`, `extensions.txt`).
+- `cursor/` → **real deltas only** (add editor-specific overrides only when needed).
 - `ai/copilot/` → editor AI integration layer (Copilot extensions only).
 - `ai/antigravity/` → Antigravity package for `~/.agent` (consumes OpenCode via symlinks, no policy duplication).
 
 ## Source of truth rules
 
-- Root-level legacy files (`ides/settings.json`, `ides/keybindings.json`, `ides/extensions.txt`) are intentionally removed.
+- Root-level legacy files (`ides/settings.json`, `ides/keybindings.json`, `ides/extensions.txt`) remain intentionally removed.
 - `scripts/sync-ides.sh` resolves files as:
-  1. `ides/editors/<editor>/<file>` if it exists as a **real file** (delta), otherwise
-  2. `ides/base/<file>` (canonical default).
-- Keep editor layer files absent when there is no real delta.
+  1. `ides/vscode/<file>` for canonical defaults.
+  2. `ides/cursor/<file>` only when a **real file** exists as Cursor delta.
+- Keep Cursor `settings.json` / `keybindings.json` absent when there is no real delta.
+- Extensions are layered as: `vscode/extensions.txt` + optional `cursor/extensions.txt` + `ai/copilot/extensions.txt`.
 
 ## OpenCode-first policy
 

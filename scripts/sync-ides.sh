@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync-ides.sh: Sync layered config across VSCode and Cursor
+# sync-ides.sh: Sync simplified IDE config for VSCode/Cursor
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
@@ -10,23 +10,29 @@ source "$SCRIPT_DIR/utils.sh"
 VSCODE_PATH="$HOME/Library/Application Support/Code/User"
 CURSOR_PATH="$HOME/Library/Application Support/Cursor/User"
 
-# Layered Source of Truth (Git Repo)
+# Source of truth in Git repo
 DOTFILES_IDES="$DOTFILES_DIR/ides"
-DOTFILES_IDES_BASE="$DOTFILES_IDES/base"
-DOTFILES_IDES_EDITORS="$DOTFILES_IDES/editors"
+DOTFILES_IDES_VSCODE="$DOTFILES_IDES/vscode"
+DOTFILES_IDES_CURSOR="$DOTFILES_IDES/cursor"
 DOTFILES_IDES_AI="$DOTFILES_IDES/ai"
 
-resolve_layer_file() {
+resolve_editor_file() {
     local editor_slug="$1"
     local file_name="$2"
-    local editor_file="$DOTFILES_IDES_EDITORS/$editor_slug/$file_name"
-    local base_file="$DOTFILES_IDES_BASE/$file_name"
+    local primary_file="$DOTFILES_IDES_VSCODE/$file_name"
 
-    # Editor layer must be a real file (delta), not a symlink to base.
+    if [ "$editor_slug" = "vscode" ]; then
+        printf "%s" "$primary_file"
+        return 0
+    fi
+
+    local editor_file="$DOTFILES_IDES_CURSOR/$file_name"
+
+    # Cursor layer must be a real file (delta), not a symlink.
     if [ -f "$editor_file" ] && [ ! -L "$editor_file" ]; then
         printf "%s" "$editor_file"
     else
-        printf "%s" "$base_file"
+        printf "%s" "$primary_file"
     fi
 }
 
@@ -94,8 +100,12 @@ install_extensions() {
             print_warning "Could not list installed extensions for $app_name. Continuing with install attempts."
         fi
 
-        installed_extensions="$(install_extensions_from_file "$app_name" "$binary" "$DOTFILES_IDES_BASE/extensions.txt" "$installed_extensions")"
-        installed_extensions="$(install_extensions_from_file "$app_name" "$binary" "$DOTFILES_IDES_EDITORS/$editor_slug/extensions.txt" "$installed_extensions")"
+        installed_extensions="$(install_extensions_from_file "$app_name" "$binary" "$DOTFILES_IDES_VSCODE/extensions.txt" "$installed_extensions")"
+
+        if [ "$editor_slug" = "cursor" ]; then
+            installed_extensions="$(install_extensions_from_file "$app_name" "$binary" "$DOTFILES_IDES_CURSOR/extensions.txt" "$installed_extensions")"
+        fi
+
         installed_extensions="$(install_extensions_from_file "$app_name" "$binary" "$DOTFILES_IDES_AI/copilot/extensions.txt" "$installed_extensions")"
 
         print_success "Extensions synced."
@@ -112,8 +122,8 @@ sync_config() {
 
     local settings_source
     local keybindings_source
-    settings_source="$(resolve_layer_file "$editor_slug" "settings.json")"
-    keybindings_source="$(resolve_layer_file "$editor_slug" "keybindings.json")"
+    settings_source="$(resolve_editor_file "$editor_slug" "settings.json")"
+    keybindings_source="$(resolve_editor_file "$editor_slug" "keybindings.json")"
 
     validate_source_file "$settings_source" "settings.json" || return 1
     validate_source_file "$keybindings_source" "keybindings.json" || return 1
@@ -133,10 +143,10 @@ sync_config() {
 
 # --- MAIN ---
 
-print_in_purple "\n🚀 Starting IDE Synchronization (layered mode)...\n"
+print_in_purple "\n🚀 Starting IDE Synchronization (simplified mode)...\n"
 print_in_blue "Source of Truth: $DOTFILES_IDES"
-print_in_blue "Model: base (canonical) + editors/<name> deltas + ai/copilot layer"
+print_in_blue "Model: vscode (canonical) + cursor deltas + ai/copilot layer"
 
 sync_config "VSCode" "vscode" "$VSCODE_PATH" "code"
 sync_config "Cursor" "cursor" "$CURSOR_PATH" "cursor"
-print_success "\n✨ Sync Complete. VSCode/Cursor now use layered config."
+print_success "\n✨ Sync Complete. VSCode/Cursor now use simplified config."
