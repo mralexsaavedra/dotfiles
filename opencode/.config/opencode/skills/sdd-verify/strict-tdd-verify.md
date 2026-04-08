@@ -7,7 +7,7 @@
 
 When Strict TDD Mode is active, verification goes beyond "does the code work?" to "was the code built correctly?" — meaning: was TDD actually followed? The apply phase reports TDD evidence; your job is to validate that evidence against reality.
 
-## Step 5a: TDD Compliance Check
+## Step 5a: TDD Compliance Check (includes Assertion Quality Audit)
 
 Read the `apply-progress` artifact and verify that TDD was actually followed:
 
@@ -171,16 +171,98 @@ When Strict TDD Mode is active, your verification report MUST include these addi
 
 ---
 
+### Assertion Quality
+| File | Line | Assertion | Issue | Severity |
+|------|------|-----------|-------|----------|
+| ... | ... | ... | ... | ... |
+
+**Assertion quality**: {N} CRITICAL, {N} WARNING
+{or "✅ All assertions verify real behavior"}
+
+---
+
 ### Quality Metrics
 **Linter**: ✅ No errors / ⚠️ {N} warnings / ❌ {N} errors / ➖ Not available
 **Type Checker**: ✅ No errors / ❌ {N} errors / ➖ Not available
 ```
 
+## Step 5f: Assertion Quality Audit (MANDATORY)
+
+Scan ALL test files created or modified by this change and check for trivial/meaningless assertions:
+
+```
+FOR EACH test file related to the change:
+├── Read the file content
+├── Scan for BANNED assertion patterns:
+│   ├── Tautologies: expect(true).toBe(true), assert True, expect(1).toBe(1)
+│   ├── Orphan empty checks: expect(result).toEqual([]) or assert len(result) == 0
+│   │   └── UNLESS there is a companion test with same setup that asserts NON-EMPTY
+│   ├── Type-only assertions used alone: toBeDefined(), not.toBeNull(), typeof checks
+│   │   └── These are OK if COMBINED with value assertions in the same test
+│   ├── Assertions that never call production code (no function call, no render, no request)
+│   ├── Ghost loops: assertions inside for/forEach over queryAll/filter results
+│   │   └── Check if the collection could be empty — if so, the assertions NEVER RUN
+│   │       Flag: CRITICAL — a loop over an empty array is a test that ALWAYS passes
+│   ├── Incomplete TDD cycle: test passes because preconditions prevent code from running
+│   │   └── e.g., testing behavior of a component that is never rendered due to state
+│   │       Flag: CRITICAL — test must set up conditions where the code path IS exercised
+│   ├── Smoke-test-only: render() + toBeInTheDocument() without behavioral assertions
+│   │   └── "Renders without crash" is NOT a valid test — it must assert WHAT was rendered
+│   │       Flag: WARNING — smoke tests do not count toward TDD coverage
+│   ├── Implementation detail coupling: assertions on CSS classes, internal state, mock call counts
+│   │   └── expect(el.className).toContain("text-xs") or expect(mock.calls.length).toBe(3)
+│   │       Flag: WARNING — tests must assert behavior, not implementation
+│   └── Mock/assertion ratio: count vi.mock() calls vs expect() calls per test file
+│       └── If mocks > 2× assertions → Flag: WARNING — "Mock-heavy test ({N} mocks, {N} assertions)"
+│           Recommend: extract logic to pure function or move to higher test layer
+│
+├── For each violation found:
+│   ├── Record: file, line number, the assertion, why it's trivial
+│   └── Classify:
+│       ├── CRITICAL: tautology (expect(true).toBe(true)) — test proves NOTHING
+│       ├── CRITICAL: assertion without production code call — test exercises nothing
+│       ├── CRITICAL: ghost loop — assertions inside loop over possibly-empty collection
+│       ├── WARNING: empty collection without companion non-empty test
+│       ├── WARNING: type-only assertion without value assertion
+│       ├── WARNING: smoke-test-only — render + toBeInTheDocument without behavioral check
+│       ├── WARNING: CSS class / implementation detail assertion
+│       └── WARNING: mock-heavy test (mocks > 2× assertions) — wrong test layer
+│
+├── Check triangulation quality:
+│   ├── Count distinct test cases per behavior
+│   ├── If only 1 test case exists for a behavior with multiple spec scenarios:
+│   │   └── Flag: WARNING — "Insufficient triangulation for {behavior}"
+│   ├── If all test cases assert the SAME type of value (e.g., all check empty arrays):
+│   │   └── Flag: WARNING — "No variance in test expectations — all assert empty/trivial"
+│   └── A well-triangulated behavior has tests asserting DIFFERENT expected values
+│
+└── Summary: "{N} trivial assertions found across {N} files"
+```
+
+### Assertion Quality Report Table
+
+Include this table in the verification report when any issues are found:
+
+```markdown
+### Assertion Quality
+| File | Line | Assertion | Issue | Severity |
+|------|------|-----------|-------|----------|
+| `path/test.ts` | 15 | `expect(true).toBe(true)` | Tautology — proves nothing | CRITICAL |
+| `path/test.ts` | 23 | `expect(result).toEqual([])` | Empty without companion non-empty test | WARNING |
+| `path/test.ts` | 31 | `expect(result).toBeDefined()` | Type-only — no value asserted | WARNING |
+
+**Assertion quality**: {N} CRITICAL, {N} WARNING
+```
+
+If zero issues found, report: "**Assertion quality**: ✅ All assertions verify real behavior"
+
 ## Rules (Strict TDD Verify specific)
 
 - ALWAYS check the TDD Cycle Evidence table from apply-progress — it's the primary artifact
 - ALWAYS cross-reference reported test files against actual execution — don't trust the report blindly
+- ALWAYS run the Assertion Quality Audit (Step 5f) — trivial tests are WORSE than missing tests
 - If apply-progress has no TDD evidence table, flag as CRITICAL — the protocol was not followed
+- If tautology assertions are found (expect(true).toBe(true)), flag as CRITICAL — these MUST be rewritten
 - Coverage and quality metrics are informational, NOT blocking — only flag as WARNING, never CRITICAL
 - Test layer distribution is informational — SUGGESTION level only
 - DO NOT fix issues — only report. The orchestrator decides.

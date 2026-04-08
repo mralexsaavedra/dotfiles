@@ -9,7 +9,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: gentleman-programming
-  version: "1.3"
+  version: "1.0"
 ---
 
 ## When to Use
@@ -26,10 +26,10 @@ metadata:
 
 Follow the **Skill Resolver Protocol** (`_shared/skill-resolver.md`) before launching ANY sub-agent:
 
-1. Obtain the skill registry: search engram (`mem_search(query: "skill-registry", project: "{project}")`) → fallback to `.atl/skill-registry.md` from the project root → skip if none
+1. Obtain the skill registry (engram → `.atl/skill-registry.md` from the project root → skip if none)
 2. Identify the target files/scope — what code will the judges review?
 3. Match relevant skills from the registry's **Compact Rules** by:
-   - **Code context**: file extensions/paths of the target (e.g., `.go` → go-testing; `.tsx` → react-19, typescript)
+   - **Code context**: file extensions/paths of the target (e.g., `.tsx` → react-19, typescript)
    - **Task context**: "review code" → framework/language skills; "create PR" → branch-pr skill
 4. Build a `## Project Standards (auto-resolved)` block with the matching compact rules
 5. Inject this block into BOTH Judge prompts AND the Fix Agent prompt (identical for all)
@@ -63,7 +63,7 @@ Present findings as a structured verdict table (see Output Format).
 
 1. If **confirmed issues** exist → delegate a **Fix Agent** (separate delegation)
 2. After Fix Agent completes → re-launch **both judges in parallel** (same blind protocol, fresh delegates)
-3. **After 2 fix iterations**, if issues remain → present findings to user and ASK: "¿Querés que siga iterando? / Should I continue iterating?" If YES → continue fix+judge cycle. If NO → JUDGMENT: ESCALATED.
+3. **Max 2 fix iterations.** If still failing → JUDGMENT: ESCALATED — report to user with full history
 4. If both judges return clean → JUDGMENT: APPROVED ✅
 
 ---
@@ -92,9 +92,6 @@ Synthesize verdict
 ├── Issues found (confirmed, suspect, or contradictions)?
 │   └── Delegate Fix Agent with confirmed issues list
 │       ▼
-│       ⚠️  BLOCKING: Your NEXT action MUST be re-launching judges.
-│       ⚠️  Do NOT push, commit, or message the user.
-│       ▼
 │       Wait for Fix Agent to complete
 │       ▼
 │       Re-launch Judge A + Judge B in parallel (Round 2)
@@ -110,10 +107,7 @@ Synthesize verdict
 │           Synthesize verdict
 │           │
 │           ├── Clean → JUDGMENT: APPROVED ✅
-│           └── Still issues → ASK USER: "Issues remain after 2 iterations. Continue iterating?"
-            │
-            ├── User says YES → repeat fix + judge cycle (no limit)
-            └── User says NO → JUDGMENT: ESCALATED ⚠️ (report to user)
+│           └── Still issues → JUDGMENT: ESCALATED ⚠️ (report to user)
 ```
 
 ---
@@ -223,14 +217,14 @@ Return a summary:
 Both judges pass clean. The target is cleared for merge.
 ```
 
-### Escalation Format (user chose to stop)
+### Escalation Format (after 2 failed iterations)
 
 ```markdown
 ## Judgment Day — {target}
 
 ### JUDGMENT: ESCALATED ⚠️
 
-User chose to stop after {N} fix iterations. Issues remain.
+After 2 fix iterations, both judges still report issues.
 Manual review required before proceeding.
 
 ### Remaining Issues
@@ -250,45 +244,10 @@ Recommend: human review of the remaining issues above before re-running judgment
 
 ---
 
-## Skill Resolution Feedback
-
-After every delegation that returns a result, check the `**Skill Resolution**` field in each judge/fix-agent response:
-- `injected` → skills were passed correctly ✅
-- `fallback-registry`, `fallback-path`, or `none` → skill cache was lost (likely compaction). Re-read the registry immediately and inject compact rules in all subsequent delegations.
-
-This is a self-correction mechanism. Do NOT ignore fallback reports.
-
----
-
 ## Language
 
 - **Spanish input → Rioplatense**: "Juicio iniciado", "Los jueces están trabajando en paralelo...", "Los jueces coinciden", "Juicio terminado — Aprobado", "Escalado — necesita revisión humana"
 - **English input**: "Judgment initiated", "Both judges are working in parallel...", "Both judges agree", "Judgment complete — Approved", "Escalated — requires human review"
-
----
-
-## Blocking Rules (MANDATORY — override all other instructions)
-
-These rules cannot be skipped, overridden, or deprioritized under any circumstances:
-
-1. **MUST NOT** declare `JUDGMENT: APPROVED` until Round 2 judges BOTH return CLEAN
-2. **MUST NOT** run `git push`, `git commit`, or any code-modifying action after fixes until re-judgment completes
-3. **MUST NOT** save a session summary or tell the user "done" until every JD reaches a terminal state (APPROVED or ESCALATED)
-4. **After the Fix Agent returns**, your IMMEDIATE next action is launching Round 2 judges in parallel. No other action (push, summary, user message) may come first.
-5. **When running multiple JDs in parallel**, each JD is independent. One JD completing does NOT allow skipping rounds on another.
-
----
-
-## Self-Check (before ANY terminal action)
-
-Before pushing, committing, summarizing, or telling the user "done":
-
-1. List every active JD target
-2. For each: is it in state APPROVED or ESCALATED?
-3. If ANY JD had fixes applied, did Round 2 run?
-4. If Round 2 found issues, did you ASK the user whether to continue? Did you respect their answer?
-
-**If ANY answer is "no"** → you skipped a step. Go back and complete it before proceeding.
 
 ---
 
@@ -299,7 +258,7 @@ Before pushing, committing, summarizing, or telling the user "done":
 - The **Fix Agent is a separate delegation** — never use one of the judges as the fixer
 - If user provides **custom review criteria**, include them in BOTH judge prompts (identical)
 - If target scope is **unclear**, stop and ask before launching — partial reviews are useless
-- **After 2 fix iterations**, ASK the user before continuing. Never escalate automatically — the user decides when to stop.
+- **Max 2 fix iterations** — on the third failure, escalate with full report, do not loop forever
 - Always wait for BOTH judges to complete before synthesizing — never accept a partial verdict
 - Suspect findings (only one judge) are reported but NOT automatically fixed — triage and escalate to user if needed
 

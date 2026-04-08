@@ -6,7 +6,7 @@ description: >
 license: MIT
 metadata:
   author: gentleman-programming
-  version: "3.0"
+  version: "2.0"
 ---
 
 ## Purpose
@@ -42,32 +42,68 @@ Before writing ANY code:
 3. Read existing code in affected files — understand current patterns
 4. Check the project's coding conventions from `config.yaml`
 
-### Step 3: Read Testing Capabilities and Resolve Mode
+### Step 3: Detect Implementation Mode
 
-Read the cached testing capabilities to determine implementation mode:
+Before writing code, determine if the project uses TDD:
 
 ```
-Read testing capabilities from:
-├── engram: mem_search("sdd/{project}/testing-capabilities") → mem_get_observation(id)
-├── openspec: openspec/config.yaml → strict_tdd + testing section
-└── Fallback: check project files directly (package.json, go.mod, etc.)
+Detect TDD mode from (in priority order):
+├── openspec/config.yaml → rules.apply.tdd (true/false — highest priority)
+├── User's installed skills (e.g., tdd/SKILL.md exists)
+├── Existing test patterns in the codebase (test files alongside source)
+└── Default: standard mode (write code first, then verify)
 
-Resolve mode:
-├── IF strict_tdd: true AND test runner exists
-│   └── STRICT TDD MODE → Load and follow strict-tdd.md module
-│       (read the file: skills/sdd-apply/strict-tdd.md)
-│
-├── IF strict_tdd: false OR no test runner
-│   └── STANDARD MODE → use Step 4 below (no TDD module loaded)
-│
-└── Cache the resolved mode for the return summary
+IF TDD mode is detected → use Step 3a (TDD Workflow)
+IF standard mode → use Step 3b (Standard Workflow)
 ```
 
-**Key principle**: If Strict TDD Mode is not active, ZERO TDD instructions are loaded. The `strict-tdd.md` module is never read, never processed, never consumes tokens.
+### Step 3a: Implement Tasks (TDD Workflow — RED → GREEN → REFACTOR)
 
-### Step 4: Implement Tasks (Standard Workflow)
+When TDD is active, EVERY task follows this cycle:
 
-This step is used when Strict TDD Mode is NOT active:
+```
+FOR EACH TASK:
+├── 1. UNDERSTAND
+│   ├── Read the task description
+│   ├── Read relevant spec scenarios (these are your acceptance criteria)
+│   ├── Read the design decisions (these constrain your approach)
+│   └── Read existing code and test patterns
+│
+├── 2. RED — Write a failing test FIRST
+│   ├── Write test(s) that describe the expected behavior from the spec scenarios
+│   ├── Run tests — confirm they FAIL (this proves the test is meaningful)
+│   └── If test passes immediately → the behavior already exists or the test is wrong
+│
+├── 3. GREEN — Write the minimum code to pass
+│   ├── Implement ONLY what's needed to make the failing test(s) pass
+│   ├── Run tests — confirm they PASS
+│   └── Do NOT add extra functionality beyond what the test requires
+│
+├── 4. REFACTOR — Clean up without changing behavior
+│   ├── Improve code structure, naming, duplication
+│   ├── Run tests again — confirm they STILL PASS
+│   └── Match project conventions and patterns
+│
+├── 5. Mark task as complete [x] in tasks.md
+└── 6. Note any issues or deviations
+```
+
+Detect the test runner for execution:
+
+```
+Detect test runner from:
+├── openspec/config.yaml → rules.apply.test_command (highest priority)
+├── package.json → scripts.test
+├── pyproject.toml / pytest.ini → pytest
+├── Makefile → make test
+└── Fallback: report that tests couldn't be run automatically
+```
+
+**Important**: If any user coding skills are installed (e.g., `tdd/SKILL.md`, `pytest/SKILL.md`, `vitest/SKILL.md`), read and follow those skill patterns for writing tests.
+
+### Step 3b: Implement Tasks (Standard Workflow)
+
+When TDD is not active:
 
 ```
 FOR EACH TASK:
@@ -80,7 +116,7 @@ FOR EACH TASK:
 └── Note any issues or deviations
 ```
 
-### Step 5: Mark Tasks Complete
+### Step 4: Mark Tasks Complete
 
 Update `tasks.md` — change `- [ ]` to `- [x]` for completed tasks:
 
@@ -92,7 +128,7 @@ Update `tasks.md` — change `- [ ]` to `- [x]` for completed tasks:
 - [ ] 1.3 Add auth routes to `internal/server/server.go`  ← still pending
 ```
 
-### Step 6: Persist Progress
+### Step 5: Persist Progress
 
 **This step is MANDATORY — do NOT skip it.**
 
@@ -102,7 +138,7 @@ Follow **Section C** from `skills/_shared/sdd-phase-common.md`.
 - type: `architecture`
 - Also update the tasks artifact with `[x]` marks via `mem_update` (engram) or file edit (openspec/hybrid).
 
-### Step 7: Return Summary
+### Step 6: Return Summary
 
 Return to the orchestrator:
 
@@ -110,7 +146,7 @@ Return to the orchestrator:
 ## Implementation Progress
 
 **Change**: {change-name}
-**Mode**: {Strict TDD | Standard}
+**Mode**: {TDD | Standard}
 
 ### Completed Tasks
 - [x] {task 1.1 description}
@@ -122,7 +158,13 @@ Return to the orchestrator:
 | `path/to/file.ext` | Created | {brief description} |
 | `path/to/other.ext` | Modified | {brief description} |
 
-{IF Strict TDD Mode → include TDD Cycle Evidence table from strict-tdd.md}
+### Tests (TDD mode only)
+| Task | Test File | RED (fail) | GREEN (pass) | REFACTOR |
+|------|-----------|------------|--------------|----------|
+| 1.1 | `path/to/test.ext` | ✅ Failed as expected | ✅ Passed | ✅ Clean |
+| 1.2 | `path/to/test.ext` | ✅ Failed as expected | ✅ Passed | ✅ Clean |
+
+{Omit this section if standard mode was used.}
 
 ### Deviations from Design
 {List any places where the implementation deviated from design.md and why.
@@ -151,6 +193,6 @@ If none, say "None."}
 - NEVER implement tasks that weren't assigned to you
 - Skill loading is handled in Step 1 — follow any loaded skills strictly when writing code
 - Apply any `rules.apply` from `openspec/config.yaml`
-- If Strict TDD Mode is active (Step 3), load `strict-tdd.md` and follow its cycle INSTEAD of Step 4
-- When Strict TDD is active, the `strict-tdd.md` module's rules OVERRIDE Step 4 entirely
+- If TDD mode is detected (Step 3), ALWAYS follow the RED → GREEN → REFACTOR cycle — never skip RED (writing the failing test first)
+- When running tests during TDD, run ONLY the relevant test file/suite, not the entire test suite (for speed)
 - Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`.
