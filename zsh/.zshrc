@@ -75,6 +75,8 @@ fi
 
 #plugins
 plugins=(
+  git
+  sudo
   command-not-found
 )
 
