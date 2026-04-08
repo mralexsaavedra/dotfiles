@@ -10,7 +10,6 @@
 
 font-family = CaskaydiaCove Nerd Font
 font-size = 14
-font-feature = ss01 # For cursive italics
 
 
 # ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -42,10 +41,9 @@ custom-shader = shaders/cursor_smear_gentleman.glsl
 # └──────────────────────────────────────────────────────────────────────────────┘
 
 # macOS Alt key fix
-macos-option-as-alt = false
-; macos-option-as-alt = left
-; keybind = alt+left=unbind
-; keybind = alt+right=unbind
+macos-option-as-alt = left
+keybind = alt+left=unbind
+keybind = alt+right=unbind
 
 # Split Management
 keybind = alt+v=new_split:right
