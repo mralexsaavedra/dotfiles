@@ -39,7 +39,7 @@ This is the foundation of the **Skill Resolver Protocol** (see `_shared/skill-re
    **Project-level (workspace skills):**
    - `{project-root}/.claude/skills/` — Claude Code
    - `{project-root}/.gemini/skills/` — Gemini CLI
-   - `{project-root}/.agent/skills/` — Antigravity (workspace)
+   - `{project-root}/.agent/skills/` — Agent workspace skills
    - `{project-root}/skills/` — Generic
 
 2. **SKIP `sdd-*` and `_shared`** — those are SDD workflow skills, not coding/task skills

@@ -5,7 +5,7 @@ This document replaces text-heavy bridge glue with direct symlink inheritance.
 ## Contract
 
 1. OpenCode remains canonical for `AGENTS.md`, `rules/`, and shared `skills/`.
-2. Claude/Gemini/Antigravity consume canonical files via repository symlinks.
+2. Claude/Gemini/Codex consume canonical files via repository symlinks.
 3. Tool-specific local behavior stays in non-versioned `*.local` files.
 
 ## Editing policy
