@@ -5,6 +5,16 @@
 # Personal project root used by custom scripts/workflows.
 export PROJECT_PATHS="/home/alanbuscaglia/work"
 
+# Personal FZF defaults.
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_DEFAULT_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+# Node version auto-switch (custom behavior).
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
 # Personal fzf helpers.
 alias fzfbat='fzf --preview="bat --theme=gruvbox-dark --color=always {}"'
 alias fzfnvim='nvim "$(fzf --preview="bat --theme=gruvbox-dark --color=always {}")"'
@@ -22,3 +32,5 @@ start_if_needed() {
     exec "$WM_CMD"
   fi
 }
+
+start_if_needed
