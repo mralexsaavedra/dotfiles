@@ -2,21 +2,18 @@
 # Gentleman Dots base / bootstrap
 # =============================================================================
 
-# [Gentleman Dots base] Powerlevel10k instant prompt (must stay near top).
+# Powerlevel10k instant prompt (must stay near top).
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# [Gentleman Dots base / bootstrap] Core shell base.
 export ZSH="$HOME/.oh-my-zsh"
 
-# [Gentleman Dots base / bootstrap] Termux detection.
 IS_TERMUX=0
 if [[ -n "$TERMUX_VERSION" || -d "/data/data/com.termux" ]]; then
   IS_TERMUX=1
 fi
 
-# [Gentleman Dots base / bootstrap] Helper functions.
 source_if_exists() {
   [[ -r "$1" ]] && source "$1"
 }
@@ -37,10 +34,9 @@ add_path_if_exists() {
 }
 
 # =============================================================================
-# Gentleman Dots platform & package manager setup
+# Gentleman Dots platform
 # =============================================================================
 
-# [Gentleman Dots platform] PATH (deduplicated + defensive).
 typeset -U path PATH
 
 if [[ $IS_TERMUX -eq 1 ]]; then
@@ -60,7 +56,6 @@ fi
 
 export PATH
 
-# [Gentleman Dots platform] Homebrew integration (non-Termux, platform-aware).
 if [[ $IS_TERMUX -eq 0 ]]; then
   BREW_BIN=""
   for candidate in \
@@ -82,23 +77,17 @@ fi
 # Gentleman Dots shell framework
 # =============================================================================
 
-# [Gentleman Dots shell framework] Oh My Zsh + plugins.
-# Keep OMZ plugins minimal and compatible with zoxide (skip plugin 'z').
-plugins=(git sudo)
+plugins=(git sudo command-not-found)
 
 if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
   source "$ZSH/oh-my-zsh.sh"
 fi
 
-# =============================================================================
-# Alexander customizations preserved (from previous ~/.zshrc)
-# =============================================================================
-
-# [Alexander customizations preserved] Optional personal aliases/functions.
+# Shared aliases/functions
 source_if_exists "$HOME/.aliases"
 source_if_exists "$HOME/.functions"
 
-# [Alexander customizations preserved] Advanced history configuration.
+# History defaults
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=100000
 SAVEHIST=100000
@@ -112,7 +101,6 @@ setopt HIST_IGNORE_SPACE
 setopt HIST_SAVE_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 
-# [Alexander customizations preserved] Smart history navigation (Up/Down by current buffer).
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -122,11 +110,7 @@ bindkey "${terminfo[kcud1]}" down-line-or-beginning-search
 bindkey "^[[A" up-line-or-beginning-search
 bindkey "^[[B" down-line-or-beginning-search
 
-# =============================================================================
-# Shared integrations (portable across setups)
-# =============================================================================
-
-# [Shared integrations] Optional shell enhancements with defensive checks.
+# Shared integrations
 if command -v fzf >/dev/null 2>&1; then
   if command -v fd >/dev/null 2>&1; then
     export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
@@ -144,18 +128,9 @@ if command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init zsh)"
 fi
 
-# =============================================================================
-# Alexander preserved Node workflow
-# =============================================================================
-
-# [Alexander preserved Node workflow] Restored fnm auto-switch on directory change.
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env --use-on-cd)"
 fi
-
-# =============================================================================
-# Shared integrations (portable completion bridge)
-# =============================================================================
 
 if command -v carapace >/dev/null 2>&1; then
   export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
@@ -163,11 +138,7 @@ if command -v carapace >/dev/null 2>&1; then
   source <(carapace _carapace)
 fi
 
-# =============================================================================
-# Gentleman Dots shell plugins & theme sources (optional)
-# =============================================================================
-
-# [Gentleman Dots shell] Extra plugin/theme sources (only if present).
+# Optional external plugin/theme sources
 source_first_existing \
   "${PREFIX:+$PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh}" \
   "${BREW_PREFIX:+$BREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh}" \
@@ -189,7 +160,6 @@ source_first_existing \
   "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
   "/home/linuxbrew/.linuxbrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# [Gentleman Dots shell] Powerlevel10k final theme/config load.
 source_first_existing \
   "${PREFIX:+$PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme}" \
   "${BREW_PREFIX:+$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme}" \
@@ -198,9 +168,11 @@ source_first_existing \
   "/home/linuxbrew/.linuxbrew/share/powerlevel10k/powerlevel10k.zsh-theme"
 source_if_exists "$HOME/.p10k.zsh"
 
-# =============================================================================
-# Local overrides (always last)
-# =============================================================================
-
-# [Local overrides] User machine-specific final overrides.
+# Personal customizations (versioned + machine-local)
+source_if_exists "$HOME/.zshrc.custom"
 source_if_exists "$HOME/.zshrc.local"
+
+# Optional terminal multiplexer auto-start hook from custom/local files
+if typeset -f start_if_needed >/dev/null 2>&1; then
+  start_if_needed
+fi

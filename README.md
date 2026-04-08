@@ -46,8 +46,9 @@ The shell config is intentionally split by responsibility:
 1. **`.zshenv`** → minimal env for *all* zsh instances (locale, editor, `DOTFILES_DIR`, lightweight PATH, secrets hook).
 2. **`.zprofile`** → login/session setup (toolchain PATH additions, Java/Android/Python/Bun env).
 3. **`.zshrc`** → interactive shell behavior (plugins, history, completions, fnm auto-switch, Powerlevel10k).
-4. **`.aliases`** / **`.functions`** → user commands loaded by `.zshrc`.
-5. **`*.local` files** (optional, machine-specific) loaded last as overrides.
+4. **`.aliases`** / **`.functions`** → shared user commands loaded by `.zshrc`.
+5. **`.zshrc.custom`** → tracked personal interactive customizations, sourced near the end.
+6. **`*.local` files** (optional, machine-specific) loaded last as overrides.
 
 ## 🔒 Local (non-versioned) overrides
 
@@ -58,6 +59,11 @@ Local/secrets files are ignored via `*.local` in `.gitignore`.
   - `~/.zshenv.local` (tokens/secrets)
   - `~/.zprofile.local` (machine login/session overrides)
   - `~/.zshrc.local` (interactive shell overrides)
+
+Suggested split for interactive config:
+- Keep **portable baseline** in `zsh/.zshrc` (safe to update from upstream).
+- Keep **tracked personal tweaks** in `zsh/.zshrc.custom`.
+- Keep **machine-only overrides** in `~/.zshrc.local`.
 
 Prefer keeping shared defaults in tracked files and machine-specific values in `*.local`.
 

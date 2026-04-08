@@ -1,0 +1,24 @@
+# =============================================================================
+# User customizations (tracked)
+# =============================================================================
+
+# Personal project root used by custom scripts/workflows.
+export PROJECT_PATHS="/home/alanbuscaglia/work"
+
+# Personal fzf helpers.
+alias fzfbat='fzf --preview="bat --theme=gruvbox-dark --color=always {}"'
+alias fzfnvim='nvim "$(fzf --preview="bat --theme=gruvbox-dark --color=always {}")"'
+
+# Terminal multiplexer auto-start hook.
+# Override WM_CMD in ~/.zshrc.local if you prefer zellij.
+WM_CMD="${WM_CMD:-tmux}"
+
+start_if_needed() {
+  [[ $- != *i* ]] && return
+  [[ -n "$TMUX" || -n "$ZELLIJ" ]] && return
+  [[ ! -t 1 ]] && return
+
+  if command -v "$WM_CMD" >/dev/null 2>&1; then
+    exec "$WM_CMD"
+  fi
+}

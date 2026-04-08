@@ -4,7 +4,7 @@
 alias ls="eza --icons --group-directories-first"
 alias ll="eza --icons --group-directories-first -l"
 alias cat="bat"
-alias edit="code --wait"
+alias edit="nvim"
 
 # Git
 alias g="git"
@@ -16,4 +16,4 @@ alias dev="cd ~/Developer"
 
 # ZSH
 alias reload="source ~/.zshrc && echo 'ZSH config reloaded!'"
-alias zconf="code ~/.zshrc"
+alias zconf="nvim ~/.zshrc"
