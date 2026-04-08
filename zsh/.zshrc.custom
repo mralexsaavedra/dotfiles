@@ -2,6 +2,10 @@
 # User customizations (tracked)
 # =============================================================================
 
+# Shared aliases/functions no longer guaranteed by upstream base.
+[[ -f "$HOME/.aliases" ]] && source "$HOME/.aliases"
+[[ -f "$HOME/.functions" ]] && source "$HOME/.functions"
+
 # Personal project root used by custom scripts/workflows.
 export PROJECT_PATHS="/home/alanbuscaglia/work"
 
