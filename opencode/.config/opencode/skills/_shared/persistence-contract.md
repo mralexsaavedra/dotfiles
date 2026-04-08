@@ -4,13 +4,31 @@
 
 The orchestrator passes `artifact_store.mode` with one of: `engram | openspec | hybrid | none`.
 
-Default resolution (when orchestrator does not explicitly set a mode):
-1. If Engram is available → use `engram`
-2. Otherwise → use `none`
+The orchestrator ASKs the user which mode they want when `/sdd-new`, `/sdd-ff`, or `/sdd-continue` is invoked for the first time in a session. The choice is cached for the session.
 
-`openspec` and `hybrid` are NEVER used by default — only when explicitly passed.
+Default (if user doesn't specify): if Engram is available → `engram`. Otherwise → `none`.
 
-When falling back to `none`, recommend the user enable `engram` or `openspec`.
+## Mode Roles
+
+- **`engram`**: Working memory between sessions. Upserts overwrite — no iteration history. Local only, not shareable.
+- **`openspec`**: Source of truth. Files in repo, git history, team-shareable, full audit trail.
+- **`hybrid`**: Both — files for team + engram for recovery. Higher token cost.
+- **`none`**: Ephemeral. Lost when conversation ends.
+
+### Mode Comparison
+
+| Capability | `engram` | `openspec` | `hybrid` | `none` |
+|------------|----------|------------|----------|--------|
+| Cross-session recovery | ✅ | ❌ (needs git) | ✅ | ❌ |
+| Compaction survival | ✅ | ❌ | ✅ | ❌ |
+| Shareable with team | ❌ (local DB) | ✅ (committed files) | ✅ (files) | ❌ |
+| Full iteration history | ❌ (upsert overwrites) | ✅ (git history) | ✅ (files + git) | ❌ |
+| Audit trail (archive) | Partial (report only) | ✅ (full folder) | ✅ (both) | ❌ |
+| Project files created | Never | Yes | Yes | Never |
+
+### `engram` mode limitation
+
+Engram uses `topic_key`-based upserts. Re-running a phase for the same change **overwrites** the previous version — no revision history is kept. The archive phase saves a summary report, not the full artifact folder. For iteration history or team collaboration, use `openspec` or `hybrid`.
 
 ## Behavior Per Mode
 
