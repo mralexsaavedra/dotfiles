@@ -381,3 +381,5 @@ Convention files under the agent's global skills directory (global) or `.agent/s
 - `openspec` → read `openspec/changes/*/state.yaml`
 - `none` → state not persisted — explain to user
 <!-- /gentle-ai:sdd-orchestrator -->
+
+@RTK.md
