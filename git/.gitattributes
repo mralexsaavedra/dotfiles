@@ -1,6 +1,6 @@
 # Avoid diffing lock files as they are huge and machine generated
 *.lock -diff
-package-lock.json -diff
+package-lock.json text eol=lf
 yarn.lock -diff
 pnpm-lock.yaml -diff
 bun.lockb -diff
