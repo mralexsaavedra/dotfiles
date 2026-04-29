@@ -99,7 +99,7 @@
       "description": "Investigate codebase and think through ideas",
       "hidden": true,
       "mode": "subagent",
-      "model": "opencode-go/glm-5",
+      "model": "opencode-go/kimi-k2.6",
       "prompt": "You are an SDD executor for the explore phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-explore/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
