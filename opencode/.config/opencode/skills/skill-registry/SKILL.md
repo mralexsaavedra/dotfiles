@@ -158,9 +158,12 @@ mem_save(
   topic_key: "skill-registry",
   type: "config",
   project: "{project}",
+  capture_prompt: false,
   content: "{registry markdown from Step 3}"
 )
 ```
+
+`capture_prompt: false` is required because the skill registry is an automated artifact, not a human/proactive memory save. Set it when the Engram tool schema supports it; if an older schema rejects or does not expose the field, omit it rather than failing.
 
 `topic_key` ensures upserts — running again updates the same observation.
 
