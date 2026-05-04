@@ -387,3 +387,7 @@ Convention files under `~/.codex/skills/_shared/` (global) or `.agent/skills/_sh
 - `openspec` → read `openspec/changes/*/state.yaml`
 - `none` → state not persisted — explain to user
 <!-- /gentle-ai:sdd-orchestrator -->
+
+<!-- gentle-ai:strict-tdd-mode -->
+Strict TDD Mode: enabled
+<!-- /gentle-ai:strict-tdd-mode -->

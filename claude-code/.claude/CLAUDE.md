@@ -409,3 +409,7 @@ Convention files under the agent's global skills directory (global) or `.agent/s
 <!-- /gentle-ai:sdd-orchestrator -->
 
 @RTK.md
+
+<!-- gentle-ai:strict-tdd-mode -->
+Strict TDD Mode: enabled
+<!-- /gentle-ai:strict-tdd-mode -->
