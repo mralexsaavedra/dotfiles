@@ -1,10 +1,6 @@
 ---
-name: gentle-ai-chained-pr
-description: >
-  Split large changes into chained or stacked pull requests that protect reviewer
-  focus and stay within Gentle AI's 400-line cognitive review budget. Trigger:
-  when a PR would exceed 400 changed lines, when planning chained PRs, stacked
-  PRs, or reviewable slices.
+name: chained-pr
+description: "Split large changes into chained or stacked pull requests that protect reviewer focus and stay within Gentle AI's 400-line cognitive review budget. Trigger: when a PR would exceed 400 changed lines, when planning chained PRs, stacked PRs, or reviewable slices."
 license: Apache-2.0
 metadata:
   author: gentleman-programming
@@ -37,7 +33,9 @@ Do not use this skill for small fixes or single-purpose changes that fit comfort
 | Exceptions | Use `size:exception` only when a maintainer agrees the large diff is unavoidable |
 | SDD handoff | If SDD forecasts a >400-line workload, honor `delivery_strategy`: ask, auto-chain, or require/record `size:exception` |
 | Visual map | Every chained PR MUST include a dependency diagram that marks the current PR |
-| Tracker PR | If the team chooses Feature Branch Chain, create a draft tracker PR that lists every child PR and current status |
+| Tracker PR | If the team chooses Feature Branch Chain, create a draft tracker PR that maps every child PR and stays draft/no-merge until final integration |
+| Child PR base | In Feature Branch Chain, PR #1 targets the feature/tracker branch; every later child PR targets the immediate previous PR branch |
+| Diff source of truth | If a child PR shows previous PR changes, its base is wrong; retarget/rebase until the diff contains only the current work unit |
 | Strategy consistency | Once the user picks a chain strategy, follow it for the entire chain — do not mix stacked and feature branch patterns |
 
 The goal is not bureaucracy. The goal is preventing reviewer burnout so maintainers can review with care instead of skimming exhausted. Big PRs create fatigue, hide defects, and slow merge velocity.
@@ -66,7 +64,7 @@ This work exceeds the 400-line review budget. How do you want to split it?
    Best for: speed-first teams, startups, independent slices.
 
 2. Feature Branch Chain (with tracker)
-   All PRs merge into a shared branch. Only the tracker merges to main.
+   Child PRs review against their immediate parent branch; the tracker branch accumulates the final feature and is the only branch that merges to main.
    Best for: rollback control, integration testing before main, coordinated releases.
 
 3. size:exception
@@ -84,7 +82,7 @@ This is a **team decision**, not a technical one. Both strategies are valid — 
 | Rollback | Revert individual PRs from main | Revert the whole feature branch |
 | Risk | Partial features may land in main | Nothing lands until everything is ready |
 | Fix flow | Fix on the go in main | Fix on the integration branch |
-| Complexity | Simpler — rebase and retarget | Needs tracker PR and branch management |
+| Complexity | Simpler — rebase and retarget | Needs tracker PR, parent bases, and diff hygiene |
 | Best for | Startups, fast-moving teams | Teams needing coordination and control |
 
 ## Chain Boundaries
@@ -147,45 +145,129 @@ When SDD planning produces tasks that may exceed 400 changed lines:
 
 ## Feature Branch Chain
 
-Use this when the user chooses option 2: all PRs integrate in a shared branch before landing in `main`.
+Use this when the user chooses option 2: the feature branch is the accumulator/tracker/final integration branch, while child PRs are reviewed as focused slices against their immediate parent branch.
+
+The tracker PR is the map, not the review surface:
+
+- tracker PR: `feat/my-feature` -> `main`, draft/no-merge,
+- PR #1: child branch -> feature/tracker branch,
+- PR #2: child branch -> PR #1 branch,
+- PR #3: child branch -> PR #2 branch,
+- final merge: tracker PR -> `main` only after the chain is complete.
 
 ```text
-main
- └── feat/my-feature              # tracker PR targets main
-      ├── feat/my-feature-01-core # PR targets feat/my-feature
-      ├── feat/my-feature-02-cli  # PR targets feat/my-feature
-      └── feat/my-feature-03-docs # PR targets feat/my-feature
+master/main
+ └── feat/my-feature              ← tracker/final integration branch
+      ↑
+      │ PR #1 base: feat/my-feature
+      │
+      └── feat/my-feature-01-core
+            ↑
+            │ PR #2 base: feat/my-feature-01-core
+            │
+            └── feat/my-feature-02-shared
+                  ↑
+                  │ PR #3 base: feat/my-feature-02-shared
+                  │
+                  └── feat/my-feature-03-slice
+```
+
+Example review chain:
+
+```text
+#40 tracker:   feat/ui-ownership-refactor -> master
+#41 foundation: ui-ownership-refactor/foundation -> feat/ui-ownership-refactor
+#42 shared:     ui-ownership-refactor/shared -> ui-ownership-refactor/foundation
+#43 feature:    ui-ownership-refactor/<feature> -> ui-ownership-refactor/shared
 ```
 
 ### Steps
 
 1. Create the feature/tracker branch from `main`.
 2. Open the tracker PR from the feature branch to `main` — mark it draft with `no-merge`.
-3. Create each child branch from the feature branch.
-4. **Every child PR MUST target the feature/tracker branch** — never `main`.
-5. Merge child PRs into the feature branch as they pass review.
-6. Only merge the tracker PR into `main` after all children are merged and integrated.
+3. Create PR #1 from the feature/tracker branch and target it back to that branch.
+4. Create each later child branch from the previous PR branch and target it to that immediate parent branch.
+5. Review each child PR against its immediate parent branch, not against `main` and not against the tracker branch after PR #1.
+6. Keep the tracker branch as the accumulator/final integration branch.
+7. Only merge the tracker PR into `main` after all children are reviewed and integrated.
 
-### Common mistake: child PR targeting main
+### Commands
 
-If you chose this strategy, no child PR should target `main` — otherwise it bypasses the tracker and lands in `main` before the chain is complete.
+PR #1 targets the feature/tracker branch:
+
+```bash
+git checkout feat/ui-ownership-refactor
+git checkout -b ui-ownership-refactor/foundation
+git push -u origin ui-ownership-refactor/foundation
+
+gh pr create \
+  --base feat/ui-ownership-refactor \
+  --head ui-ownership-refactor/foundation
+```
+
+PR #2 targets PR #1's branch:
+
+```bash
+git checkout ui-ownership-refactor/foundation
+git checkout -b ui-ownership-refactor/shared
+git push -u origin ui-ownership-refactor/shared
+
+gh pr create \
+  --base ui-ownership-refactor/foundation \
+  --head ui-ownership-refactor/shared
+```
+
+PR #3 targets PR #2's branch:
+
+```bash
+git checkout ui-ownership-refactor/shared
+git checkout -b ui-ownership-refactor/orgs
+git push -u origin ui-ownership-refactor/orgs
+
+gh pr create \
+  --base ui-ownership-refactor/shared \
+  --head ui-ownership-refactor/orgs
+```
+
+### Diff Hygiene
+
+The diff is the source of truth. A child PR is correctly based only when GitHub shows the current work unit and not previous PR changes.
+
+- If PR #2 shows PR #1 changes, retarget PR #2 to PR #1's branch or rebase it until the diff is clean.
+- If PR #3 shows PR #1 or PR #2 changes, retarget it to PR #2's branch or rebase it until the diff is clean.
+- Do **not** target `main` from child PRs in Feature Branch Chain.
+- Do **not** target the tracker branch from child PRs after PR #1; that inflates review diffs.
+
+### Common mistakes
+
+If you chose this strategy, no child PR should target `main` — otherwise it bypasses the tracker and lands in `main` before the chain is complete. Later child PRs also should not target the tracker branch, because GitHub will show prior slices again.
 
 ```text
 # WRONG — child bypasses tracker
 main ← #101 (base: main) ← #102 ← #103
 
-# CORRECT — all children flow through the tracker branch
+# WRONG — later children target tracker and show inflated diffs
 main ← tracker (#105)
          ├── #101 (base: tracker branch)
-         ├── #102 (base: tracker branch)
-         └── #103 (base: tracker branch)
+         ├── #102 (base: tracker branch)  # shows #101 again
+         └── #103 (base: tracker branch)  # shows #101 and #102 again
+
+# CORRECT — each review targets the immediate parent branch
+main ← tracker (#105)
+         └── #101 (base: tracker branch)
+              └── #102 (base: #101 branch)
+                   └── #103 (base: #102 branch)
 ```
+
+### Post-merge Rule
+
+After a parent PR is merged, keep the chain coherent: leave the next PR base as the parent branch if GitHub still shows only the current work unit, or retarget/rebase to the updated accumulator/parent as needed. The diff must stay focused.
 
 ### Tracker PR Expectations
 
 The tracker PR is a **chain map**, not the review surface. Keep it draft/no-merge until the child PRs are reviewed and integrated.
 
-- Reviewers should review the child PRs, where each slice stays within the 400-line budget.
+- Reviewers should review child PRs against their immediate parent branches, where each slice stays within the 400-line budget.
 - The tracker PR may exceed 400 changed lines because it aggregates the full feature branch by design.
 - If the tracker PR exceeds the budget, request/obtain maintainer-applied `size:exception` and document why the aggregate diff is unavoidable.
 
@@ -271,10 +353,10 @@ main
 # Check PR size before asking for review
 gh pr view <PR_NUMBER> --json additions,deletions,changedFiles,title,url
 
-# Create a chained PR targeting a feature branch
+# Create PR #1 in a Feature Branch Chain
 gh pr create --base feat/my-feature --title "feat(scope): focused slice" --body-file pr-body.md
 
-# Create a stacked PR targeting the previous branch
+# Create the next child PR targeting its immediate parent branch
 gh pr create --base feat/my-feature-01-core --title "feat(scope): next focused slice" --body-file pr-body.md
 ```
 
@@ -283,6 +365,7 @@ gh pr create --base feat/my-feature-01-core --title "feat(scope): next focused s
 - If a PR exceeds 400 changed lines without `size:exception`, ask for a split.
 - Recommend chained PRs when the work must integrate before `main`.
 - Recommend stacked PRs when each slice can merge independently.
+- In Feature Branch Chain, review child PRs against their immediate parent branches and treat a polluted diff as a base/branching bug.
 - Prefer clear dependency notes over clever branch gymnastics.
 - Push for autonomy: green CI, clear rollback, and tests or docs for the unit under review.
 - Protect reviewer energy. If the chain forces reviewers to reconstruct hidden context, ask for clearer boundaries.

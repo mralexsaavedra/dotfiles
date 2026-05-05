@@ -102,5 +102,6 @@ SDD must protect reviewer cognitive load, not only generate tasks.
 - If the forecast is high, `sdd-tasks` MUST recommend chained or stacked PRs using deliverable work units.
 - `sdd-apply` MUST NOT start oversized work unless the delivery strategy resolves to chained/stacked PR slices or explicitly accepted `size:exception`.
 - Each chained PR slice must have a clear start, clear finish, autonomous scope, verification, and reasonable rollback.
+- In a Feature Branch Chain, PR #1 targets the feature/tracker branch and later child PRs target the immediate previous PR branch; if GitHub shows previous slices in a child diff, retarget/rebase until the diff is clean.
 
 This guard exists to reduce reviewer burnout and keep implementation delivery safe. Do not treat it as optional process noise.

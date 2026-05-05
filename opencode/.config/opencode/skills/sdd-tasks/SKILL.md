@@ -1,8 +1,6 @@
 ---
 name: sdd-tasks
-description: >
-  Break down a change into an implementation task checklist.
-  Trigger: When the orchestrator launches you to create or update the task breakdown for a change.
+description: "Break down a change into an implementation task checklist. Trigger: When the orchestrator launches you to create or update the task breakdown for a change."
 license: MIT
 metadata:
   author: gentleman-programming
@@ -80,8 +78,8 @@ Chain strategy: <stacked-to-main|feature-branch-chain|size-exception|pending>
 
 | Unit | Goal | Likely PR | Notes |
 |------|------|-----------|-------|
-| 1 | <standalone deliverable> | PR 1 | <tests/docs included> |
-| 2 | <standalone deliverable> | PR 2 | <depends on PR 1 or independent> |
+| 1 | <standalone deliverable> | PR 1 | <base branch; tests/docs included> |
+| 2 | <standalone deliverable> | PR 2 | <immediate parent/base branch boundary; depends on PR 1 or independent> |
 
 ## Phase 1: {Phase Name} (e.g., Infrastructure / Foundation)
 
@@ -132,7 +130,7 @@ If the estimate is **High** or likely above 400 lines:
 3. Each suggested PR must have a clear start, clear finish, verification, and autonomous scope.
 4. **Ask the user which chain strategy to use** (this is a team decision):
    - **Stacked PRs to main** — each PR merges to main in order. Fast iteration, fix on the go. Best for speed-first teams and independent slices.
-   - **Feature Branch Chain** — all PRs merge into a shared branch with a tracker PR. Only the tracker merges to main. Best for rollback control and coordinated releases.
+   - **Feature Branch Chain** — the feature/tracker branch accumulates the final integration; PR #1 targets the tracker branch, later PRs target the immediate previous PR branch so each child diff stays focused. Only the tracker merges to main. Best for rollback control and coordinated releases.
    - **size:exception** — keep it as a single PR with maintainer approval. Best for generated code, migrations, or vendor diffs.
 5. Cache the user's choice and set `Decision needed before apply` from delivery strategy:
    - `ask-on-risk`: `Yes` — orchestrator asks before apply.
@@ -152,6 +150,8 @@ Chain strategy: stacked-to-main|feature-branch-chain|size-exception|pending
 ```
 
 You may keep the table for readability, but the plain-text lines are the guard contract.
+
+For `feature-branch-chain`, suggested work units SHOULD name the intended base boundary: PR #1 base = feature/tracker branch; PR #2 base = PR #1 branch; PR #3 base = PR #2 branch. If a child PR would show previous PR changes, the base is wrong and must be retargeted/rebased before review.
 
 ### Phase Organization Guidelines
 

@@ -1,8 +1,6 @@
 ---
 name: sdd-apply
-description: >
-  Implement tasks from the change, writing actual code following the specs and design.
-  Trigger: When the orchestrator launches you to implement one or more tasks from a change.
+description: "Implement tasks from the change, writing actual code following the specs and design. Trigger: When the orchestrator launches you to implement one or more tasks from a change."
 license: MIT
 metadata:
   author: gentleman-programming
@@ -61,7 +59,7 @@ Then you MUST confirm the orchestrator/user provided a resolved delivery path:
 
 Also check for `Chain strategy` in the tasks artifact. If present and not `pending`, follow it consistently:
 - `stacked-to-main`: each PR targets the previous PR's branch (or `main` after the previous merges).
-- `feature-branch-chain`: each PR targets the tracker/feature branch — never `main` directly.
+- `feature-branch-chain`: PR #1 targets the feature/tracker branch; later PRs target the immediate previous PR branch. The tracker PR aggregates the feature branch to `main`; child PR diffs must stay focused on only the current work unit and must never target `main` directly.
 
 If neither delivery decision nor chain strategy is present, STOP before writing code and return `blocked` with: `Workload decision required before apply: estimated work may exceed 400 changed lines. Ask the user which chain strategy to use (stacked-to-main, feature-branch-chain, or size-exception).`
 
