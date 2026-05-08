@@ -1,6 +1,8 @@
 ---
 name: sdd-apply
-description: "Implement tasks from the change, writing actual code following the specs and design. Trigger: When the orchestrator launches you to implement one or more tasks from a change."
+description: "Implement SDD tasks from specs and design. Trigger: orchestrator launches apply for one or more change tasks."
+disable-model-invocation: true
+user-invocable: false
 license: MIT
 metadata:
   author: gentleman-programming
