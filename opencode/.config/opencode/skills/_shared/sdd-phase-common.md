@@ -6,15 +6,15 @@ Executor boundary: every SDD phase agent is an EXECUTOR, not an orchestrator. Do
 
 ## A. Skill Loading
 
-1. Check if the orchestrator injected a `## Project Standards (auto-resolved)` block in your launch prompt. If yes, follow those rules — they are pre-digested compact rules from the skill registry. **Do NOT read any SKILL.md files.**
-2. If no Project Standards block was provided, check for `SKILL: Load` instructions. If present, load those exact skill files.
+1. Check if the orchestrator injected a `## Skills to load before work` block in your launch prompt. If yes, read those exact `SKILL.md` files before task-specific work.
+2. If no skills block was provided, check for `SKILL: Load` instructions. If present, load those exact skill files.
 3. If neither was provided, search for the skill registry as a fallback:
    a. `mem_search(query: "skill-registry", project: "{project}")` — if found, `mem_get_observation(id)` for full content
    b. Fallback: read `.atl/skill-registry.md` from the project root if it exists
-   c. From the registry's **Compact Rules** section, apply rules whose triggers match your current task.
+   c. From the registry's skills index, match triggers to your task and read the exact listed `SKILL.md` paths.
 4. If no registry exists, proceed with your phase skill only.
 
-NOTE: the preferred path is (1) — compact rules pre-injected by the orchestrator. Paths (2) and (3) are fallbacks for backwards compatibility. Searching the registry is SKILL LOADING, not delegation. If `## Project Standards` is present, IGNORE any `SKILL: Load` instructions — they are redundant.
+NOTE: the preferred path is (1) — exact skill paths selected by the orchestrator. Paths (2) and (3) are fallbacks. Searching the registry is SKILL LOADING, not delegation. If `## Skills to load before work` is present, IGNORE redundant `SKILL: Load` instructions.
 
 ## B. Artifact Retrieval (Engram Mode)
 
@@ -76,7 +76,7 @@ Every phase MUST return a structured envelope to the orchestrator:
 - `artifacts`: list of artifact keys/paths written
 - `next_recommended`: the next SDD phase to run, or "none"
 - `risks`: risks discovered, or "None"
-- `skill_resolution`: how skills were loaded — `injected` (received Project Standards from orchestrator), `fallback-registry` (self-loaded from registry), `fallback-path` (loaded via SKILL: Load path), or `none` (no skills loaded)
+- `skill_resolution`: how skills were loaded — `paths-injected` (received exact skill paths from orchestrator), `fallback-registry` (self-loaded paths from registry), `fallback-path` (loaded via SKILL: Load path), or `none` (no skills loaded)
 
 Example:
 
@@ -86,7 +86,7 @@ Example:
 **Artifacts**: Engram `sdd/{change-name}/proposal` | `openspec/changes/{change-name}/proposal.md`
 **Next**: sdd-spec or sdd-design
 **Risks**: None
-**Skill Resolution**: injected — 3 skills (react-19, typescript, tailwind-4)
+**Skill Resolution**: paths-injected — 3 skills (react-19, typescript, tailwind-4)
 (other values: `fallback-registry`, `fallback-path`, or `none — no registry found`)
 ```
 

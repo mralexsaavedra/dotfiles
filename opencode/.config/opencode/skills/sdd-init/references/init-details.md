@@ -12,9 +12,9 @@
 - Scan user skills: `~/.pi/agent/skills/`, `~/.config/agents/skills/`, `~/.agents/skills/`, `~/.kimi/skills/`, `~/.config/opencode/skills/`, `~/.config/kilo/skills/`, `~/.claude/skills/`, `~/.gemini/skills/`, `~/.gemini/antigravity/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`, `~/.codex/skills/`, `~/.codeium/windsurf/skills/`, `~/.qwen/skills/`, `~/.kiro/skills/`, and `~/.openclaw/skills/`.
 - Scan project skills: `{project-root}/skills/`, `{project-root}/.opencode/skills/`, `{project-root}/.claude/skills/`, `{project-root}/.gemini/skills/`, `{project-root}/.cursor/skills/`, `{project-root}/.github/skills/`, `{project-root}/.codex/skills/`, `{project-root}/.qwen/skills/`, `{project-root}/.kiro/skills/`, `{project-root}/.openclaw/skills/`, `{project-root}/.pi/skills/`, `{project-root}/.agent/skills/`, `{project-root}/.agents/skills/`, and `{project-root}/.atl/skills/`.
 - Skip `sdd-*`, `_shared`, and `skill-registry`; deduplicate by skill name, preferring project-level skills over user-level skills.
-- Read each selected `SKILL.md`; if it exceeds 200 lines, focus on frontmatter plus Critical Patterns / Rules sections.
-- Extract `name`, trigger text from `description`, full `SKILL.md` path, and compact rules.
-- Generate compact rules as 5-15 actionable lines per skill: constraints, key patterns, breaking changes, and gotchas only. Do not include purpose, motivation, installation steps, full examples, or fluff.
+- Read each selected `SKILL.md` frontmatter as needed.
+- Extract `name`, trigger text from `description`, full `SKILL.md` path, and scope.
+- Treat the registry as an index, not a generated summary; subagents receive exact paths and read the full skill source of truth.
 - Scan project convention files: `agents.md`, `AGENTS.md`, project-level `CLAUDE.md`, `.cursorrules`, `GEMINI.md`, and `copilot-instructions.md`.
 - For index files such as `AGENTS.md`, extract referenced file paths and include both the index and referenced files in the registry.
 
