@@ -354,7 +354,7 @@ The Claude Code session model is controlled by Claude Code itself; Gentle AI doe
 | sdd-design | opus | Architecture decisions |
 | sdd-tasks | sonnet | Mechanical breakdown |
 | sdd-apply | sonnet | Implementation |
-| sdd-verify | sonnet | Validation against spec |
+| sdd-verify | opus | Validation against spec |
 | sdd-archive | haiku | Copy and close |
 | default | sonnet | Non-SDD general delegation |
 
