@@ -25,6 +25,10 @@ path_add_if_exists "$PYENV_ROOT/bin"
 export BUN_INSTALL="$HOME/.bun"
 path_add_if_exists "$BUN_INSTALL/bin"
 
+# pnpm
+export PNPM_HOME="$HOME/Library/pnpm"
+path_add_if_exists "$PNPM_HOME"
+
 # Android SDK
 export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
 path_add_if_exists "$ANDROID_SDK_ROOT/cmdline-tools/tools/bin"
