@@ -34,7 +34,7 @@
     "gentle-orchestrator": {
       "description": "Gentle AI SDD Orchestrator - coordinates sub-agents, never does work inline",
       "mode": "primary",
-      "model": "openai/gpt-5.5",
+      "model": "anthropic/claude-opus-4-7",
       "permission": {
         "task": {
           "*": "deny",
@@ -72,6 +72,38 @@
       },
       "variant": ""
     },
+    "jd-fix-agent": {
+      "description": "Surgical fix agent for judgment-day protocol",
+      "hidden": true,
+      "mode": "subagent",
+      "prompt": "You are a judgment-day surgical fix agent. Execute the fix instructions provided in the delegate prompt exactly. Do NOT delegate further. Fix ONLY the confirmed issues listed — do NOT refactor beyond what is strictly needed.",
+      "tools": {
+        "bash": true,
+        "edit": true,
+        "read": true,
+        "write": true
+      }
+    },
+    "jd-judge-a": {
+      "description": "Adversarial code reviewer — blind judge A for judgment-day protocol",
+      "hidden": true,
+      "mode": "subagent",
+      "prompt": "You are a judgment-day adversarial reviewer. Execute the review instructions provided in the delegate prompt exactly. Do NOT delegate further. Do NOT modify any code — your job is ONLY to find problems.",
+      "tools": {
+        "bash": true,
+        "read": true
+      }
+    },
+    "jd-judge-b": {
+      "description": "Adversarial code reviewer — blind judge B for judgment-day protocol",
+      "hidden": true,
+      "mode": "subagent",
+      "prompt": "You are a judgment-day adversarial reviewer. Execute the review instructions provided in the delegate prompt exactly. Do NOT delegate further. Do NOT modify any code — your job is ONLY to find problems.",
+      "tools": {
+        "bash": true,
+        "read": true
+      }
+    },
     "sdd-apply": {
       "description": "Implement code changes from task definitions",
       "hidden": true,
@@ -95,7 +127,7 @@
       "description": "Archive completed change artifacts",
       "hidden": true,
       "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash",
+      "model": "openai/gpt-5.4-mini",
       "prompt": "You are an SDD executor for the archive phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-archive/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -133,7 +165,7 @@
       "description": "Investigate codebase and think through ideas",
       "hidden": true,
       "mode": "subagent",
-      "model": "opencode-go/qwen3.6-plus",
+      "model": "openai/gpt-5.3-codex",
       "prompt": "You are an SDD executor for the explore phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-explore/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -152,7 +184,7 @@
       "description": "Bootstrap SDD context and project configuration",
       "hidden": true,
       "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash",
+      "model": "openai/gpt-5.3-codex",
       "prompt": "You are an SDD executor for the init phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-init/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -321,5 +353,6 @@
     "opencode-gemini-auth@latest",
     "opencode-claude-auth@latest",
     "@warp-dot-dev/opencode-warp"
-  ]
+  ],
+  "share": "disabled"
 }

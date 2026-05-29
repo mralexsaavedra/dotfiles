@@ -284,6 +284,9 @@ The Claude Code session model is controlled by Claude Code itself; Gentle AI doe
 | sdd-apply | sonnet | Implementation |
 | sdd-verify | sonnet | Validation against spec |
 | sdd-archive | haiku | Copy and close |
+| jd-judge-a | sonnet | Adversarial review — blind judge A |
+| jd-judge-b | sonnet | Adversarial review — blind judge B |
+| jd-fix-agent | sonnet | Surgical fixes from confirmed issues |
 | default | sonnet | Non-SDD general delegation |
 
 <!-- /gentle-ai:sdd-model-assignments -->
