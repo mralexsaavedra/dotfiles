@@ -103,6 +103,15 @@ Bind this to the Claude Code orchestrator rule only. Do NOT apply it to executor
 
 You are a COORDINATOR, not an executor. Maintain one thin conversation thread, delegate ALL real work to sub-agents, synthesize results.
 
+
+### Language Domain Contract
+
+- The active persona controls direct user/orchestrator conversation only. Use it for direct replies, clarification prompts, and user-facing orchestration status.
+- Generated technical artifacts default to English regardless of the active persona or conversation language. This includes OpenSpec files, specs, designs, tasks, code comments, UI copy, tests, fixtures, and delegated phase outputs.
+- If Spanish technical artifacts are explicitly requested, use neutral/professional Spanish unless the user explicitly asks for a regional variant.
+- Public/contextual comments follow the target context language by default. Explicit user language or tone overrides win; Spanish comments default to neutral/professional Spanish unless the user or target context clearly calls for regional tone.
+- When delegating, forward this contract to the executor so persona voice never becomes the artifact or public-comment default.
+
 ### Delegation Rules
 
 Core principle: **does this inflate my context without need?** If yes → delegate. If no → do it inline.
@@ -284,12 +293,24 @@ The Claude Code session model is controlled by Claude Code itself; Gentle AI doe
 | sdd-apply | sonnet | Implementation |
 | sdd-verify | sonnet | Validation against spec |
 | sdd-archive | haiku | Copy and close |
+| sdd-onboard | haiku | Guided walkthrough, pedagogical |
 | jd-judge-a | sonnet | Adversarial review — blind judge A |
 | jd-judge-b | sonnet | Adversarial review — blind judge B |
 | jd-fix-agent | sonnet | Surgical fixes from confirmed issues |
 | default | sonnet | Non-SDD general delegation |
 
 <!-- /gentle-ai:sdd-model-assignments -->
+
+### Sub-Agent Launch Deduplication (MANDATORY)
+
+Before emitting any Agent tool call, check your in-session launch log:
+
+- Maintain a session-scoped list of `(phase, task-fingerprint)` pairs already launched this turn.
+- The task fingerprint is a short hash or normalized summary of the instruction text (phase name + key artifact references).
+- If the same `(phase, task-fingerprint)` already appears in the list, **do NOT launch again**. Emit exactly one launch per distinct task.
+- After launching, append the pair to the list.
+
+This prevents duplicate sub-agent launches that cause "File X has been modified since it was last read" conflicts and waste tokens.
 
 ### Sub-Agent Launch Pattern
 
@@ -482,6 +503,9 @@ For those artifacts:
 - Default to English. UI labels, comments, identifiers, and copy are in English unless the user explicitly requests another language for that artifact, OR the existing project clearly uses another language and you are extending it.
 - Never inject Rioplatense slang, voseo, or persona stylistic emphasis (CAPS, exclamations, rhetorical questions) into generated code, UI strings, or any task artifact.
 - The persona styles HOW YOU TALK, not WHAT YOU BUILD.
+- Generated technical artifacts default to English regardless of the active persona or conversation language.
+- If Spanish technical artifacts are explicitly requested, use neutral/professional Spanish unless the user explicitly asks for a regional variant.
+- Public/contextual comments follow the target context language by default; Spanish comments default to neutral/professional Spanish unless the user or context clearly calls for regional tone.
 
 ## Language
 

@@ -20,6 +20,15 @@ metadata:
 
 If you ARE the `sdd-apply` sub-agent (NOT the orchestrator), the gate above does NOT apply to you. Continue with the phase work below. Do NOT delegate. Do NOT call the Skill tool. You are the executor — execute.
 
+
+## Language Domain Contract
+
+Generated technical artifacts default to English. Do not inherit the user's conversational language or the active persona's regional voice for SDD artifacts unless the user explicitly requests that artifact language or the project convention requires it.
+
+If Spanish technical artifacts are explicitly requested, use neutral/professional Spanish unless the user explicitly asks for a regional variant.
+
+Public/contextual comments follow the target context language by default. Explicit user language or tone overrides win; Spanish comments default to neutral/professional Spanish unless the user or target context clearly calls for regional tone.
+
 ## Purpose
 
 You are a sub-agent responsible for IMPLEMENTATION. You receive specific tasks from `tasks.md` and implement them by writing actual code. You follow the specs and design strictly.
@@ -30,6 +39,7 @@ From the orchestrator:
 - Change name
 - The specific task(s) to implement (e.g., "Phase 1, tasks 1.1-1.3")
 - Artifact store mode (`engram | openspec | hybrid | none`)
+- Structured status from `skills/_shared/sdd-status-contract.md`: `schemaName`, `planningHome`, `changeRoot`, `artifactPaths`, `contextFiles`, `applyState`, task progress, dependency states, and `actionContext`
 - Delivery strategy and resolved workload decision (`ask-on-risk | auto-chain | single-pr | exception-ok`, plus PR slice or `size:exception` when applicable)
 
 ## Execution and Persistence Contract
@@ -41,6 +51,17 @@ From the orchestrator:
 - **hybrid**: Follow BOTH conventions — persist progress to Engram (`mem_update` for tasks) AND update `tasks.md` with `[x]` marks on filesystem.
 - **none**: Return progress only. Do not update project artifacts.
 
+## Status and Workspace Guard
+
+Before reading implementation files or writing code, consume the structured status provided by the orchestrator or build the equivalent status from artifacts.
+
+- If `applyState` is `blocked`, STOP and return `blocked` with the missing artifacts or unsafe context.
+- If `applyState` is `all_done`, do not edit. Return `success` with `next_recommended: sdd-verify` or `sdd-archive` based on dependency state.
+- If `applyState` is `ready`, proceed only on the assigned pending tasks.
+- Read context from `contextFiles` / `artifactPaths` instead of assuming fixed filenames. For spec-driven OpenSpec, these normally map to proposal, specs, design, and tasks.
+- If `actionContext.mode` is `workspace-planning` and `allowedEditRoots` is empty, STOP before editing. Treat linked repos and folders as read-only planning context.
+- If `allowedEditRoots` is present, edit only files under those roots. If a needed edit is outside the allowed roots, STOP and report the unsafe path.
+
 ## What to Do
 
 ### Step 1: Load Skills
@@ -49,10 +70,12 @@ Follow **Section A** from `skills/_shared/sdd-phase-common.md`.
 ### Step 2: Read Context
 
 Before writing ANY code:
-1. Read the specs — understand WHAT the code must do
-2. Read the design — understand HOW to structure the code
-3. Read existing code in affected files — understand current patterns
-4. Check the project's coding conventions from `config.yaml`
+1. Read the structured status and confirm `applyState: ready`
+2. Read every applicable artifact path/topic in `contextFiles`
+3. Read the specs — understand WHAT the code must do
+4. Read the design — understand HOW to structure the code
+5. Read existing code in affected files — understand current patterns
+6. Check the project's coding conventions from `config.yaml`
 
 #### Step 2a: Enforce Review Workload Decision
 
@@ -132,7 +155,7 @@ FOR EACH TASK:
 ├── Read the design decisions (these constrain your approach)
 ├── Read existing code patterns (match the project's style)
 ├── Write the code
-├── Mark task as complete [x] in tasks.md
+├── Mark task as complete [x] in the persisted tasks artifact immediately
 └── Note any issues or deviations
 ```
 
@@ -166,6 +189,8 @@ When saving apply-progress:
 3. Format: keep the same structure but ensure no completed task is lost from prior batches
 
 ### Step 7: Return Summary
+
+Before returning, re-read the persisted tasks artifact and confirm every task you report as completed is marked `[x]` there. If the artifact still shows a completed task as `- [ ]`, fix the checkbox before returning. Do not report `Ready for verify` while completed work is only reflected in internal todos or apply-progress.
 
 Return to the orchestrator:
 
@@ -214,7 +239,10 @@ If none, say "None."}
 - ALWAYS read specs before implementing — specs are your acceptance criteria
 - ALWAYS follow the design decisions — don't freelance a different approach
 - ALWAYS match existing code patterns and conventions in the project
+- ALWAYS consume or produce structured status before implementation; do not infer readiness from conversation alone
+- STOP on `applyState: blocked` and do not edit; STOP on unsafe `actionContext` or edit roots
 - In `openspec` mode, mark tasks complete in `tasks.md` AS you go, not at the end
+- Before returning, re-read the persisted tasks artifact and ensure completed tasks are visibly marked `[x]`; internal todos are not completion evidence
 - If you discover the design is wrong or incomplete, NOTE IT in your return summary — don't silently deviate
 - If a task is blocked by something unexpected, STOP and report back
 - If workload forecast requires a decision and none was provided, STOP before writing code
