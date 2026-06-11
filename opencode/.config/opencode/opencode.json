@@ -146,7 +146,7 @@
       "description": "Create technical design from proposals",
       "hidden": true,
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "google/gemini-3.1-pro-preview",
       "prompt": "You are an SDD executor for the design phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-design/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -159,7 +159,7 @@
         "skill": true,
         "write": true
       },
-      "variant": ""
+      "variant": "high"
     },
     "sdd-explore": {
       "description": "Investigate codebase and think through ideas",
@@ -184,7 +184,7 @@
       "description": "Bootstrap SDD context and project configuration",
       "hidden": true,
       "mode": "subagent",
-      "model": "openai/gpt-5.4-mini",
+      "model": "google/gemini-3.1-pro-preview",
       "prompt": "You are an SDD executor for the init phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-init/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -197,13 +197,13 @@
         "skill": true,
         "write": true
       },
-      "variant": ""
+      "variant": "low"
     },
     "sdd-onboard": {
       "description": "Guide user through a complete SDD cycle using their real codebase",
       "hidden": true,
       "mode": "subagent",
-      "model": "openai/gpt-5.4-mini",
+      "model": "openai/gpt-5.4",
       "prompt": "You are an SDD executor for the onboard phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task/delegate, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-onboard/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -211,7 +211,7 @@
         "read": true,
         "write": true
       },
-      "variant": ""
+      "variant": "low"
     },
     "sdd-propose": {
       "description": "Create change proposals from explorations",
@@ -230,7 +230,7 @@
         "skill": true,
         "write": true
       },
-      "variant": ""
+      "variant": "high"
     },
     "sdd-spec": {
       "description": "Write detailed specifications from proposals",
