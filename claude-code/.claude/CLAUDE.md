@@ -48,6 +48,14 @@ Topic update rules:
 - Unsure about key → call `mem_suggest_topic_key` first
 - Know exact ID to fix → use `mem_update`
 
+Memory lifecycle rule (when Engram exposes lifecycle metadata/tooling):
+- At session start or before architecture-sensitive work, call `mem_review` with action `list` for the current project when the tool is available.
+- If `mem_review` is unavailable, do not fail the task. Continue with normal `mem_context`/`mem_search`, and still apply lifecycle metadata from any returned observations when present.
+- `active` memories may be used normally.
+- `needs_review` memories are stale context, not trusted facts.
+- When a retrieved memory is marked `needs_review`, surface that stale context to the user and verify it against current evidence before relying on it.
+- Do NOT call `mem_review` with action `mark_reviewed` automatically. Only call `mark_reviewed` after explicit user confirmation or through a dedicated memory maintenance command.
+
 ### WHEN TO SEARCH MEMORY
 
 On any variation of "remember", "recall", "what did we do", "how did we solve", or references to past work (in any language the user writes in):
@@ -298,21 +306,21 @@ The Claude Code session model is controlled by Claude Code itself; Gentle AI doe
 
 **Mandatory model gate:** Every Agent tool call MUST include `model`. Calling Agent without `model` is invalid. Before each Agent call, resolve the target phase to an alias from this table; for general/non-SDD delegation use `default`. If you are about to call Agent and have not chosen a `model`, STOP and choose the mapped alias first.
 
-| Phase | Default Model | Reason |
-|-------|---------------|--------|
-| sdd-explore | sonnet | Reads code, structural - not architectural |
-| sdd-propose | opus | Architectural decisions |
-| sdd-spec | sonnet | Structured writing |
-| sdd-design | opus | Architecture decisions |
-| sdd-tasks | sonnet | Mechanical breakdown |
-| sdd-apply | sonnet | Implementation |
-| sdd-verify | sonnet | Validation against spec |
-| sdd-archive | haiku | Copy and close |
-| sdd-onboard | haiku | Guided walkthrough, pedagogical |
-| jd-judge-a | sonnet | Adversarial review — blind judge A |
-| jd-judge-b | sonnet | Adversarial review — blind judge B |
-| jd-fix-agent | sonnet | Surgical fixes from confirmed issues |
-| default | sonnet | Non-SDD general delegation |
+| Phase | Default Model | Effort | Reason |
+|-------|---------------|--------|--------|
+| sdd-explore | sonnet | default | Reads code, structural - not architectural |
+| sdd-propose | opus | default | Architectural decisions |
+| sdd-spec | sonnet | default | Structured writing |
+| sdd-design | opus | default | Architecture decisions |
+| sdd-tasks | sonnet | default | Mechanical breakdown |
+| sdd-apply | sonnet | default | Implementation |
+| sdd-verify | sonnet | default | Validation against spec |
+| sdd-archive | haiku | default | Copy and close |
+| sdd-onboard | haiku | default | Guided walkthrough, pedagogical |
+| jd-judge-a | sonnet | default | Adversarial review — blind judge A |
+| jd-judge-b | sonnet | default | Adversarial review — blind judge B |
+| jd-fix-agent | sonnet | default | Surgical fixes from confirmed issues |
+| default | sonnet | default | Non-SDD general delegation |
 
 <!-- /gentle-ai:sdd-model-assignments -->
 

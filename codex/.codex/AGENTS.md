@@ -120,6 +120,14 @@ Topic update rules:
 - Unsure about key → call `mem_suggest_topic_key` first
 - Know exact ID to fix → use `mem_update`
 
+Memory lifecycle rule (when Engram exposes lifecycle metadata/tooling):
+- At session start or before architecture-sensitive work, call `mem_review` with action `list` for the current project when the tool is available.
+- If `mem_review` is unavailable, do not fail the task. Continue with normal `mem_context`/`mem_search`, and still apply lifecycle metadata from any returned observations when present.
+- `active` memories may be used normally.
+- `needs_review` memories are stale context, not trusted facts.
+- When a retrieved memory is marked `needs_review`, surface that stale context to the user and verify it against current evidence before relying on it.
+- Do NOT call `mem_review` with action `mark_reviewed` automatically. Only call `mark_reviewed` after explicit user confirmation or through a dedicated memory maintenance command.
+
 ### WHEN TO SEARCH MEMORY
 
 On any variation of "remember", "recall", "what did we do", "how did we solve", or references to past work (in any language the user writes in):
@@ -259,21 +267,21 @@ explicitly requested background execution.
 ### Phase delegation pattern
 
 For each phase:
-1. Look up the phase's `reasoning_effort` value in the **Model Profiles** table below (the values are preset-driven and written by gentle-ai — do not assume fixed tiers).
-2. `spawn_agent` with `task_name`, the phase prompt as `message`, and `reasoning_effort` set to the tier value. The `spawn_agent` tool has NO `profile` parameter — tier selection is the `reasoning_effort` argument, not a profile name.
+1. Look up the phase's `reasoning_effort` **AND** `model` values in the **Model Profiles** table below (the values are preset-driven and written by gentle-ai — do not assume fixed tiers). This applies both for preset (per-carril) tables and Custom (per-phase) tables — always pass the model and effort shown in the table for that phase.
+2. `spawn_agent` with `task_name`, the phase prompt as `message`, `reasoning_effort` set to the tier value, and `model` set to the table's Model value for that phase. The `spawn_agent` tool has NO `profile` parameter — tier selection is the `reasoning_effort` argument, not a profile name.
 3. Set `fork_turns: "none"` whenever you override `reasoning_effort` or `model`. A full-history fork (the default) REJECTS these overrides, so the override is silently ignored unless `fork_turns` is `"none"`.
 4. `wait_agent` to collect the result.
 5. `close_agent` to release the thread.
 6. Verify the artifact was persisted before launching the next phase.
 
-Example — launching `sdd-design` at the strong tier:
+Example — launching `sdd-design` with its assigned model and effort:
 ```
-spawn_agent(task_name="sdd-design", message=<design prompt>, reasoning_effort="xhigh", fork_turns="none")
+spawn_agent(task_name="sdd-design", message=<design prompt>, model="gpt-5.5", reasoning_effort="xhigh", fork_turns="none")
 wait_agent(task_name="sdd-design")
 close_agent(task_name="sdd-design")
 ```
 
-Note: the `~/.codex/<tier>.config.toml` profile files apply to whole CLI sessions launched with `codex --profile <name>`. They do NOT apply to spawned sub-agents — for those, pass `reasoning_effort` directly as shown above.
+Note: the `~/.codex/<tier>.config.toml` profile files apply to whole CLI sessions launched with `codex --profile <name>`. They do NOT apply to spawned sub-agents — for those, pass `reasoning_effort` and `model` directly as shown above.
 
 ### Parallelism
 
@@ -455,15 +463,15 @@ Each phase returns: `status`, `executive_summary`, `artifacts`, `next_recommende
 
 ## Model Profiles
 
-gentle-ai writes three SDD model-selection profile files into `~/.codex/` during installation. Each profile sets `model_reasoning_effort` so Codex picks the right tier — no hardcoded model IDs.
+gentle-ai writes three SDD model-selection profile files into `~/.codex/` during installation. Each profile pins both a `model` and a `model_reasoning_effort` so Codex picks the right tier for each carril.
 
 These profile files apply to whole CLI sessions: `codex --profile <name> "<prompt>"`. They do NOT apply to spawned sub-agents. When delegating a phase via `spawn_agent`, pass the tier's effort directly as `reasoning_effort` (with `fork_turns: "none"`), using the same tier values below.
 
-| Profile (CLI) | `reasoning_effort` (spawn_agent) | SDD phases |
-|---------------|----------------------------------|------------|
-| `sdd-strong` | `high` | propose, design, verify, judge |
-| `sdd-mid` | `high` | spec, tasks, apply |
-| `sdd-cheap` | `low` | explore, archive, onboard |
+| Profile (CLI) | Model | `reasoning_effort` (spawn_agent) | SDD phases |
+|---------------|-------|----------------------------------|------------|
+| `sdd-strong` | `gpt-5.5` | `high` | propose, design, verify, judge |
+| `sdd-mid` | `gpt-5.5` | `high` | apply, fix-agent |
+| `sdd-cheap` | `gpt-5.4-mini` | `high` | explore, spec, tasks, archive, onboard |
 
 <!-- /gentle-ai:sdd-orchestrator -->
 
