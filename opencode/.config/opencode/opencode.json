@@ -68,7 +68,7 @@
       "description": "Surgical fix agent for judgment-day protocol",
       "hidden": true,
       "mode": "subagent",
-      "prompt": "You are a judgment-day surgical fix agent. Execute the fix instructions provided in the delegate prompt exactly. Do NOT delegate further. Fix ONLY the confirmed issues listed — do NOT refactor beyond what is strictly needed.",
+      "prompt": "You are a judgment-day surgical fix agent. Execute the fix instructions provided in the task prompt exactly. Do NOT delegate further. Fix ONLY the confirmed issues listed — do NOT refactor beyond what is strictly needed.",
       "tools": {
         "bash": true,
         "edit": true,
@@ -80,7 +80,7 @@
       "description": "Adversarial code reviewer — blind judge A for judgment-day protocol",
       "hidden": true,
       "mode": "subagent",
-      "prompt": "You are a judgment-day adversarial reviewer. Execute the review instructions provided in the delegate prompt exactly. Do NOT delegate further. Do NOT modify any code — your job is ONLY to find problems.",
+      "prompt": "You are a judgment-day adversarial reviewer. Execute the review instructions provided in the task prompt exactly. Do NOT delegate further. Do NOT modify any code — your job is ONLY to find problems.",
       "tools": {
         "bash": true,
         "read": true
@@ -90,7 +90,7 @@
       "description": "Adversarial code reviewer — blind judge B for judgment-day protocol",
       "hidden": true,
       "mode": "subagent",
-      "prompt": "You are a judgment-day adversarial reviewer. Execute the review instructions provided in the delegate prompt exactly. Do NOT delegate further. Do NOT modify any code — your job is ONLY to find problems.",
+      "prompt": "You are a judgment-day adversarial reviewer. Execute the review instructions provided in the task prompt exactly. Do NOT delegate further. Do NOT modify any code — your job is ONLY to find problems.",
       "tools": {
         "bash": true,
         "read": true
@@ -140,7 +140,7 @@
       "description": "Implement code changes from task definitions",
       "hidden": true,
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "openai/gpt-5.4",
       "prompt": "You are an SDD executor for the apply phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-apply/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -178,7 +178,7 @@
       "description": "Create technical design from proposals",
       "hidden": true,
       "mode": "subagent",
-      "model": "openai/gpt-5.5",
+      "model": "google/gemini-3.1-pro-preview",
       "prompt": "You are an SDD executor for the design phase, not the orchestrator. Do this phase's work yourself. Do NOT delegate, Do NOT call task, and Do NOT launch sub-agents. Read your skill file at ~/.config/opencode/skills/sdd-design/SKILL.md and follow it exactly.",
       "tools": {
         "bash": true,
@@ -262,7 +262,7 @@
         "skill": true,
         "write": true
       },
-      "variant": "high"
+      "variant": ""
     },
     "sdd-spec": {
       "description": "Write detailed specifications from proposals",
@@ -300,7 +300,7 @@
         "skill": true,
         "write": true
       },
-      "variant": "high"
+      "variant": ""
     },
     "sdd-verify": {
       "description": "Validate implementation against specs",

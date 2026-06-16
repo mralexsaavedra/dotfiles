@@ -470,8 +470,8 @@ These profile files apply to whole CLI sessions: `codex --profile <name> "<promp
 | Profile (CLI) | Model | `reasoning_effort` (spawn_agent) | SDD phases |
 |---------------|-------|----------------------------------|------------|
 | `sdd-strong` | `gpt-5.5` | `high` | propose, design, verify, judge |
-| `sdd-mid` | `gpt-5.5` | `high` | apply, fix-agent |
-| `sdd-cheap` | `gpt-5.4-mini` | `high` | explore, spec, tasks, archive, onboard |
+| `sdd-mid` | `gpt-5.5` | `medium` | apply, fix-agent |
+| `sdd-cheap` | `gpt-5.4-mini` | `low` | explore, spec, tasks, archive, onboard |
 
 <!-- /gentle-ai:sdd-orchestrator -->
 
