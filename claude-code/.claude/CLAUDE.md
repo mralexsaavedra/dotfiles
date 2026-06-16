@@ -314,7 +314,7 @@ The Claude Code session model is controlled by Claude Code itself; Gentle AI doe
 | sdd-design | opus | default | Architecture decisions |
 | sdd-tasks | sonnet | default | Mechanical breakdown |
 | sdd-apply | sonnet | default | Implementation |
-| sdd-verify | sonnet | default | Validation against spec |
+| sdd-verify | opus | default | Validation against spec |
 | sdd-archive | haiku | default | Copy and close |
 | sdd-onboard | haiku | default | Guided walkthrough, pedagogical |
 | jd-judge-a | sonnet | default | Adversarial review — blind judge A |
