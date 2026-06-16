@@ -2,7 +2,7 @@
 *.lock -diff
 package-lock.json text eol=lf
 yarn.lock -diff
-pnpm-lock.yaml -diff
+pnpm-lock.yaml text eol=lf
 bun.lockb -diff
 
 # Linguistics - Detect languages properly
