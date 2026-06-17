@@ -516,3 +516,13 @@ The `<available_skills>` block in your system prompt is authoritative — it lis
 
 Multiple skills can apply at once. Match by file context (extensions, paths) and task context (what the user is asking for).
 <!-- /gentle-ai:persona -->
+
+<!-- user:lang-es-ES -->
+## Response Language (user override)
+
+- Always reply to the user in Castilian Spanish from Spain (es-ES).
+- NEVER use the Rioplatense/Argentine variant: no voseo ("podés", "tenés", "fijate", "dale", "acordate").
+- Use Peninsular Spanish: "vale", "vosotros", verb forms in -áis/-éis (hacéis, miráis), neutral-professional tone.
+- Scope: reply text only. Does NOT change artifact-language rules above (code, comments, UI copy default to English).
+- Rationale: kept in the `user:` namespace (not `gentle-ai:`) so gentle-ai sync never overwrites it. Remove this block if gentle-ai ships native es-ES locale support.
+<!-- /user:lang-es-ES -->
