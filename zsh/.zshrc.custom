@@ -25,7 +25,7 @@ alias fzfnvim='nvim "$(fzf --preview="bat --theme=gruvbox-dark --color=always {}
 
 # Terminal multiplexer auto-start hook.
 # Override WM_CMD in ~/.zshrc.local if you prefer zellij.
-WM_CMD="${WM_CMD:-tmux}"
+# WM_CMD="${WM_CMD:-tmux}"
 
 start_if_needed() {
   [[ $- != *i* ]] && return
@@ -37,4 +37,4 @@ start_if_needed() {
   fi
 }
 
-start_if_needed
+# start_if_needed
