@@ -14,6 +14,7 @@ Use this skill when asked to audit, refactor, normalize, or improve existing `SK
 ## Hard Rules
 
 - Treat `docs/skill-style-guide.md` as the normative style contract when it exists.
+- For installed global skills, use `references/skill-style-guide.md` as the bundled local copy when `docs/skill-style-guide.md` is unavailable.
 - Treat `SKILL.md` as the source of truth; preserve author intent, critical rules, activation semantics, and output requirements.
 - Use `.atl/skill-registry.md` as an index of skill names, triggers, scopes, and exact paths; do not expect generated summaries.
 - Default to audit-only. Modify files only when the user explicitly asks to apply improvements.
@@ -32,7 +33,7 @@ Use this skill when asked to audit, refactor, normalize, or improve existing `SK
 
 ## Execution Steps
 
-1. Read `docs/skill-style-guide.md`; if unavailable, enforce the core LLM-first structure: frontmatter, Activation Contract, Hard Rules, Decision Gates, Execution Steps, Output Contract, References.
+1. Read `docs/skill-style-guide.md`; if unavailable, read `references/skill-style-guide.md`; if neither exists, enforce the core LLM-first structure: frontmatter, Activation Contract, Hard Rules, Decision Gates, Execution Steps, Output Contract, References.
 2. Read `.atl/skill-registry.md`; use listed paths to select skills. If missing, scan known skill directories for `*/SKILL.md`.
 3. For each selected skill, audit metadata, trigger clarity, section order, body budget, actionability, decision gates, output contract, and local references.
 4. Return an audit report grouped by skill with severity and exact proposed changes.
@@ -50,3 +51,4 @@ Return:
 ## References
 
 - `docs/skill-style-guide.md` — normative LLM-first skill style guide for this repo.
+- `references/skill-style-guide.md` — bundled local copy for installed global skills when the repo doc is unavailable.
