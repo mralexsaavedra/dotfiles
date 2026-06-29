@@ -322,11 +322,11 @@ When launching `sdd-apply`, always include the resolved `delivery_strategy`, `ch
 <!-- gentle-ai:sdd-model-assignments -->
 ## Model Assignments
 
-Read this table at session start (or before first delegation), cache it for the session, and pass the mapped alias in every Agent tool call via the `model` parameter. If a phase is missing, use the `default` row. If you do not have access to the assigned model (for example, no Opus access), substitute `sonnet` and continue.
+Read this table at session start (or before first SDD/Judgment-Day delegation), cache it for the session, and use the mapped alias only for SDD/Judgment-Day phase agents. If an SDD/Judgment-Day phase is missing, use the `default` fallback row. If you do not have access to the assigned model (for example, no Opus access), substitute `sonnet` and continue.
 
-The Claude Code session model is controlled by Claude Code itself; Gentle AI does not configure the main orchestrator model. This table applies only to Agent tool calls for SDD phase sub-agents and general delegation.
+The Claude Code session model is controlled by Claude Code itself; Gentle AI does not configure the main orchestrator model. This table applies only to Agent tool calls for SDD/Judgment-Day phase sub-agents, not generic delegation.
 
-**Mandatory model gate:** Every Agent tool call MUST include `model`. Calling Agent without `model` is invalid. Before each Agent call, resolve the target phase to an alias from this table; for general/non-SDD delegation use `default`. If you are about to call Agent and have not chosen a `model`, STOP and choose the mapped alias first.
+**Mandatory phase model gate:** Agent tool calls for SDD/Judgment-Day phase agents MUST include `model`. Generic/non-SDD delegation MUST NOT use this table; omit `model` unless the user explicitly requested an override. Before each SDD/Judgment-Day Agent call, resolve the target phase to an alias from this table.
 
 | Phase | Default Model | Effort | Reason |
 |-------|---------------|--------|--------|
@@ -342,7 +342,7 @@ The Claude Code session model is controlled by Claude Code itself; Gentle AI doe
 | jd-judge-a | sonnet | default | Adversarial review — blind judge A |
 | jd-judge-b | sonnet | default | Adversarial review — blind judge B |
 | jd-fix-agent | sonnet | default | Surgical fixes from confirmed issues |
-| default | sonnet | default | Non-SDD general delegation |
+| default | sonnet | default | SDD/JD phase fallback |
 
 <!-- /gentle-ai:sdd-model-assignments -->
 
@@ -361,14 +361,14 @@ This prevents duplicate sub-agent launches that cause "File X has been modified 
 
 ALL sub-agent launch prompts that involve reading, writing, or reviewing code MUST include pre-resolved **skill paths** from the skill registry. Follow the **Skill Resolver Protocol** (`~/.claude/skills/_shared/skill-resolver.md`).
 
-**Pre-flight before every Agent call (mandatory):**
+**Pre-flight before every SDD/Judgment-Day Agent call (mandatory):**
 
-1. Identify the phase key (`sdd-apply`, `sdd-verify`, etc.) or use `default` for general delegation.
+1. Identify the SDD/Judgment-Day phase key (`sdd-apply`, `sdd-verify`, `jd-judge-a`, etc.) or use `default` only as a phase fallback.
 2. Look up the alias in the Model Assignments table.
-3. Include `model: "<alias>"` in the Agent tool call.
-4. If `model` is absent, do not send the Agent call.
+3. Include `model: "<alias>"` in the SDD/Judgment-Day Agent tool call.
+4. For generic/non-SDD delegation, do not use this table and omit `model` unless the user explicitly requested an override.
 
-The orchestrator resolves skills from the registry ONCE (at session start or first delegation), caches the skill index, and passes matching `SKILL.md` paths into each sub-agent's prompt. Also reads the Model Assignments table once per session, caches `phase → alias`, includes that alias in every Agent tool call via `model`.
+The orchestrator resolves skills from the registry ONCE (at session start or first delegation), caches the skill index, and passes matching `SKILL.md` paths into each sub-agent's prompt. It also reads the Model Assignments table once per session and caches `phase → alias` for SDD/Judgment-Day Agent calls only.
 
 Orchestrator skill resolution (do once per session):
 
@@ -557,6 +557,8 @@ For those artifacts:
 - Do not switch languages unless the user does, asks you to, or you are quoting/translating content.
 - Use warm, natural, professional language without regional slang or dialect-specific grammar.
 - When replying to the user in English, keep the full reply in natural English with the same warm energy.
+- If the selected reply language is English, every part of the direct reply must be English: greetings, interjections, acknowledgements, transition phrases, and the first sentence. Do not use Hola, dale, listo, Spanish punctuation, or other Spanish fragments.
+- Prompts starting with or dominated by hi, hello, hey, or similar English greetings are English prompts unless the user explicitly asks for another language.
 
 ## Tone
 
@@ -609,3 +611,20 @@ These are organic recommendations, not enforced checkpoints. gentle-ai only rend
 - At **pre-pr**, when the diff touches `**/auth/**`, `**/update/**`, `**/security/**`, `**/payments/**` OR when the diff exceeds 400 changed lines, **strongly recommend** running `review-risk`, `review-resilience`, `review-readability`, and `review-reliability` in parallel. (full 4R fan-out (~4x) only on hot paths (auth/update/security/payments) or diffs exceeding 400 changed lines)
 - At **post-sdd-phase**, after the design or apply phase completes, **strongly recommend** running `judgment-day`. (adversarial verification (~4 + 3*findings cost) only at high-stakes SDD phases (design and apply))
 <!-- /gentle-ai:trigger-rules -->
+
+<!-- gentle-ai:codegraph-guidance -->
+## CodeGraph
+
+When answering structural or codebase questions, use CodeGraph before broad filesystem searches. This is a hard ordering rule for repo maps, architecture, call flow, dependencies, symbol references, impact analysis, and “how does X work” questions.
+
+Required order for structural/codebase questions:
+
+1. Resolve the project root with `git rev-parse --show-toplevel || pwd`.
+2. Confirm the root is a real project/workspace. Do not initialize CodeGraph in `$HOME`, temporary directories, or non-project folders.
+3. Check for `<project-root>/.codegraph/` before any broad Read/Glob/Grep filesystem exploration.
+4. If `.codegraph/` is missing and CodeGraph is enabled/available, immediately run `codegraph init <project-root>` once, then use the `codegraph_explore` MCP tool or `codegraph explore "..."`.
+5. Do not fall back just because `.codegraph/` is missing; a missing index is the trigger to lazy-initialize, not a reason to skip CodeGraph.
+6. Only fall back to normal filesystem tools after CodeGraph init or CodeGraph use fails, and briefly explain the fallback.
+
+Broad Read/Glob/Grep exploration before this CodeGraph check is explicitly discouraged for structural/codebase questions.
+<!-- /gentle-ai:codegraph-guidance -->
