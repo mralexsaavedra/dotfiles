@@ -101,7 +101,6 @@ To run any SDD phase:
 
 Do not execute SDD phase work in the orchestrator thread except for trivial routing, artifact lookup, user clarification, and synthesis. Phase subagents own phase-specific reading, writing, testing, and artifact production.
 
-
 ### Language Domain Contract
 
 - The active persona controls direct user/orchestrator conversation only. Use it for direct replies, clarification prompts, and user-facing orchestration status.
@@ -140,16 +139,30 @@ These are orchestrator stop rules for Antigravity. Once any trigger fires, the o
 
 1. **4-file rule**: if understanding requires reading 4+ files, invoke an exploration/mapping phase before implementation.
 2. **Multi-file write rule**: if implementation will touch 2+ non-trivial files, require an explicit apply phase and verify phase boundary.
-3. **PR rule**: before commit, push, or PR after code changes, invoke verification/review unless the diff is trivial docs/text.
-4. **Incident rule**: after wrong `cwd`, accidental repo/worktree mutation, merge recovery, confusing test command, or environment workaround, stop and invoke a fresh audit/verification pass before continuing.
+3. **PR rule**: before commit, push, or PR after code changes, invoke verification/review with the concrete lens(es) selected by Review Lens Selection unless the diff is trivial docs/text.
+4. **Incident rule**: after wrong `cwd`, accidental repo/worktree mutation, merge recovery, confusing test command, or environment workaround, stop and invoke a fresh audit/verification pass with the concrete lens(es) selected by Review Lens Selection before continuing.
 5. **Long-session rule**: after roughly 20 tool calls, 5 exploratory file reads, or 2 non-mechanical edits without a phase boundary and growing complexity, pause and re-plan instead of silently continuing monolithically.
-6. **Fresh review rule**: for verification, instruct the `sdd-verify` subagent to re-read the diff/spec from scratch and challenge prior assumptions.
+6. **Fresh review rule**: for verification, instruct the `sdd-verify` subagent to re-read the diff/spec from scratch and challenge prior assumptions through the selected concrete review lens(es).
+
+#### Review Lens Selection
+
+`reviewer` is an intent, not a concrete installed agent. When a fresh review/audit is required, select concrete lenses by risk profile:
+
+| Risk signal | Review lens |
+| --- | --- |
+| Clear naming, structure, maintainability, or small refactors | `review-readability` |
+| Behavior, state, tests, determinism, or regressions | `review-reliability` |
+| Shell/process integration, partial failures, recovery, or degraded dependencies | `review-resilience` |
+| Security, permissions, data exposure/loss, architecture, or dependencies | `review-risk` |
+| Large PR, hot path, or >400 changed lines | full 4R: `review-risk`, `review-resilience`, `review-readability`, `review-reliability` |
+
+If multiple rows match, run the narrow set that covers the risk. Example: shell integration that mutates live state should use `review-reliability` plus `review-resilience`, not `review-readability` by default.
 
 #### Cost and Context Balance
 
 - Keep exploration, apply, and verify concerns separated even when all phases run in one Antigravity conversation.
 - Preserve one writer thread; do not interleave broad exploration with edits unless it is the explicit `sdd-apply` phase subagent.
-- Use verification after implementation, conflict resolution, or incidents because its value is independent judgment, not token saving.
+- Use concrete review lenses after implementation, conflict resolution, or incidents because their value is independent judgment, not token saving.
 - Avoid extra phase ceremony for truly local one-file fixes, quick state checks, and already-understood mechanical edits.
 
 ## SDD Workflow (Spec-Driven Development)
@@ -555,11 +568,11 @@ When answering structural or codebase questions, use CodeGraph before broad file
 Required order for structural/codebase questions:
 
 1. Resolve the project root with `git rev-parse --show-toplevel || pwd`.
-2. Confirm the root is a real project/workspace. Do not initialize CodeGraph in `$HOME`, temporary directories, or non-project folders.
+2. Confirm the root is a real project/workspace. Do not ask the user before initializing CodeGraph in a real project. Do not initialize CodeGraph in `$HOME`, temporary directories, or non-project folders.
 3. Check for `<project-root>/.codegraph/` before any broad Read/Glob/Grep filesystem exploration.
 4. If `.codegraph/` is missing and CodeGraph is enabled/available, immediately run `codegraph init <project-root>` once, then use the `codegraph_explore` MCP tool or `codegraph explore "..."`.
-5. Do not fall back just because `.codegraph/` is missing; a missing index is the trigger to lazy-initialize, not a reason to skip CodeGraph.
-6. Only fall back to normal filesystem tools after CodeGraph init or CodeGraph use fails, and briefly explain the fallback.
+5. Missing .codegraph/ is the trigger to initialize, not a reason to skip CodeGraph. Do not fall back just because `.codegraph/` is missing; a missing index is the trigger to lazy-initialize, not a reason to skip CodeGraph.
+6. Only fall back after CodeGraph init or CodeGraph use fails. Only fall back to normal filesystem tools after CodeGraph init or CodeGraph use fails, and briefly explain the fallback.
 
 Broad Read/Glob/Grep exploration before this CodeGraph check is explicitly discouraged for structural/codebase questions.
 <!-- /gentle-ai:codegraph-guidance -->
