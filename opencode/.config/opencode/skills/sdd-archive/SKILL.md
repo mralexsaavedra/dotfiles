@@ -25,9 +25,9 @@ If you ARE the `sdd-archive` sub-agent (NOT the orchestrator), the gate above do
 
 Generated technical artifacts default to English. Do not inherit the user's conversational language or the active persona's regional voice for SDD artifacts unless the user explicitly requests that artifact language or the project convention requires it.
 
-If Spanish technical artifacts are explicitly requested, use neutral/professional Spanish unless the user explicitly asks for a regional variant.
+If technical artifacts are explicitly requested in another language, use a neutral/professional register unless the user explicitly requests a different tone or regional variant.
 
-Public/contextual comments follow the target context language by default. Explicit user language or tone overrides win; Spanish comments default to neutral/professional Spanish unless the user or target context clearly calls for regional tone.
+Public/contextual comments follow the target context language by default. Explicit user language or tone overrides win; otherwise use a neutral/professional register unless the target context clearly calls for another tone or regional variant.
 
 ## Purpose
 
@@ -45,10 +45,14 @@ From the orchestrator:
 
 > Follow **Section B** (retrieval) and **Section C** (persistence) from `skills/_shared/sdd-phase-common.md`.
 
-- **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec`, `sdd/{change-name}/design`, `sdd/{change-name}/tasks`, `sdd/{change-name}/verify-report` (all required). Record all observation IDs in the archive report for traceability. Save as `sdd/{change-name}/archive-report`.
+- **engram**: Read `sdd/{change-name}/proposal`, `sdd/{change-name}/spec`, `sdd/{change-name}/design`, `sdd/{change-name}/tasks`, `sdd/{change-name}/verify-report`, and exact `sdd/{change-name}/review/{transaction,ledger,receipt,gate-context}` topics (all required). Record all observation IDs in the archive report for traceability. Save as `sdd/{change-name}/archive-report`.
 - **openspec**: Read and follow `skills/_shared/openspec-convention.md`. Perform merge and archive folder moves.
 - **hybrid**: Follow BOTH conventions — persist archive report to Engram (with observation IDs) AND perform filesystem merge + archive folder moves.
 - **none**: Return closure summary only. Do not perform archive file operations.
+
+### Native Review Receipt Gate
+
+Before any task reconciliation, spec sync, or archive move, require structured status with `reviewGate.result: allow`. Read the exact transaction, frozen ledger, approved terminal receipt, and post-apply gate context referenced by status. Missing, pending, malformed, `scope-changed`, `invalidated`, or `escalated` review state blocks archive with no override and no automatic reviewer launch. The receipt must match final candidate tree, paths digest, policy, ledger, fix delta, current independent verification evidence, mode counters, and base relationship.
 
 ### Task Completion Gate
 

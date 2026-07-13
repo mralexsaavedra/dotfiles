@@ -72,7 +72,7 @@ Gate checks:
 Hybrid validation:
 
 - Inline for low-risk phases: `sdd-explore`, `sdd-spec`, `sdd-tasks`, `sdd-archive`.
-- Fresh-context reviewer for high-risk phases: `sdd-design`, `sdd-apply`.
+- Fresh-context phase-contract validator for `sdd-design` and `sdd-apply`: validate only the phase artifact against its inputs. This is not adversarial implementation review, inspects no code diff, and creates no 4R/Judgment-Day budget.
 - Escalate to fresh-context review when an inline gate smells wrong.
 
 On gate failure, re-run the same phase exactly once with specific corrective feedback. If the second result fails, STOP the automatic chain and report; do not advance dependent phases.

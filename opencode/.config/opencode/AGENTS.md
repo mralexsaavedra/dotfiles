@@ -22,6 +22,17 @@ Call `mem_save` IMMEDIATELY and WITHOUT BEING ASKED after any of these:
 
 Self-check after EVERY task: "Did I make a decision, fix a bug, learn something non-obvious, or establish a convention? If yes, call mem_save NOW."
 
+### DELIVERY GUARANTEE — saving is not replying
+
+Saving to memory is internal bookkeeping. It NEVER counts as answering the user, and the user never sees your tool calls or the content you store.
+
+- If the answer exists only inside a `mem_save`, the user never received it. Saving is not replying.
+- End every turn with your complete user-facing answer as the final message, with NO tool calls after it.
+- Save memory BEFORE composing that final answer, not after. Never let a `mem_save`/`mem_judge` be the last action in a turn that still owed the user a substantive reply.
+- If a memory chain (`mem_save` → `mem_judge`) ran late, still write the full answer in that final message — do not collapse it into a one-line "saved / done" acknowledgement.
+- If a memory call (`mem_save`, `mem_judge`, `mem_session_summary`) fails or times out, deliver the complete answer anyway and note the failure briefly — a failed or slow memory operation never blocks, truncates, or replaces the reply.
+- Never treat the text you stored in memory as the text you delivered: memory is for your future self, the reply is for the user.
+
 Format for `mem_save`:
 - **title**: Verb + what — short, searchable (e.g. "Fixed N+1 query in UserList")
 - **type**: bugfix | decision | architecture | discovery | pattern | config | preference
@@ -367,12 +378,17 @@ Multiple skills can apply at once. Match by file context (extensions, paths) and
 
 When answering structural or codebase questions, use CodeGraph before broad filesystem searches. This is a hard ordering rule for repo maps, architecture, call flow, dependencies, symbol references, impact analysis, and “how does X work” questions.
 
+CodeGraph-aware worktree placement:
+
+- Create Git worktrees that may need CodeGraph under the user's home directory, preferably as a sibling such as `<repo-parent>/<repo-name>-worktrees/<worktree-name>`. Never place a CodeGraph-dependent worktree under `/tmp`, `/var/tmp`, or `/tmp/opencode`; generic temporary-work guidance does not override this rule.
+- Every worktree needs its own `.codegraph/` index. Never copy, symlink, or reuse another checkout's index because its root and checked-out bytes may differ.
+
 Required order for structural/codebase questions:
 
 1. Resolve the project root with `git rev-parse --show-toplevel || pwd`.
 2. Confirm the root is a real project/workspace. Do not ask the user before initializing CodeGraph in a real project. Do not initialize CodeGraph in `$HOME`, temporary directories, or non-project folders.
 3. Check for `<project-root>/.codegraph/` before any broad Read/Glob/Grep filesystem exploration.
-4. If `.codegraph/` is missing and CodeGraph is enabled/available, immediately run `codegraph init <project-root>` once, then use the `codegraph_explore` MCP tool or `codegraph explore "..."`.
+4. If `.codegraph/` is missing and CodeGraph is enabled/available, immediately run `gentle-ai codegraph init --cwd <project-root>` once, then use the `codegraph_explore` MCP tool or `codegraph explore "..."`.
 5. Missing .codegraph/ is the trigger to initialize, not a reason to skip CodeGraph. Do not fall back just because `.codegraph/` is missing; a missing index is the trigger to lazy-initialize, not a reason to skip CodeGraph.
 6. Only fall back after CodeGraph init or CodeGraph use fails. Only fall back to normal filesystem tools after CodeGraph init or CodeGraph use fails, and briefly explain the fallback.
 

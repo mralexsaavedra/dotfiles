@@ -43,6 +43,11 @@ artifactPaths:
   tasks: [<absolute path>]
   applyProgress: [<absolute path>]
   verifyReport: [<absolute path>]
+  reviewLedger: [<absolute path>]
+  reviewReceipt: [<absolute path>]
+  reviewBundle: [<absolute path to reviews/chain-bundle.json>]
+  reviewContext: [<absolute path>]
+  reviewState: [<absolute path to reviews/transaction.json>]
 contextFiles:
   proposal: [<absolute readable files>]
   specs: [<absolute readable files>]
@@ -50,6 +55,11 @@ contextFiles:
   tasks: [<absolute readable files>]
   applyProgress: [<absolute readable files>]
   verifyReport: [<absolute readable files>]
+  reviewLedger: [<absolute readable files>]
+  reviewReceipt: [<absolute readable files>]
+  reviewBundle: [<absolute readable files>]
+  reviewContext: [<absolute readable files>]
+  reviewState: [<absolute readable files>]
 artifacts:
   proposal: missing | done | partial
   specs: missing | done | partial
@@ -57,6 +67,11 @@ artifacts:
   tasks: missing | done | partial
   applyProgress: missing | done | partial
   verifyReport: missing | done | partial
+  reviewLedger: missing | done | partial
+  reviewReceipt: missing | done | partial
+  reviewBundle: missing | done | partial
+  reviewContext: missing | done | partial
+  reviewState: missing | done | partial
 taskProgress:
   total: 0
   completed: 0
@@ -81,15 +96,27 @@ relationships:
   amends: []
   conflictsWith: []
   sameDomainActiveChanges: []
+remediationState:
+  required: false
+  complete: false
+  failedEvidenceRevision: ""
+  lineageId: ""
+  generation: 0
+  fixBatch: 0
+  reason: ""
+reviewGate:
+  result: allow | scope-changed | invalidated | escalated
+  reason: <deterministic explanation>
 phaseInstructions:
   apply: [<instruction strings>]
   verify: [<instruction strings>]
+  remediate: [<instruction strings>]
   archive: [<instruction strings>]
-nextRecommended: propose | spec | design | tasks | apply | verify | archive | sdd-new | select-change | resolve-blockers
+nextRecommended: propose | spec | design | tasks | apply | review | verify | remediate | archive | sdd-new | select-change | resolve-blockers | resolve-review
 blockedReasons: []
 ```
 
-`phaseInstructions` is optional and appears only when instructions are requested. It carries only execution-phase keys (`apply`, `verify`, `archive`); planning-phase instructions (`propose`, `spec`, `design`, `tasks`) are surfaced in the dispatcher markdown, not this JSON map, so a consumer routing on a planning `nextRecommended` MUST NOT expect a matching `phaseInstructions` entry. Empty path fields MUST be arrays, not null. `changeName` and `changeRoot` are nullable; all other sections should be present in fallback output so consumers can parse native and manual status the same way. Native status currently emits `artifactStore: openspec`; manual fallback output MUST set `artifactStore` to the session's actual store (`openspec`, `engram`, or `hybrid`), not blindly mirror the native token.
+`phaseInstructions` is optional and appears only when instructions are requested. It carries execution-phase keys (`apply`, `verify`, `remediate`, `archive`); planning-phase instructions (`propose`, `spec`, `design`, `tasks`) are surfaced in dispatcher markdown. `reviewGate` is omitted until final archive gating runs; when present, its result uses only the four listed values. Empty path fields MUST be arrays, not null. `changeName` and `changeRoot` are nullable; all other non-optional sections should be present in fallback output so consumers can parse native and manual status the same way.
 
 ## Apply State
 
@@ -101,8 +128,12 @@ blockedReasons: []
 
 - `proposal`, `specs`, `design`, and `tasks` report whether prerequisite artifacts are blocked, ready, or all done.
 - `apply` is `ready` only when specs, design, and tasks are available and task progress is not all done.
-- `verify` is `ready` when tasks exist and either apply-progress exists or the tasks artifact shows all intended implementation work complete. Incomplete tasks remain blockers for full verification.
-- `archive` is `ready` only when verify-report exists, is clearly passing, and tasks are complete. A clearly passing report needs an explicit PASS/SUCCESS signal and no blocker or negation signals such as FAIL, FAILURE, BLOCKED, CRITICAL, PENDING, TODO, verification blockers, `not passed`, or `pass: no`. CRITICAL verification issues have no override. Explicit recorded exceptions are limited to non-critical partial archives or stale-checkbox reconciliation when apply-progress/verify-report prove completion.
+- `verify` is `ready` only after every task is complete and the persisted bounded transaction reaches `ready_final_verification` (or has begun `final_verifying`). Missing or active review state routes to `review`; apply-progress and focused work-unit checks never make final verification ready.
+- Verify routing parses only the strict leading `gentle-ai.verify-result/v1` envelope. It compares measured requirement/scenario totals with actual specs and requires current test/build commands, zero passing exit codes, and output hashes. Human prose never controls readiness.
+- Failed evidence may route to `remediate` only when an exact persisted transaction lineage/generation has remaining mode-specific fix budget and names the same failed evidence revision. Remediation completion requires concrete focused-test, runtime-harness (or justified N/A), and rollback evidence bound to that transaction; a bare envelope never passes.
+- `archive` is `ready` only when tasks are complete, strict verification passes, and an approved receipt exactly matches the final candidate tree, paths, policy, frozen ledger, and current evidence. Missing, pending, or invalid receipts block archive. Scope change requires an explicit new lineage; new external evidence may invalidate or escalate without reopening review.
+- OpenSpec review artifacts use `openspec/changes/{change-name}/reviews/{transaction,ledger,receipt,chain-bundle,gate-context}.json`. Engram uses exact topics `sdd/{change-name}/review/{transaction,ledger,receipt,chain-bundle,gate-context}`. The chain bundle is a portable non-authoritative recovery source and requires explicit validated import into the repository-derived store. Do not substitute prompt-only state when these native artifacts are available.
+- Planning phases never auto-launch ordinary 4R or Judgment Day. Post-apply may explicitly start ordinary `review/start(target)` only when no valid receipt exists. Pre-commit, pre-push, and pre-PR validate the same receipt through the native validator and never create a new review budget. A release whose tag target is proven to be the current protected `origin/main` SHA may use the release fast path only with successful required CI for that exact SHA, an immediate remote-head recheck before tag push, and no fresh risk evidence; otherwise it falls back to native receipt validation. Major or post-incident releases always require explicit extraordinary review.
 
 ## Action Context Guard
 
