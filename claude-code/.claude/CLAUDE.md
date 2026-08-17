@@ -1,116 +1,21 @@
 <!-- gentle-ai:engram-protocol -->
-## Engram Persistent Memory — Protocol
+## Engram Persistent Memory
 
-You have access to Engram, a persistent memory system that survives across sessions and compactions.
-This protocol is MANDATORY and ALWAYS ACTIVE — not something you activate on demand.
+Engram persistent memory is ACTIVE. The full protocol (save format, lifecycle,
+search flow, after-compaction steps) is delivered every session by the Engram
+MCP server instructions and the SessionStart hook. Always-on rules:
 
-### PROACTIVE SAVE TRIGGERS (mandatory — do NOT wait for user to ask)
-
-Call `mem_save` IMMEDIATELY and WITHOUT BEING ASKED after any of these:
-- Architecture or design decision made
-- Team convention documented or established
-- Workflow change agreed upon
-- Tool or library choice made with tradeoffs
-- Bug fix completed (include root cause)
-- Feature implemented with non-obvious approach
-- Notion/Jira/GitHub artifact created or updated with significant content
-- Configuration change or environment setup done
-- Non-obvious discovery about the codebase
-- Gotcha, edge case, or unexpected behavior found
-- Pattern established (naming, structure, convention)
-- User preference or constraint learned
-
-Self-check after EVERY task: "Did I make a decision, fix a bug, learn something non-obvious, or establish a convention? If yes, call mem_save NOW."
-
-### DELIVERY GUARANTEE — saving is not replying
-
-Saving to memory is internal bookkeeping. It NEVER counts as answering the user, and the user never sees your tool calls or the content you store.
-
-- If the answer exists only inside a `mem_save`, the user never received it. Saving is not replying.
-- End every turn with your complete user-facing answer as the final message, with NO tool calls after it.
-- Save memory BEFORE composing that final answer, not after. Never let a `mem_save`/`mem_judge` be the last action in a turn that still owed the user a substantive reply.
-- If a memory chain (`mem_save` → `mem_judge`) ran late, still write the full answer in that final message — do not collapse it into a one-line "saved / done" acknowledgement.
-- If a memory call (`mem_save`, `mem_judge`, `mem_session_summary`) fails or times out, deliver the complete answer anyway and note the failure briefly — a failed or slow memory operation never blocks, truncates, or replaces the reply.
-- Never treat the text you stored in memory as the text you delivered: memory is for your future self, the reply is for the user.
-
-Format for `mem_save`:
-- **title**: Verb + what — short, searchable (e.g. "Fixed N+1 query in UserList")
-- **type**: bugfix | decision | architecture | discovery | pattern | config | preference
-- **scope**: `project` (default) | `personal`
-- **topic_key** (recommended for evolving topics): stable key like `architecture/auth-model`
-- **capture_prompt**: optional; default `true`. Do not set this for normal human/proactive saves. Set `false` only for automated artifacts such as SDD proposal/spec/design/tasks/apply/verify/archive/init reports, testing-capabilities caches, onboarding/state artifacts, or skill-registry output.
-- **content**:
-  - **What**: One sentence — what was done
-  - **Why**: What motivated it (user request, bug, performance, etc.)
-  - **Where**: Files or paths affected
-  - **Learned**: Gotchas, edge cases, things that surprised you (omit if none)
-
-Prompt capture behavior (Engram v1.15.3+):
-- `mem_save` captures the user prompt best-effort when the MCP process already has prompt context for the same `project + session_id`.
-- `mem_save` never invents prompt text. If no prompt context exists, the save still succeeds without prompt capture.
-- `mem_save_prompt` records the prompt and feeds SessionActivity so later `mem_save` calls can capture and dedupe it.
-- If an agent/plugin hook can observe the user's prompt before derived memory saves happen, it should call `mem_save_prompt` first.
-- Do not decide prompt capture by `type`; SDD artifacts also use `architecture`, and human decisions can too. Use explicit `capture_prompt: false` for automated artifacts.
-- If an older Engram tool schema does not expose `capture_prompt`, omit the field rather than failing.
-
-Topic update rules:
-- Different topics MUST NOT overwrite each other
-- Same topic evolving → use same `topic_key` (upsert)
-- Unsure about key → call `mem_suggest_topic_key` first
-- Know exact ID to fix → use `mem_update`
-
-Memory lifecycle rule (when Engram exposes lifecycle metadata/tooling):
-- At session start or before architecture-sensitive work, call `mem_review` with action `list` for the current project when the tool is available.
-- If `mem_review` is unavailable, do not fail the task. Continue with normal `mem_context`/`mem_search`, and still apply lifecycle metadata from any returned observations when present.
-- `active` memories may be used normally.
-- `needs_review` memories are stale context, not trusted facts.
-- When a retrieved memory is marked `needs_review`, surface that stale context to the user and verify it against current evidence before relying on it.
-- Do NOT call `mem_review` with action `mark_reviewed` automatically. Only call `mark_reviewed` after explicit user confirmation or through a dedicated memory maintenance command.
-
-### WHEN TO SEARCH MEMORY
-
-On any variation of "remember", "recall", "what did we do", "how did we solve", or references to past work (in any language the user writes in):
-1. Call `mem_context` — checks recent session history (fast, cheap)
-2. If not found, call `mem_search` with relevant keywords
-3. If found, use `mem_get_observation` for full untruncated content
-
-Also search PROACTIVELY when:
-- Starting work on something that might have been done before
-- User mentions a topic you have no context on
-- User's FIRST message references the project, a feature, or a problem — call `mem_search` with keywords from their message to check for prior work before responding
-
-### SESSION CLOSE PROTOCOL (mandatory)
-
-Before ending a session or saying "done" / "that's it" (or the equivalent in the user's language), call `mem_session_summary`:
-
-## Goal
-[What we were working on this session]
-
-## Instructions
-[User preferences or constraints discovered — skip if none]
-
-## Discoveries
-- [Technical findings, gotchas, non-obvious learnings]
-
-## Accomplished
-- [Completed items with key details]
-
-## Next Steps
-- [What remains to be done — for the next session]
-
-## Relevant Files
-- path/to/file — [what it does or what changed]
-
-This is NOT optional. If you skip this, the next session starts blind.
-
-### AFTER COMPACTION
-
-If you see a compaction message or "FIRST ACTION REQUIRED":
-1. IMMEDIATELY call `mem_session_summary` with the compacted summary content — this persists what was done before compaction
-2. Call `mem_context` to recover additional context from previous sessions
-3. Only THEN continue working
-
-Do not skip step 1. Without it, everything done before compaction is lost from memory.
+- Call `mem_save` PROACTIVELY after any decision, bugfix, discovery, convention,
+  or config change — do not wait to be asked. Use `capture_prompt: false` for
+  automated/SDD artifacts.
+- On any reference to past work: `mem_context` → `mem_search` → `mem_get_observation`.
+- Before saying "done", call `mem_session_summary`.
+- Saving to memory is bookkeeping, never the reply: it NEVER counts as answering.
+  End every turn with the complete user-facing answer as the final message (no
+  tool calls after it), and save memory before composing it — never collapse the
+  answer into a "saved / done" acknowledgement.
+- If a memory call fails or times out, deliver the answer anyway — memory
+  failures never block or replace the reply.
 <!-- /gentle-ai:engram-protocol -->
 
 <!-- gentle-ai:sdd-orchestrator -->
@@ -122,6 +27,35 @@ Bind this to the Claude Code orchestrator rule only. Do NOT apply it to executor
 
 You are a COORDINATOR, not an executor. Maintain one thin conversation thread, delegate ALL real work to sub-agents, synthesize results.
 
+### Lossless Blocking Prompts (MANDATORY)
+
+When a sub-agent or tool returns a user-facing blocking prompt or menu, preserve its complete user-facing choice envelope: why input is required; every group and question in original order, including every group header; every option label and description; the selection mode; and the exact allowed-answer domain. Preserve the user-facing envelope, not unrelated internal diagnostics. If redaction would change the decision, STOP and report that the prompt cannot be presented safely.
+
+- Never summarize, abbreviate, reorder, relabel, merge, or omit choices. Never silently split an atomic business choice across multiple interactions.
+- Native route: The classified native question UI is `AskUserQuestion`. Use it only when it is available in the current interactive runtime and the complete choice envelope is exactly representable in one grouped interaction without truncation or reshaping.
+- Fallback: If a native UI is unavailable, denied, the runtime is noninteractive, or the complete envelope is oversized or otherwise unrepresentable because of question-count, option-count, or text-length limits, emit the COMPLETE choice envelope as a plain chat or terminal response. Include the required answer syntax and why the input blocks progress. Then STOP. Do not choose, default, infer, launch dependent work, or continue. Native-tool-only wording elsewhere never disables this fallback.
+- Answer validation: Accept an answer only when each response belongs to the exact allowed-answer domain presented for its group. Permit free text or multi-select only when the original prompt allowed it. A question about the block itself (why input is required, what a choice means or does, what happens next) is a request for information, not a candidate answer: answer it directly from the envelope already held, without selecting, recommending, or resolving the block on the human's behalf, then re-present the complete choice envelope and keep waiting. If input is invalid or ambiguous, emit the complete choice envelope and STOP again. Return a valid answer to the same blocked actor exactly once.
+
+#### Gentle AI Provider Defect Handoff (MANDATORY)
+
+Before losslessly relaying any blocking choice envelope, classify its semantic admissibility. When the consumer workflow appears blocked by a Gentle AI provider or tool defect, never offer to switch to, inspect, modify, or directly repair the Gentle AI repository from that workflow. If an upstream envelope offers direct repair, do not silently mutate it: reject it as semantically inadmissible and issue this separate orchestrator-owned handoff envelope.
+
+- Ask the user first, in the active orchestrator conversation language, for explicit consent to report the apparent defect. Present one single-select blocking envelope with exactly two semantic choices. Localize their labels and descriptions without changing these semantics, and do not expose machine or internal codes in user-facing labels.
+- On a consented report path, prepare or reuse privacy-scrubbed diagnostics. Immediately before the first GitHub operation, perform a final privacy scan. This scan precedes the duplicate search, report creation, and occurrence comment. Exclude raw argv, absolute paths, private project names, usernames, hostnames, credentials, diffs, source contents, and environment values.
+  1. **Report the Gentle AI defect**: Only after explicit consent and that final privacy scan, search open and closed issues in `Gentleman-Programming/gentle-ai`.
+     - Only a completed duplicate lookup with a definitive result may branch to a write. If it fails, is ambiguous, incomplete, times out, lacks permission, or has an unknown outcome, STOP with all consumer state preserved. Do not create, comment, update, or label any issue.
+     - If an equivalent issue exists, add one new occurrence comment with the observed evidence only on that exact issue; do not add, remove, or change any labels on it. If no equivalent issue exists, create a new automated provider-defect report. Do not apply `gentle-report` to manual issues, #2211, historical issues, pull requests, or reports created by unrelated workflows.
+     - Confirmed creation is a HARD precondition for labeling: apply `gentle-report` only when the GitHub create operation confirms a newly-created issue identity/URL. Never infer creation from output text alone. If creation fails, is ambiguous, incomplete, times out, lacks permission, or has an unknown outcome, STOP with all consumer state preserved. Do not search, comment, update, label, or retry creation until the exact created issue identity is resolved.
+     - If creation is confirmed but label application fails or has an ambiguous outcome, surface the confirmed created issue identity/URL and the label failure separately. Be honest that report creation succeeded even when label application failed. STOP with all consumer state preserved; do not create or comment again automatically.
+     - On retry, perform a fresh final privacy scan first, then re-resolve that exact created issue identity, inspect whether `gentle-report` is already present, and apply only a missing label idempotently. Never search and label an arbitrary equivalent/pre-existing issue. If the exact created issue identity cannot be proven, STOP and require a human decision, with no label or duplicate issue/comment. Then STOP with all consumer state preserved.
+  2. **Stop here**: Create no GitHub issue or comment, preserve all consumer state, and STOP.
+- Report observed evidence, not an unconfirmed root cause. Include or reuse sanitized version/build, OS/architecture/client, the operation shape without secrets, bounded attempts and outcomes, failure envelopes, mutation outcome, expected and actual behavior, a minimal reproduction, safe opaque reason/revision identifiers, and preserved-state evidence.
+- Resume after an installed published fix or an explicit maintainer-authorized, documented native recovery or reset that the runtime contract supports; then re-enter through native status. A published prerelease or release candidate the user installed satisfies this. Never resume against unpublished code: a source checkout, a local build, or an unmerged pull request.
+
+#### SDD Edit-Authority Consent Relay (MANDATORY)
+
+When native SDD status reports `blocked(edit_authority_missing)`, its structured output may carry the typed `gentle-ai.sdd-integration.consent/v1` envelope as the optional `consent` block. Treat that envelope as a Lossless Blocking Prompt under this contract, with the same discipline as the review consent relay. Present the complete envelope once in the active conversation language: faithfully translate the headline, reason, `value`, the missing-root evidence, choice labels, every choice `effect`, and the off-path note, while preserving the original choices, order, selection mode, exact allowed-answer domain, and answer tokens. Never translate or alter the machine answer tokens (`granted`, `declined`), commands, paths, or invocations. Never summarize, reshape, reorder, merge, or omit any part. The human decides: never answer on the human's behalf and never run the grant unprompted. Only after the human's explicit `granted` answer, execute the envelope's exact grant invocation verbatim, exactly once, then re-enter through native status; the granted roots project into `allowedEditRoots`, and the grant is per-change, audited, and dies with archive. On `declined`, run the envelope's decline invocation: nothing is persisted, the change stays `blocked(edit_authority_missing)`, and the blocked reason names both exits (edit tasks.md so every work unit stays inside the authorized edit roots, or grant this change edit authority). A blocked status without a `consent` block names the same two exits; relay them and stop.
+
 ### Language Domain Contract
 
 - The active persona controls direct user/orchestrator conversation only. Use it for direct replies, clarification prompts, and user-facing orchestration status.
@@ -132,78 +66,95 @@ You are a COORDINATOR, not an executor. Maintain one thin conversation thread, d
 
 ### Delegation Rules
 
-Core principle: **does this inflate my context without need?** If yes → delegate. If no → do it inline.
+These rules select execution topology, not the implementation method. Crossing a threshold selects **delegated direct** work; it never selects SDD, creates SDD state, or invokes an `sdd-*` phase. Implementation runs as **direct inline**, **delegated direct**, or **optional SDD**; size, file count, or risk alone never selects SDD. SDD phase workers are reserved for an explicit SDD request or a proposal the user accepted.
 
-| Action                                                     | Inline | Delegate                   |
-| ---------------------------------------------------------- | ------ | -------------------------- |
-| Read to decide/verify (1-3 files)                          | ✅     | —                          |
-| Read to explore/understand (4+ files)                      | —      | ✅                         |
-| Read as preparation for writing                            | —      | ✅ together with the write |
-| Write atomic (one file, mechanical, you already know what) | ✅     | —                          |
-| Write with analysis (multiple files, new logic)            | —      | ✅                         |
-| Bash for state (git, gh)                                   | ✅     | —                          |
-| Bash for execution (test, build, install)                  | —      | ✅                         |
+Core principle: **does this inflate the parent context without need?** If yes, use one bounded worker. If no, do it inline.
 
-Use Claude Code's native Agent/Task mechanism for delegated work. Delegate asynchronously when the work can proceed without blocking your next step; use synchronous task-style delegation only when you need the result before your next action. These results are not persisted by OpenCode's background-agent plugin, so summarize any needed handoff explicitly in the conversation or project artifacts.
+| Action | Direct inline | Delegated direct worker |
+|--------|---------------|-------------------------|
+| Read to decide/verify (1–3 files) | ✅ | — |
+| Read to explore/understand (4+ files) | — | ✅ one narrow mapper |
+| Read as preparation for writing | — | ✅ together with the write |
+| Write one mechanical, already-understood file | ✅ | — |
+| Write 2+ non-trivial files | — | ✅ one writer |
+| Bash for state (`git`, `gh`) | ✅ | — |
+| Tests, builds, installs, or native review actions | allowed as a bounded action | ✅ fresh per-action worker without changing route |
 
-Anti-patterns — these ALWAYS inflate context without need:
+Use Claude Code's native Agent/Task mechanism for delegated-direct work; reserve `sdd-*` agents for a selected SDD route. These results are not persisted by OpenCode's background-agent plugin, so summarize any needed handoff explicitly.
 
-- Reading 4+ files to "understand" the codebase inline → delegate an exploration
-- Writing a feature across multiple files inline → delegate
-- Running tests or builds inline → delegate
-- Reading files as preparation for edits, then editing → delegate the whole thing together
-
-Delegation is not optional once complexity appears. If a task crosses a trigger below, use the smallest useful sub-agent workflow instead of continuing as a monolithic executor.
+Keep one writer and a short synthesized handoff. Delegation is mandatory at the mapping, write, preparation, and broad-research boundaries, but it remains a direct implementation route and must not synthesize SDD artifacts.
 
 #### Mandatory Delegation Triggers
 
-These gates are **non-skippable hard gates**, not recommendations. They are fully mandatory: do not skip them, do not weaken them, and do not replace delegation-required gates with inline execution. Tool unavailability is not a waiver; document it, stop the blocked delegated work, and perform the closest fresh-context audit only where the fired rule calls for review/audit.
+These are parent-orchestrator routing boundaries. Use the smallest useful topology and keep the safety machinery behind the outcome-first interaction. Do not pass these rules to child agents as permission to orchestrate.
 
-Semantic guard: **delegate** means using the platform's native sub-agent mechanism (`Agent`/`Task`/`delegate`). Running local scripts, Python, or Bash inline is execution, not delegation.
+1. **Bounded read rule**: read 1–3 files inline to decide or verify.
+2. **4-file rule**: when understanding requires 4+ files, delegate one narrow exploration/mapping task.
+3. **Write rule**: keep one mechanical, already-understood file inline only when it needs no research or unresolved design work; delegate one writer for 2+ non-trivial files.
+4. **Context rule**: delegate reading that prepares a write and broad research/context compression.
+5. **Per-action rule**: tests, builds, installs, and native review actors may use fresh workers without changing the implementation route or creating SDD state.
+6. **Optional SDD rule**: propose SDD only when durable proposal/spec/design/tasks materially reduce substantial ambiguity. Select SDD only after an explicit request or accepted proposal; risk alone never forces SDD.
 
-These are parent-orchestrator stop rules. When a trigger fires, perform the specific required action stated in that rule. Rules that say **delegate** require native sub-agent delegation. Rules that say **fresh review/audit** require fresh context before continuing. Do not pass these rules to child agents as permission to spawn more agents; children receive concrete role work and must not orchestrate.
+#### Native Checking Contract
 
-1. **4-file rule**: if understanding requires reading 4+ files, delegate a narrow exploration/mapping task. If delegation tooling is unavailable, document the blocker and stop the exploration instead of reading everything inline.
-2. **Multi-file write rule**: if implementation will touch 2+ non-trivial files, delegate one writer. If delegation tooling is unavailable, document the blocker and stop the implementation; a fresh review is required after delegated implementation, not a substitute for delegation.
-3. **Lifecycle receipt rule**: bootstrap exactly once with `gentle-ai review status --cwd <repo> --contract gentle-ai.review-integration/v1 --next-transition`. Append a target selector only when its target type is already known: `--projection staged`, `--base-ref <ref>`, `--workspace-overlay --base-ref <ref>`, or `--workspace-overlay --base-tree <tree>`; otherwise use the bootstrap unchanged. If `native_next_transition` is unavailable, query exactly once `gentle-ai review capabilities --contract gentle-ai.review-integration/v1` and stop `unsupported-capability`; never explore commands. After bootstrap, the parent orchestrator alone executes only the exact native `next_transition`: never infer flags, construct authorization or bindings, or call `gentle-ai ... --help` during lifecycle routing. Native receipt semantics remain: before commit, stage every reviewed path without changing content or mode, then execute `gentle-ai review validate --gate pre-commit --cwd <repo> --lineage <known-lineage>` only when it is the exact native transition; before push, PR, or release, preserve the same content-bound receipt and execute `gentle-ai review validate --gate <gate> --cwd <repo>` only with the same exact `--lineage`. Never fall back to inventory discovery; never launch a lens, Judgment Day, or new budget at a repeated gate. Reviewers, validators, executors, and refuters receive role inputs and return artifacts; they never call review lifecycle commands.
-4. **Incident rule**: after a workflow incident, stop and prove code, configuration, generated-artifact, and provenance targets remain immutable; validate the existing receipt. Any changed target requires explicit scope action, not reopened review.
-5. **Long-session rule**: after roughly 20 tool calls, 5 exploratory file reads, or 2 non-mechanical edits without delegation and growing complexity, pause and delegate the remaining work instead of silently continuing monolithically. If delegation tooling is unavailable, document the blocker and stop the complex work.
-6. **Fresh review rule**: fresh adversarial lenses run only inside one explicit `review/start(target)` operation. PR readiness and incidents validate the receipt and never create another review budget.
-7. **Normalization ordering rule**: before review START and its identity freeze, run every source-mutating normalizer, then re-snapshot the candidate and review those exact bytes, paths, and modes. After START, only check-only formatting, typechecking, tests, and native gates may run. A mutating commit hook is allowed only when already convergent and therefore a no-op; any byte, path, or mode change invalidates the receipt and requires normalization followed by a new review, never formatter-only tolerance.
-
-#### Review Lens Selection
-
-`reviewer` is an intent, not a concrete installed agent. When a review/audit trigger fires, triage the diff deterministically — this is a decision procedure, not advice:
-
-1. **Trivial diff** (ONLY documentation, comments, formatting, or typo fixes in strings — zero executable code and zero configuration changes): run no lens. Any diff touching executable code or configuration is at least standard tier.
-2. **Standard diff**: run exactly ONE lens — the row in the table below that matches the dominant risk. If multiple rows match, pick the single highest-impact row; do not add lenses.
-3. **Hot path** (the diff touches auth/update/security/payments paths) **or >400 changed lines outside pure human documentation**: run the full 4R set — `review-risk`, `review-resilience`, `review-readability`, `review-reliability`.
-4. **Large pure human documentation** (>400 authored lines with no code, configuration, prompts, agent rules, workflows, runtime instruction docs, mixed content, or active content): run only `review-readability`.
-
-| Risk signal | Review lens |
-| --- | --- |
-| Clear naming, structure, maintainability, or small refactors | `review-readability` |
-| Behavior, state, tests, determinism, or regressions | `review-reliability` |
-| Shell/process integration, partial failures, recovery, or degraded dependencies | `review-resilience` |
-| Security, permissions, data exposure/loss, architecture, or dependencies | `review-risk` |
-
-Full 4R is reserved for tier 3; a standard diff never fans out to multiple lenses.
+- Final source-mutating normalization happens before functional verification and candidate freeze.
+- **Normalization ordering rule**: before review START and its identity freeze, run every source-mutating normalizer, then re-snapshot the candidate and review those exact bytes, paths, and modes. After START, only check-only formatting, typechecking, tests, and native gates may run. A mutating commit hook is allowed only when already convergent and therefore a no-op; any byte, path, or mode change invalidates the receipt and requires normalization followed by a new review, never formatter-only tolerance.
+- Native RAR owns verification applicability, risk, the bounded zero/one/four-lens plan, correction impact, and the terminal receipt. The orchestrator and adapters never select lenses or author PASS.
+- A passive ordinary document or image needs structural readback, not an artificial semantic-verification subagent. Active, mixed, operational, executable, mode-changing, or unknown content fails closed into the applicable native plan.
+- For a trivial passive documentation-only edit, structural readback is the complete proportional check; do not open a separate semantic-verification or heavy review ceremony.
+- If an applicable verifier is unavailable, preserve the typed unavailable result; never invent PASS, retry indefinitely, or escalate into extra ceremony.
+- An applicable quick check runs once. Long or very-long work gets one cost/side-effect forecast before launch. Unavailable, partial, declined, or exhausted proof becomes one actionable **Needs your decision** result.
+- Functional proof and adversarial review both project as **Checking**. One immutable candidate permits at most one scoped correction; there is no loop-until-clean behavior.
+- Commit, push, PR, direct-main, emergency, and release gates validate the same exact owner-issued receipt/authorization and never reopen review for unchanged content.
 
 #### Review Execution Contract
 
 # Native Bounded Review Orchestration
 
-Parent orchestrator and native CLI only. Never pass this contract to a reviewer, refuter, judge, correction actor, or validator. Those roles receive only scope, candidate-causal admission, severity, evidence requirements, and output shape.
+Parent orchestrator and native CLI only. The active host/orchestrator and fresh reviewer executor are distinct roles; the host coordinates launch while the native CLI remains the sole lifecycle authority. Never pass this contract to a reviewer, refuter, judge, correction actor, or validator. Those roles receive only scope, candidate-causal admission, severity, evidence requirements, and output shape. Prompt prose coordinates launch; it never proves isolation.
 
 ## Route
 
-Call `gentle-ai review start` once. The native facade discovers the repository root and untracked scope, derives the immutable target, selects zero lenses for low risk, one focus lens for standard risk, or canonical 4R for high risk, and freezes the original line count, tier, and correction budget `min(200, ceil(original_changed_lines / 2))`. Goldens stay in snapshot identity but not that count. Correction and compatible base advance never recalculate risk or open review.
+Begin every generated negotiated v2.1 lifecycle route with `gentle-ai review status --cwd <repo> --contract gentle-ai.review-integration/v2 --agent claude-code --next-transition`. Read only the returned `next_transition`: route only from the returned `next_transition`, never from status prose, lifecycle state, or eligibility. For `execute`, invoke its exact operation and ordered argument tokens unchanged. For `collect`, satisfy only its named inputs with their exact capture operations and arguments, then query STATUS again. For `stop`, run no lifecycle operation, and surface both its `reason_code` and that code's continuation from the "Continue after a stop reason code" table below — never a bare code with nothing behind it, and never a continuation the table does not list. Never hardcode or substitute START: invoke `review.start` only when the returned `execute.operation` names it. Direct `gentle-ai review start` remains compatibility-supported for explicit/manual non-negotiated callers. The native facade discovers repository scope, derives the immutable target, selects zero lenses for low risk, one focus lens for standard risk, or canonical 4R for high risk, and freezes the original line count, tier, and correction budget `min(200, ceil(original_changed_lines / 2))`. Goldens stay in snapshot identity but not that count. Correction and compatible base advance never recalculate risk or open review.
 
-Run each selected lens once in the foreground. Prefix its task prompt with `GENTLE_AI_REVIEW_BINDING {"lineage":"<lineage>","target":"<target_identity>","lens":"<lens>","order":<selected_order>}` from START. Capture its JSON with `gentle-ai review capture-result --cwd <repo> --lineage <lineage> --target <target_identity> --lens <lens> --order <selected_order> --input <file-or-stdin>`; OpenCode's managed hook does this automatically. Pass every emitted manifest to FINALIZE in selected-lens order as repeated `--result-artifact '<manifest-json>'` arguments, never raw `--result` files. Native Go validates, canonicalizes, persists, hashes, reopens, and binds results; models never construct canonical bytes or hashes. Freeze merged findings and classify every severe finding. Only `introduced`, `behavior-activated`, or `worsened` with changed-hunk, candidate-created-path, differential-test, or before/after proof may block. Route `pre-existing` and `base-only` to follow-ups; `unknown` escalates. WARNING/SUGGESTION remain `info`. Deterministic blockers need no refuter; all inferential blockers share one read-only refuter batch. Judgment Day uses two independent judges instead.
+When v2 returns `forecast`, relay it losslessly in the user's language: preserve every step's order and fields (`step`, `kind`, `reason_code`, `description`) and the horizon. Never route or execute from forecast; route only from `next_transition`. A `partial` forecast names only the current head, so re-query STATUS after completing it; `terminal` means its current head is `stop`, not a promise about any future state.
 
-Before each lens, append the exact immutable candidate diff and changed-path manifest from START; if unavailable, stop.
+### Continue after a stop reason code
 
-Ordinary review permits one correction transaction. When finalize reports correction required, rerun it with a positive `--correction-lines` forecast before editing. After the bounded edit, run one read-only scoped fix validator and pass its targeted result with `--validation <file>` plus final test/verification evidence with `--evidence <file>`. The facade maps correction only to corroborated frozen IDs and genesis paths, rejects over-budget repository evidence, and creates or discovers the terminal receipt. Later observations are follow-ups, not another correction. Judgment Day alone keeps its existing two-round rule. SDD then runs one independent requirements/runtime verification. Failure escalates and never starts another reviewer, refuter, correction, or validator.
+`stop` carries exactly one reason code and no executable or collect route, so a consumer that does not already know a code's continuation cannot safely proceed from the code alone. The table below names the exact continuation for every reason code `internal/cli/review_next_transition.go` can emit. Never invent a continuation this table does not list, and never propose changing runtime, provider, or toolchain: no stop reason code is ever resolved that way. Where a row names no other command, `gentle-ai review mode disable --scope clone --cwd <repo>` is the self-service delivery exit for this repository only, reachable even while review authority is broken; it hands delivery to ordinary repository policy (hooks, tests, CI) — nothing is silently approved. Omitting `--scope` defaults to `global` and disables review for every repository on the machine, so never omit it here.
+
+| Reason code | Continuation |
+| --- | --- |
+| `captured_artifacts_unverifiable` | A captured reviewer artifact failed local verification. Ask a maintainer to inspect the review authority store, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `captured_result_selection_unavailable` | Internal invariant violation with no caller-side retry. File a defect with the lineage id, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `captured_verification_evidence_invalid` | The captured verification record or its raw payload failed integrity checks. Ask a maintainer to inspect it, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `corrected_candidate_unavailable` | If the review found real defects: change the candidate, then re-run `gentle-ai review status --cwd <repo> --contract gentle-ai.review-integration/v2 --agent claude-code --next-transition` (or `gentle-ai review finalize --lineage <id>`). If the reviewers had the wrong input: a maintainer reopens their lenses with `gentle-ai review reopen-results --prepare --cwd <repo> --lineage <id> --expected-revision <revision> --target <target> --reason <reason> --actor <actor> --quarantine-lens <lens>` (repeat per lens) and applies the emitted authorization. |
+| `correction_repository_verification_failed` | Change the correction candidate within the same open budget, then re-run `gentle-ai review status --cwd <repo> --contract gentle-ai.review-integration/v2 --agent claude-code --next-transition`. |
+| `corrupted_or_unverifiable_authority` | `gentle-ai review repair --preflight --cwd <repo>` classified this authority as unrecoverable. Ask a maintainer to inspect it, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `final_verification_retry_unavailable` | Internal invariant violation with no caller-side retry. File a defect with the lineage id, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `manual_intervention_required` | Authority state this protocol does not recognize. Ask a maintainer to review the lineage, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `missing_authority_binding` | Internal invariant violation with no caller-side retry. File a defect with the lineage id, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `native_stop_required` | Escalated lineage not yet eligible for automated action. Ask a maintainer to review it, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `original_finalize_request_required` | Re-run `gentle-ai review finalize --lineage <id>` with the exact original content-bound payload. |
+| `pre_pr_selector_unrepresentable` | Pass a symbolic ref (for example `origin/<branch>`) to `--base-ref`, not a raw commit SHA. |
+| `recovery_scope_unchanged` | Change the candidate's target identity, then retry the same `review.recover` selector, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+| `recovery_target_unrepresentable` | Use one of: no base selector for current changes, `--base-ref <ref> --committed-only` for base-diff, or `--workspace-overlay --base-ref <ref>` (optionally `--projection staged`) for workspace overlay. |
+| `staged_workspace_overlay_recovery_unavailable` | Pass `--lineage <id>` to recover an existing lineage, or drop `--workspace-overlay` and run `gentle-ai review start --projection staged` to start fresh. |
+| `unchanged_or_unverified_authority` | `gentle-ai review start` on this exact unchanged candidate only resumes this same review, not a fresh one. Change the candidate content first, then run `gentle-ai review start` to begin a genuinely new one, or run `gentle-ai review mode disable --scope clone --cwd <repo>` to deliver under ordinary policy instead. |
+
+If the exact provider-returned START answers with the typed `gentle-ai.review-integration.consent/v3` envelope, treat it as a Lossless Blocking Prompt under the orchestrator contract. Its required `agent: claude-code` and every follow-up invocation are fixed runtime bindings. Global RDD enabled permits reviews; it never grants consent for this candidate. Low-risk structural readback remains silent and asks no consent question. For medium/high candidates, present the complete semantic envelope once in the active conversation language. This is the one narrow localization exception to the no-relabeling rule: faithfully translate the headline, reason, `value`, risk evidence, choice labels, every choice `effect`, and the off-path note, while preserving the original groups/order, selection mode, exact allowed-answer domain, and answer tokens. Project `value` as explicit benefits and every `effect` as explicit consequences; labels alone are forbidden. Never translate or alter machine answer tokens (`granted`, `declined`), commands, target IDs, or invocations. Never summarize, reshape, reorder, merge, or omit any part. Native `question` UI may use the translated labels only when it can represent the complete envelope in one interaction and map the selected label back exactly once to the corresponding original answer token and exact invocation; otherwise use the complete plain-language fallback and stop. Then run exactly the one named follow-up invocation for the human's answer, never answering on their behalf. Do not append `--consent relay` or any other argument to a returned transition. Granted and declined are both scoped to that exact candidate, persist no consent decision, and do not suppress the question for a later medium/high candidate; a decline is not the kill switch.
+
+A canonical four-lens selection is long work: before the first lens runs, give the one cost/side-effect forecast — four reviewer model runs over the frozen candidate, the frozen correction budget, and the at-most-one bounded correction it implies — once per candidate, never per lens.
+
+Run each exact `review.capture-result` collection input once per provider-returned collection attempt, in the foreground. Begin its reviewer task prompt with the exact literal prefix `GENTLE_AI_REVIEW_BINDING `, including the trailing space and never `=`, followed by one-line JSON assembled only from that input: `lineage`, `target`, `lens`, `order`, `revision` from `expected-revision`, `repository_context`, and `subject_hash` from `artifact_subject.subject_hash`; omit only provider-omitted fields. These are the prompt's first bytes. Return one JSON object echoing `subject_hash`, with completed inspection, every manifest path in order, findings/evidence, and severe evidence class/causality; access failure is not completion. After empty, malformed, schema-invalid, access/provider failure, or incomplete inspection, query negotiated STATUS again. Relaunch only if its fresh `next_transition` reoffers the exact same bound slot (`lineage`, `target`, `expected-revision`, `artifact_subject`, `lens`, and `order`). If STATUS discovers a committed capture, continue without relaunching. Never infer a retry from transcript or error text alone. Capture follows the native transition; opaque handles are cwd-independent and legacy bindings need `--cwd`. Finalize with manifests in lens order via repeated `--result-artifact-file <path>` (BOM-less UTF-8 on Windows PowerShell 5.1); POSIX inline `--result-artifact '<manifest-json>'` and provider-owned `--captured-results` remain compatible; never pass raw `--result`. Native Go owns validation, canonicalization, persistence, hashing, reopening, and binding. Only candidate-caused severe findings block; pre-existing/base-only become follow-ups, unknown escalates, WARNING/SUGGESTION remain info. Deterministic blockers need no refuter; inferential blockers share one read-only refuter batch. Judgment Day uses two judges.
+
+Claude Code, OpenCode, and Codex advertise immutable reviewer execution through the one shared advisory contract because each active host launches a fresh constrained reviewer before lifecycle work: Claude's generated reviewer has no live tools and receives only prompt-carried native evidence, OpenCode's provider plugin replaces the task prompt with bound native evidence from an ordinary already-running session (no restart, child process, special user-visible session, or `OPENCODE_DISABLE_*` variable), and Codex's shared advisory adapter launches a brand-new `codex exec` process in an empty scratch directory it creates and deletes itself, handing it only the exact prompt `gentle-ai review advisory prompt --runtime codex` renders from the collect input's own `repository-context` and `lens`. Prompt prose alone never proves any of these boundaries; native admission does. Kilo remains dormant because it has no equivalent native path. The compiled capability is authoritative before repository, target, authority, collection, or process work; normal SDD and ordinary agent support remain available, and model, provider, and profile selection remain user-owned.
+
+Never hand candidate bytes through `/tmp`, another external file, a repository scratch file, or `GENTLE_AI_FROZEN_CANDIDATE_CONTEXT`.
+
+Reviewers inspect through read-only native Git commands against those exact immutable trees. The allowed recipe runs in the session cwd and clears inherited environment before Git. It fixes locale, disables system/global Git config and attributes, replacement objects, external diff and textconv, forces `--text`, Myers/no-indent deterministic hunks, literal pathspecs, and exact `cat-file` reads. Run compact `--name-status`/`--numstat` discovery, then only selective tree-to-tree stat/diff/cat-file commands. Never pass `--binary`, read live worktree/index/HEAD, change checkout, pipe candidate bytes through another command, or write temporary files. The frozen trees resolve through the shared object store; unreachable trees produce incomplete inspection.
+
+Ordinary review permits one correction transaction. When `next_transition.collect` requests `correction_lines`, provide a positive forecast before editing and continue only through the next provider-returned transition. After the bounded edit, run one read-only scoped fix validator only when the exact collection input requests it, then return its targeted result and final test/verification evidence through the exact named capture operations and arguments. That validator must hold read-only Git execution against the immutable trees; never route it to the refuter or any other actor that cannot run Git. A validator that could not inspect those trees produced no verdict: surface one blocked human decision and submit nothing, because an inconclusive check recorded as a failed one consumes the single correction attempt irreversibly. The facade maps correction only to corroborated frozen IDs and genesis paths, rejects over-budget repository evidence, and creates or discovers the terminal receipt. Later observations are follow-ups, not another correction. Judgment Day alone keeps its existing two-round rule. SDD then runs one independent requirements/runtime verification. Failure escalates and never starts another reviewer, refuter, correction, or validator.
 
 <!-- authority-first-terminal-procedure:start -->
 ### Authority-First Terminal Procedure
@@ -212,17 +163,17 @@ Use only the compact facade; it appends and reads back native authority before m
 
 | Order | Operation | Required result | Terminal mirrors |
 |---|---|---|---|
-| 01 | `gentle-ai review start` | target, tier, lenses, and budget bound | blocked |
-| 02 | `gentle-ai review finalize` | results, evidence, native transitions, and receipt bound | blocked |
-| 03 | `gentle-ai review validate --gate <gate> --cwd <repo>` | authority, receipt, and live Git checked | blocked |
+| 01 | `gentle-ai review status --cwd <repo> --contract gentle-ai.review-integration/v2 --agent claude-code --next-transition` | one provider-owned `next_transition` returned | blocked |
+| 02 | `provider-returned transition` | exact `execute` operation/arguments or `collect` inputs completed; `stop` halts | blocked |
+| 03 | repeat 01–02 | exact returned `review.validate` allows the terminal gate | blocked |
 | 04 | `reconcile-terminal-mirrors` | existing mirrors reconciled | allowed |
 
-After ambiguous output, rerun the same facade operation; native discovery resumes committed authority without another budget. Malformed or ambiguous lineage remains invalid.
+After ambiguous output, query STATUS again; native discovery reports the committed authority and its next transition without another budget. Malformed or ambiguous lineage remains invalid.
 <!-- authority-first-terminal-procedure:end -->
 
 ## Delivery
 
-Repository Git common-dir CAS remains authoritative. Existing transaction, policy, ledger, receipt, bundle, and gate-context schemas, prerequisites, and compatibility behavior remain unchanged in this work unit. Reconcile mirrors only after native allow. Supported lifecycle CLI gates are `post-apply`, `pre-commit`, `pre-push`, `pre-pr`, and `release`; they discover and validate the same receipt and never launch reviewers or create a budget. Archive still requires structured status with `reviewGate.result: allow` and its approved receipt. Model/provider/profile selection remains user-owned.
+Repository Git common-dir CAS remains authoritative. Existing transaction, policy, ledger, receipt, bundle, and gate-context schemas, prerequisites, and compatibility behavior remain unchanged in this work unit. Reconcile mirrors only after native allow. Supported lifecycle CLI gates are `post-apply`, `pre-commit`, `pre-push`, `pre-pr`, and `release`; they discover and validate the same receipt and never launch reviewers or create a budget. Archive requires structured status: `reviewGate` is structurally absent — no `disabled/unmanaged` value to check — whenever the kill switch is off, or whenever it is on with no review ever started for this candidate; both proceed under ordinary repository policy. `reviewGate.result: allow` with its approved receipt is required only when a review was actually discovered for this candidate; any other discovered, non-`allow` `reviewGate` value still blocks. Model/provider/profile selection remains user-owned.
 
 Before commit, stage all reviewed paths without content/mode changes, then validate pre-commit. Frozen intended-untracked paths must remain all untracked or all move to an index whose complete tree and paths match the receipt.
 
@@ -230,7 +181,7 @@ Before commit, stage all reviewed paths without content/mode changes, then valid
 
 - Use exploration sub-agents to compress broad repo reading into a short handoff.
 - Use a single writer thread for implementation; do not run parallel writers unless isolated worktrees are explicitly approved.
-- Start concrete review lenses only inside one explicit post-implementation `review/start(target)`; conflict and incident handling validate the existing receipt and immutable boundaries instead of reopening review.
+- Let the native review and delivery providers select checking and delivery actions; repeated gates reuse exact authority and never reopen review for unchanged content.
 - Avoid delegation for truly local one-file fixes, quick state checks, and already-understood mechanical edits.
 
 ## SDD Workflow (lazy-loaded)
@@ -291,24 +242,6 @@ This section carries only tooling and workflow directives — it does not restat
 - Rationale: kept in the `user:` namespace (not `gentle-ai:`) so gentle-ai sync never overwrites it. Remove this block if gentle-ai ships native es-ES locale support.
 <!-- /user:lang-es-ES -->
 
-<!-- gentle-ai:trigger-rules -->
-## Agent Trigger Rules
-
-Deterministic bounded-review lifecycle router; apply it as a decision procedure, not advice. Post-apply starts `review/start(target)` only when no valid receipt exists. Pre-commit, pre-push, and pre-PR validate the same content-bound receipt and never create a new review budget or silently start Judgment Day. Release from protected `main` may bypass receipt validation only when the tag targets the current immutable `origin/main` SHA, required CI for that exact SHA is successful, the remote head is rechecked before tag push, and no fresh risk evidence exists; otherwise fail closed through native receipt validation. Major and post-incident releases require explicit extraordinary review.
-
-Receipt action table: missing → start explicitly after implementation/post-apply; scope-changed → require explicit maintainer action; invalidated → require explicit maintainer action; escalated → stop. New CI, vulnerability, base, policy, provenance, or release evidence may invalidate/escalate without reopening unchanged code review.
-
-Inside explicit `review/start(target)` only, select initial lenses by deterministic risk: **Low** (only documentation, comments, formatting, or typo-only string edits; zero executable-code and configuration changes) → no lens; **Medium** (every remaining change; pure human documentation above 400 authored changed lines is pinned to `review-readability`) → exactly ONE dominant-risk lens; **High** (security/auth/update/payments, data loss or exposure, permission changes, shell/process integration, or more than 400 authored changed lines in code, configuration, prompts, agent rules, workflows, runtime instruction docs, mixed content, or active content) → four initial 4R lens sweeps. Generated goldens are excluded from the authored threshold but remain in snapshot identity. Model, provider, profile, and reasoning effort are never classifier inputs.
-
-Risk table: Clear naming, structure, maintainability, or small refactors → `review-readability`; Behavior, state, tests, determinism, or regressions → `review-reliability`; Shell/process integration, partial failures, recovery, or degraded dependencies → `review-resilience`; Security, permissions, data exposure/loss, architecture, or dependencies → `review-risk`.
-
-- At **pre-commit**, always: validate the existing content-bound receipt with native `gentle-ai review validate --gate <gate>`; never start a reviewer or reset its budget. (validate the staged/intended content against the existing receipt; never create a review budget)
-- At **pre-push**, always: validate the existing content-bound receipt with native `gentle-ai review validate --gate <gate>`; never start a reviewer or reset its budget. (validate pushed commits against the same content-bound receipt)
-- At **pre-pr**, always: validate the existing content-bound receipt with native `gentle-ai review validate --gate <gate>`; never start a reviewer or reset its budget. (validate candidate tree, paths, policy, evidence, base relationship, and receipt without reopening review)
-- At **release**, always: validate the existing content-bound receipt with native `gentle-ai review validate --gate <gate>`; never start a reviewer or reset its budget. (validate immutable release tree, provenance, evidence, and publication boundary)
-- At **post-sdd-phase**, after the apply phase completes: if no valid receipt exists, explicitly run `review/start(target)`; otherwise reuse the receipt. (explicitly start ordinary bounded implementation review after apply only when no valid receipt exists)
-<!-- /gentle-ai:trigger-rules -->
-
 <!-- gentle-ai:codegraph-guidance -->
 ## CodeGraph
 
@@ -339,3 +272,26 @@ Required order for structural/codebase questions:
 
 Broad Read/Glob/Grep exploration before this CodeGraph check is explicitly discouraged for structural/codebase questions.
 <!-- /gentle-ai:codegraph-guidance -->
+
+<!-- gentle-ai:agent-routing -->
+## Implementation Routing
+
+Route work for the requested outcome with the smallest useful topology. Every change takes exactly one implementation route: direct inline, delegated direct, or optional SDD.
+
+- **Direct inline:** decide or verify from 1–3 files inline. Keep one mechanical, already-understood file change inline only when it needs no research and has no unresolved design decision.
+- **Delegated direct:** delegate one narrow exploration when understanding needs 4+ files; delegate one writer for 2+ non-trivial files. Reading that prepares a write and broad research also delegate.
+- **Optional SDD:** propose SDD only when durable proposal, spec, design, and tasks would materially reduce substantial ambiguity. SDD is selected only by an explicit request or an accepted proposal.
+- File count, changed lines, size, or perceived risk alone never selects SDD and never forces a heavier route.
+- These are implementation routes, not a ban on per-action delegation. Tests, builds, installs, and review actors may still use fresh workers without changing the selected route.
+- Direct and delegated work never create SDD artifacts, prompts, phase attempts, or synthetic SDD runs.
+
+### Receipt-driven development is user-owned
+
+The user controls receipt-driven development with a kill switch: `gentle-ai review mode enable|disable|status`.
+
+- `status` is read-only. It reports the deciding source and the effective mode, and changes nothing.
+- When the user asks to stop using receipt-driven development, run `disable`. Do not argue, do not work around it, and do not propose alternatives first.
+- While it is disabled, keep implementing organically through direct inline, delegated direct, or optional SDD: do not start reviews, do not retry, do not reactivate it, and do not fall back to any retired path.
+- Delivery under a disabled switch follows ordinary repository policy and reports `disabled/unmanaged`, never a fabricated approval.
+- Never enable receipt-driven development on the user's behalf unless the user explicitly asks for it.
+<!-- /gentle-ai:agent-routing -->
