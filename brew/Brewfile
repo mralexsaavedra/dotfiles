@@ -2,7 +2,6 @@ tap "gentleman-programming/tap", "https://github.com/Gentleman-Programming/homeb
 tap "gromgit/fuse", trusted: true
 tap "homebrew/bundle"
 tap "kitlangton/tap", trusted: true
-tap "steipete/tap"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Static checker for GitHub Actions workflow files
