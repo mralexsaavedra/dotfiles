@@ -13,84 +13,59 @@ SDD is the structured planning layer for substantial changes. This file is the l
 
 Skills and slash commands:
 
-- `/sdd-init` → initialize SDD context; detects stack and testing capabilities.
-- `/sdd-explore <topic>` → investigate an idea; no implementation.
-- `/sdd-status [change]` → read-only structured status.
-- `/sdd-apply [change]` → implement pending tasks in batches.
-- `/sdd-verify [change]` → validate implementation against specs/tasks.
-- `/sdd-archive [change]` → close a completed change.
-- `/sdd-onboard` → guided end-to-end walkthrough.
+- `/gentle-sdd-init` → initialize SDD context; detects stack and testing capabilities.
+- `/gentle-sdd-explore <topic>` → investigate an idea; no implementation.
+- `/gentle-sdd-status [change]` → read-only structured status.
+- `/gentle-sdd-apply [change]` → implement pending tasks in batches.
+- `/gentle-sdd-verify [change]` → validate implementation against specs/tasks.
+- `/gentle-sdd-archive [change]` → close a completed change.
+- `/gentle-sdd-onboard` → guided end-to-end walkthrough.
 
 Meta-commands are handled by the orchestrator directly and do not appear in autocomplete:
 
-- `/sdd-new <change>` → run exploration then proposal.
-- `/sdd-continue [change]` → run the next dependency-ready phase.
-- `/sdd-ff <name>` → fast-forward proposal → specs → design → tasks.
+- `/gentle-sdd-new <change>` → run exploration then proposal.
+- `/gentle-sdd-continue [change]` → run the next dependency-ready phase.
+- `/gentle-sdd-ff <name>` → fast-forward proposal → specs → design → tasks.
 
 ### Native SDD Dispatcher Guard
 
-Before routing, continuing, applying, verifying, or archiving an SDD change, first determine this session's artifact store. The native dispatcher (`gentle-ai sdd-continue [change] --cwd <repo>` or `gentle-ai sdd-status [change] --cwd <repo> --json --instructions`) reads only OpenSpec file artifacts and always emits `artifactStore: openspec`; it cannot observe Engram-backed changes.
+Before routing, continuing, applying, verifying, or archiving an SDD change, invoke the native dispatcher (`gentle-ai sdd-continue [change] --cwd <repo>` or `gentle-ai sdd-status [change] --cwd <repo> --json --instructions`). It resolves the artifact store the workspace declares and reports it in `artifactStore`.
 
-- For `engram`, do NOT invoke the dispatcher. Resolve status from Engram topic keys with `mem_search` followed by `mem_get_observation`.
-- For `openspec` or `hybrid`, use the dispatcher when available and treat its JSON as authoritative over prompt inference.
+- Do NOT determine the artifact store yourself, and do NOT branch on it. The dispatcher already did, and it returns the locators for the store it resolved.
+- Use the dispatcher for every store and treat its JSON as authoritative over prompt inference.
 - Route only by structured `nextRecommended`, dependency states, and `blockedReasons`; never infer from free text.
 - If blocked, stop and report the blocker. Do not proceed to apply, archive, or terminal work.
 
+<!-- Session preflight is projected here by the installer from the shared canonical authority. -->
+
+<!-- gentle-ai:sdd-session-preflight -->
 ### SDD Session Preflight (HARD GATE)
 
-Before executing ANY SDD command or natural-language SDD request, ensure this session has an explicit `SDD Session Preflight` decision block.
+Before every SDD command or natural-language SDD request, run this preflight before the SDD init guard; cache choices for the session.
 
-This applies to `/sdd-new`, `/sdd-ff`, `/sdd-continue`, `/sdd-explore`, `/sdd-status`, `/sdd-apply`, `/sdd-verify`, `/sdd-archive`, and natural-language equivalents such as "use SDD to add dark mode" / "do it with SDD".
+Use the `AskUserQuestion` tool only when available and all three groups (Pace, Artifacts, and PR strategy) are exactly representable; otherwise use the lossless blocking fallback and STOP.
+Ask Pace, Artifacts, and PR strategy in ONE `AskUserQuestion` tool call; no sequential wizard and no three separate calls.
+Match labels and descriptions to the conversation language and persona; do not expose canonical/internal codes.
 
-Required preflight choices:
+1. **Pace**: Interactive or Automatic.
+2. **Artifacts**: OpenSpec, Engram, or Both (user-facing Both maps only to internal `hybrid`).
+3. **PR strategy**: Ask me, Single PR, or Auto.
 
-1. **Execution mode**: `interactive` or `auto`.
-2. **Artifact store**: `openspec`, `engram`, or `hybrid` when Engram is callable. If Engram is unavailable, offer only file/inline-safe choices.
-3. **Chained PR strategy**: the canonical `delivery_strategy` — `ask-on-risk`, `auto-chain`, `single-pr`, or `exception-ok`. The preflight menu offers the first three; `exception-ok` is reachable only when the user explicitly accepts `size:exception`.
-4. **Review budget**: maximum changed lines before stopping for reviewer-burden approval.
+Review policy is fixed at 400 changed lines per PR; above 400, split the PR or require maintainer-approved `size:exception`; NEVER ask it as a fourth group or selectable budget.
 
-User-facing preflight question format:
-
-Use the built-in `AskUserQuestion` tool for SDD Session Preflight only when it is available in the current interactive runtime and all four groups are exactly representable. While that native route is usable, do NOT render a duplicate plain-chat menu. If the tool is unavailable, denied, the runtime is noninteractive, or the prompt is unrepresentable, follow the Lossless Blocking Prompts fallback in the orchestrator rule and STOP.
-
-When the native route is representable, ask all four preflight groups in one single `AskUserQuestion` tool call so Claude Code can render the groups as one interactive prompt. Do NOT run this as a sequential wizard. Do NOT issue four separate `AskUserQuestion` tool calls.
-
-The single `AskUserQuestion` tool call must contain these four localized groups in this order:
-
-1. Pace: Interactive, Automatic.
-2. Artifacts: OpenSpec, Engram, Both.
-3. PRs: Ask me, Single PR, Auto.
-4. Review: 400 lines, 800 lines, Other.
-
-Match the user's current language and active persona for question labels and descriptions. Treat the preflight UI as direct orchestrator conversation, not as a generated technical artifact. Technical artifacts still default to English, but this UI follows the user's conversation language/persona. Do NOT mix languages inside one grouped question.
-
-Do NOT show option codes in the interactive UI. Do NOT show canonical values or other internal values in the interactive UI labels or descriptions.
-
-After the single grouped `AskUserQuestion` tool call returns, map the selected human labels to canonical values internally. Do not reveal the canonical values in the UI.
-
-If Other is selected for review budget, ask one follow-up question for the numeric budget.
-
-Only after all four preflight choices are collected, summarize them as the `SDD Session Preflight` decision block and continue with the SDD init guard/requested phase.
-
-Map answers to canonical values:
-
-- Pace: Interactive -> `interactive`; Automatic -> `auto`.
-- Artifacts: OpenSpec -> `openspec`; Engram -> `engram`; Both -> `hybrid`.
-- PRs: Ask me -> `ask-on-risk`; Single PR -> `single-pr`; Auto -> `auto-chain`.
-- Review: 400 lines -> `review_budget_lines: 400`; 800 lines -> `review_budget_lines: 800`; Other -> ask one follow-up for the number.
-
-The PR canonical values are exactly the `delivery_strategy` domain `sdd-tasks` and `sdd-apply` accept; never emit a value outside it. The preflight offers no separate chained option because `delivery_strategy` is only consulted once the tasks forecast flags review-budget risk: below that line there is nothing to chain, and above it `Auto` already resolves to `auto-chain` without asking again.
-
-Hard gate rules:
-
-- `openspec/config.yaml`, existing SDD artifacts, previous `sdd-init` results, or installed SDD assets do NOT satisfy session preflight.
-- If the session has no preflight block, ask the single grouped `AskUserQuestion` preflight above. Do not run init, delegate phases, edit files, or apply tasks until all four choices are collected.
-- Cache the choices for this session and include them in later phase prompts.
-- If the user explicitly provided all four choices in the current conversation, summarize them as the session preflight block and continue.
-
+Canonical mappings:
+- Interactive -> `interactive`
+- Automatic -> `auto`
+- OpenSpec -> `openspec`
+- Engram -> `engram`
+- Both -> `hybrid`
+- Ask me -> `ask-on-risk`
+- Single PR -> `single-pr`
+- Auto -> `auto-chain`
+<!-- /gentle-ai:sdd-session-preflight -->
 ### SDD Entry Routing (MANDATORY)
 
-For a new product/code change request that says to use SDD, start at preflight -> init guard -> explore/proposal (`/sdd-new` equivalent). Never launch `sdd-apply` just because the user asked to implement a feature.
+For a new product/code change request that says to use SDD, start at preflight -> init guard -> explore/proposal (`/gentle-sdd-new` equivalent). Never launch `sdd-apply` just because the user asked to implement a feature.
 
 Only launch `sdd-apply` when all are true:
 
@@ -98,7 +73,7 @@ Only launch `sdd-apply` when all are true:
 2. The active change has existing spec, design, and tasks artifacts.
 3. The user explicitly asked to apply/continue implementation, or the prior SDD planning phase completed and the orchestrator has passed the review workload guard.
 
-If any dependency is missing, STOP and propose `/sdd-new` or `/sdd-ff`; do not implement.
+If any dependency is missing, STOP and propose `/gentle-sdd-new` or `/gentle-sdd-ff`; do not implement.
 
 ### SDD Init Guard (MANDATORY)
 
@@ -119,7 +94,7 @@ This is collected by `SDD Session Preflight`. If missing, enforce the hard gate 
 
 If the user doesn't specify, default to **Automatic**. After scope approval, expect zero further prompts on the happy path and at most one actionable prompt per recoverable failure; the gatekeeper summarizes phase progress instead of interrupting except on a second consecutive gate failure or a genuine scope/product decision. Interactive approval is phase-scoped; words like "continue", "dale", or "go on" approve only the immediate next phase.
 
-Before the `sdd-propose` phase in interactive mode, offer the user a proposal question round focused on business/product understanding, business problem, business rules, outcomes, implications and impact, edge cases, scope boundaries, non-goals, constraints, and product tradeoffs. Do not ask about test commands, PR shape, changed-line budget, or other harness mechanics unless the user explicitly asks.
+### Research and Pre-Proposal Gate (MANDATORY) — Offer `sdd-research` immediately after `sdd-explore`; selection makes completion mandatory. Before every `propose`, invoke `sdd-propose` only when selected research is `done` or research is unselected, product decisions are `confirmed`, evidence references are valid, and the selected artifact-store state is ready. The orchestrator owns product discovery. Automatic unresolved choices require one lossless grouped prompt with all context, options, consequences, allowed answers, and exact tokens; it MUST persist the pending state before prompting, then STOP without invoking `sdd-propose`. The proposer receives a confirmed pre-proposal handoff and MUST NOT interview or infer consent. Native `gentle-ai.sdd-status/v2` is the sole status contract.
 
 ### Automatic Mode Gatekeeper (MANDATORY)
 
@@ -148,8 +123,9 @@ Use the provider-owned Git-common-dir runtime ledger for every runtime-bearing `
 1. Before an actor or harness launch, call `gentle-ai sdd-attempt acquire --cwd <repo> --change <change> --request-id <id> --work-unit <label> --evidence-goal <goal> --max-attempts <count> --max-changed-lines <count>`.
    - Exception: when this launch is a phase actor started BY a parent that already ran this exact acquire and got `state: proceed`, do not acquire blind — pass the parent's returned token as `--token <token>` on the actor's own acquire call. A matching token proves the actor is continuing that SAME attempt and returns `proceed` with zero ledger mutation; acquiring without it collides with the parent's own active attempt and deadlocks on `blocked: active_attempt` (#2291).
 2. Launch only when acquire returns `state: proceed`, and retain its opaque `token`. `blocked` or `complete` stops the launch.
-3. After the external run, call `gentle-ai sdd-attempt settle --cwd <repo> --change <change> --token <token> --request-id <settle-id> ...` with a request ID distinct from the acquire operation's request ID, outcome, and bounded evidence. Reuse each operation's own ID only for its idempotent replay. Settle derives native binding/remediation inputs; pass `--successor-lineage` only for a distinct approved successor, otherwise the bound lineage remains its own successor.
-4. Route only from settle's `proceed`, `blocked`, or `complete` state. Full `status|begin|finish|reset` operations are diagnostic/compatibility surfaces; reset requires an explicit maintainer scope decision and is never automatic.
+3. After a failed or passed run, call `gentle-ai sdd-attempt settle --cwd <repo> --change <change> --token <token> --request-id <settle-id> --outcome <passed|failed> --evidence-revision <sha256> --diagnosis "<proven-diagnosis>" --harness-disposition <reused|invalidated> --cleanup-evidence "<evidence>" --process-evidence "<evidence>"`. After an interrupted run, pass `--outcome interrupted` and omit `--evidence-revision`. When the acquire carried `--remediates-evidence-revision <sha256>`, settle with the same `--remediates-evidence-revision <sha256>`. Use a `<settle-id>` distinct from the acquire operation's request ID; reuse each operation's own ID only for its idempotent replay. Settle defines no other flag and derives native binding and remediation inputs itself.
+4. On any failed external command (test command or non-test external command) before a later native block, disclose in this order: **Primary failure:** identify the command in a privacy-safe form, its failed/cancelled/non-zero outcome, and only bounded relevant error evidence; never persist or print secrets, private values, raw environment, or unbounded output. **Verification consequence:** state that the current SDD phase/verification did not pass. **Attempt settlement:** when the native contract requires it, settle the current token with the correct failed/interrupted outcome and diagnosis, and disclose the settlement result before any later acquire/refusal. **Secondary governance block:** label a later objective-change/acquire refusal as secondary, never as the cause of the external command failure, and preserve the exact provider-owned runnable continuation unchanged. Never imply Gentle AI or the native ledger caused the independent consumer command failure.
+5. Route only from settle's `proceed`, `blocked`, or `complete` state. Full `status|begin|finish|reset` operations are diagnostic/compatibility surfaces; reset requires an explicit maintainer scope decision and is never automatic.
 
 ### Artifact Store Mode
 
@@ -159,7 +135,7 @@ Pass the artifact store mode to every SDD phase agent.
 
 ### Delivery Strategy
 
-On the first SDD chain request in a session, ask once for delivery strategy and cache it:
+Use the delivery strategy cached by SDD Session Preflight; do not ask a separate strategy question:
 
 - `ask-on-risk` — default; ask only when the tasks forecast detects review-budget risk.
 - `auto-chain` — automatically split into chained/stacked PR slices when needed.
@@ -209,33 +185,6 @@ Always pass the resolved `delivery_strategy`, `chain_strategy`, and PR boundary/
 
 When launching `sdd-apply`, always include the resolved `delivery_strategy`, `chain_strategy`, and any chosen PR boundary/exception in the prompt.
 
-<!-- gentle-ai:sdd-model-assignments -->
-## Model Assignments
-
-Read this table at session start (or before first SDD/Judgment-Day delegation), cache it for the session, and use the mapped alias only for SDD/Judgment-Day phase agents. If an SDD/Judgment-Day phase is missing, use the `default` fallback row. If you do not have access to the assigned model (for example, no Opus access), substitute `sonnet` and continue.
-
-The Claude Code session model is controlled by Claude Code itself; Gentle AI does not configure the main orchestrator model. This table applies only to Agent tool calls for SDD/Judgment-Day phase sub-agents, not generic delegation.
-
-**Mandatory phase model gate:** Agent tool calls for SDD/Judgment-Day phase agents MUST include `model`. Generic/non-SDD delegation MUST NOT use this table; omit `model` unless the user explicitly requested an override. Before each SDD/Judgment-Day Agent call, resolve the target phase to an alias from this table.
-
-| Phase | Default Model | Effort | Reason |
-|-------|---------------|--------|--------|
-| sdd-explore | sonnet | default | Reads code, structural - not architectural |
-| sdd-propose | opus | default | Architectural decisions |
-| sdd-spec | sonnet | default | Structured writing |
-| sdd-design | opus | default | Architecture decisions |
-| sdd-tasks | sonnet | default | Mechanical breakdown |
-| sdd-apply | sonnet | default | Implementation |
-| sdd-verify | opus | default | Validation against spec |
-| sdd-archive | haiku | default | Copy and close |
-| sdd-onboard | haiku | default | Guided walkthrough, pedagogical |
-| jd-judge-a | sonnet | default | Adversarial review — blind judge A |
-| jd-judge-b | sonnet | default | Adversarial review — blind judge B |
-| jd-fix-agent | sonnet | default | Surgical fixes from confirmed issues |
-| default | sonnet | default | SDD/JD phase fallback |
-
-<!-- /gentle-ai:sdd-model-assignments -->
-
 ### Sub-Agent Launch Deduplication (MANDATORY)
 
 Maintain a session-scoped launch log of `(phase, task-fingerprint)` pairs. If the same pair already exists, do NOT launch again. Emit exactly one launch per distinct task and append the pair after launch.
@@ -243,13 +192,6 @@ Maintain a session-scoped launch log of `(phase, task-fingerprint)` pairs. If th
 ### Sub-Agent Launch Protocol
 
 ALL sub-agent launch prompts that involve reading, writing, or reviewing code MUST include pre-resolved skill paths from the skill registry. Follow `~/.claude/skills/_shared/skill-resolver.md`.
-
-Pre-flight before every SDD/Judgment-Day Agent call:
-
-1. Identify the phase key (`sdd-apply`, `sdd-verify`, `jd-judge-a`, etc.).
-2. Look up the model alias in the Model Assignments table.
-3. Include `model: "<alias>"` in SDD/Judgment-Day Agent calls.
-4. For generic/non-SDD delegation, omit `model` unless the user explicitly requested one.
 
 Resolve skills once per session, cache the registry, and pass exact `SKILL.md` paths. If a delegated result reports `skill_resolution` as `fallback-registry`, `fallback-path`, or `none`, re-read the registry before subsequent delegations.
 
