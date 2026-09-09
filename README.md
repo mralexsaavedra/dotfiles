@@ -77,7 +77,6 @@ Prefer keeping shared defaults in tracked files and machine-specific values in `
 - `opencode/` — canonical AI source (`AGENTS.md`, `rules/`, `skills/`, templates).
 - `claude-code/` — `~/.claude` package consuming OpenCode via symlinks.
 - `gemini-cli/` — `~/.gemini` package consuming OpenCode via symlinks.
-- `codex/` — `~/.codex` package consuming OpenCode via symlinks.
 
 ## Acknowledgements
 

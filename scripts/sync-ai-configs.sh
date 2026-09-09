@@ -20,8 +20,5 @@ echo "  ✓ opencode/.config/opencode/opencode.json"
 cp ~/.gemini/GEMINI.md "$DOTFILES/gemini-cli/.gemini/GEMINI.md"
 echo "  ✓ gemini-cli/.gemini/GEMINI.md"
 
-cp ~/.codex/AGENTS.md "$DOTFILES/codex/.codex/AGENTS.md"
-echo "  ✓ codex/.codex/AGENTS.md"
-
 echo ""
 echo "Done. Run 'git -C $DOTFILES diff' to see changes."
