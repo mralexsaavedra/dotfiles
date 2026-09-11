@@ -156,8 +156,6 @@ cask "mounty"
 cask "orbstack"
 # VPN client
 cask "private-internet-access"
-# Open-source application manager and system cleaner
-cask "puremac"
 # Control your tools with a few keystrokes
 cask "raycast"
 # Team communication and collaboration software
