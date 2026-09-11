@@ -134,8 +134,6 @@ cask "canon-eos-utility"
 cask "claude"
 # Terminal-based AI coding assistant
 cask "claude-code@latest"
-# Write, edit, and chat about your code with AI
-cask "cursor"
 # Voice and text chat software
 cask "discord"
 # Display control utility
@@ -172,8 +170,6 @@ cask "the-unarchiver"
 cask "transmission"
 # Open-source code editor
 cask "visual-studio-code"
-# Multimedia player
-cask "vlc"
 # Rust-based terminal
 cask "warp"
 # Native desktop client for WhatsApp
