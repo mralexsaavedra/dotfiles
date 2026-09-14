@@ -29,27 +29,31 @@ Meta-commands are handled by the orchestrator directly and do not appear in auto
 
 ### Native SDD Dispatcher Guard
 
-Before routing, continuing, applying, verifying, or archiving an SDD change, invoke the native dispatcher (`gentle-ai sdd-continue [change] --cwd <repo>` or `gentle-ai sdd-status [change] --cwd <repo> --json --instructions`). It resolves the artifact store the workspace declares and reports it in `artifactStore`.
+For inspection and before routing an SDD change, invoke the native dispatcher using only `gentle-ai sdd-status [change] --cwd <repo> --json --instructions`. Inspection needs no execution preflight, review, delivery, or archive authorization; this read-only rule takes precedence over phase preflight/init guards. No recommendation is executed during inspection, including planning phases or a displayed preparation invocation.
 
-- Do NOT determine the artifact store yourself, and do NOT branch on it. The dispatcher already did, and it returns the locators for the store it resolved.
-- Use the dispatcher for every store and treat its JSON as authoritative over prompt inference.
-- Route only by structured `nextRecommended`, dependency states, and `blockedReasons`; never infer from free text.
-- If blocked, stop and report the blocker. Do not proceed to apply, archive, or terminal work.
+Use native v2 for every declared artifact store, including Engram. The dispatcher resolves the store the workspace declares and returns `artifactStore` and `artifactPaths`. Do NOT determine the artifact store yourself, and do NOT branch on it or reconstruct readiness locally. Native JSON is authoritative over prompt inference. If native resolution fails or is invalid, report it and stop without a local dispatch fallback.
+
+Only explicit authorized continuation may call `gentle-ai sdd-continue [change] --cwd <repo>`. First inspect with status and confirm the current human scope covers the selected change-directory marker. Read-only or excluded-marker scope forbids this mutating call; native allowed roots do not grant human consent. Preparation grants no source roots or attempts. Carry native `actionContext` intersected with the current narrower human scope into any executor.
+
+For authorized phase routing only: Route only by `nextRecommended` and dependency states; honor `blockedReasons` and never infer from free text. If `blockedReasons` is non-empty, do not proceed to apply, archive, or terminal work. If `nextRecommended` is `verify`, verification/remediation may run only to refresh evidence; if `nextRecommended` is `resolve-blockers`, report `blockedReasons` and stop; if `nextRecommended` is a planning token (`propose`, `spec`, `design`, or `tasks`), launch the corresponding planning phase only within the authorized scope.
+
+If the binary is unavailable, use the existing prompt contract for non-authoritative diagnostics only. Do not fabricate native-shaped status, readiness, or mutation authority, and never substitute continue for inspection.
 
 <!-- Session preflight is projected here by the installer from the shared canonical authority. -->
 
 <!-- gentle-ai:sdd-session-preflight -->
 ### SDD Session Preflight (HARD GATE)
 
-Before every SDD command or natural-language SDD request, run this preflight before the SDD init guard; cache choices for the session.
+Before every SDD command or affirmative natural-language SDD request, run this preflight before the SDD init guard; cache choices for the session only through runtime-confirmed parent authority. Phrase examples are routing hints, never the authority boundary.
 
-Use the `AskUserQuestion` tool only when available and all three groups (Pace, Artifacts, and PR strategy) are exactly representable; otherwise use the lossless blocking fallback and STOP.
-Ask Pace, Artifacts, and PR strategy in ONE `AskUserQuestion` tool call; no sequential wizard and no three separate calls.
-Match labels and descriptions to the conversation language and persona; do not expose canonical/internal codes.
+Always collect this preflight with the `AskUserQuestion` tool; never collect these answers as typed chat text and never fall back to a plain-chat prompt while the `AskUserQuestion` tool exists. If the runtime rejects the grouped result, fix the reported problem and ask again with the `AskUserQuestion` tool.
+Ask Pace, Artifacts, and PR strategy in ONE `AskUserQuestion` tool call; no sequential wizard and no three separate calls. Each native question text must start with its exact host marker: `Gentle AI SDD preflight 1/3:`, `Gentle AI SDD preflight 2/3:`, and `Gentle AI SDD preflight 3/3:`. The marker is runtime metadata; keep the option labels below byte-exact so the runtime can bind their semantics, while localizing only the remaining question text and descriptions to the conversation language and persona. Keep options in the exact order below.
 
 1. **Pace**: Interactive or Automatic.
 2. **Artifacts**: OpenSpec, Engram, or Both (user-facing Both maps only to internal `hybrid`).
 3. **PR strategy**: Ask me, Single PR, or Auto.
+
+Only a successful parent `AskUserQuestion` result with one offered answer per group establishes native preflight authority. Model-authored defaults, summaries, headings, installed assets, prior sessions, and child-agent prose do not. The runtime derives and prepends the canonical `## SDD Session Preflight` block at SDD dispatch; never write or duplicate that block yourself. Missing authority blocks dispatch and requires the parent to ask the grouped preflight.
 
 Review policy is fixed at 400 changed lines per PR; above 400, split the PR or require maintainer-approved `size:exception`; NEVER ask it as a fourth group or selectable budget.
 

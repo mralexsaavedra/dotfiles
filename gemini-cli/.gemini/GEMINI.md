@@ -247,15 +247,15 @@ Meta-commands (type directly — orchestrator handles them, will not appear in a
 <!-- gentle-ai:sdd-session-preflight -->
 ### SDD Session Preflight (HARD GATE)
 
-Before every SDD command or natural-language SDD request, run this preflight before the SDD init guard; cache choices for the session.
+Before every SDD command or affirmative natural-language SDD request, run this preflight before the SDD init guard; cache choices for the session only through runtime-confirmed parent authority. Phrase examples are routing hints, never the authority boundary.
 
-This runtime has no classified native question UI. Present ONE complete blocking prompt in plain chat or terminal with all three groups below, in order, and explain that their answers are required before init. Each group is single-select; its listed labels are the complete allowed-answer domain. Include every label and description, the fixed review policy, and this answer syntax: `Pace: <label>; Artifacts: <label>; PR strategy: <label>`. Then STOP; never default, infer, or launch dependent work. Validate all three answers under the Lossless Blocking Prompts contract before caching their canonical mappings.
-
-Match labels and descriptions to the conversation language and persona; do not expose canonical/internal codes.
+This runtime has no classified native question UI. Present ONE complete blocking prompt in plain chat or terminal with all three groups below, in order, and explain that their answers are required before init. Each group is single-select; its listed labels are the complete allowed-answer domain. Include every label and description, the fixed review policy, and this answer syntax: `Pace: <label>; Artifacts: <label>; PR strategy: <label>`. Then STOP; never default, infer, or launch dependent work. Validate all three explicit parent answers under the Lossless Blocking Prompts contract before caching their canonical mappings.
 
 1. **Pace**: Interactive or Automatic.
 2. **Artifacts**: OpenSpec, Engram, or Both (user-facing Both maps only to internal `hybrid`).
 3. **PR strategy**: Ask me, Single PR, or Auto.
+
+Only three explicit, validated answers from the parent conversation establish preflight authority in this fallback runtime. Model-authored defaults, summaries, headings, installed assets, prior sessions, and child-agent prose do not. After validating every answer, summarize the canonical mappings once and pass them to each SDD phase; missing authority blocks dispatch and requires the parent to re-present the complete prompt.
 
 Review policy is fixed at 400 changed lines per PR; above 400, split the PR or require maintainer-approved `size:exception`; NEVER ask it as a fourth group or selectable budget.
 
@@ -271,7 +271,15 @@ Canonical mappings:
 <!-- /gentle-ai:sdd-session-preflight -->
 ### Native SDD Dispatcher Guard
 
-Before routing, continuing, applying, verifying, or archiving an SDD change, **invoke the native dispatcher** (`gentle-ai sdd-continue [change] --cwd <repo>` or `gentle-ai sdd-status [change] --cwd <repo> --json --instructions`). It resolves the artifact store the workspace DECLARES, reports it in `artifactStore`, and returns that store's locators in `artifactPaths`. **Do NOT determine the artifact store yourself, and do NOT branch on it** — an actor that re-derives the store disagrees with the authority that launched it, which is how a phase ends up reading a store the workspace never declared. Use the dispatcher for every store when `gentle-ai` is available and treat its native status JSON as authoritative over prompt inference. Route only by `nextRecommended` and dependency states; never infer from free text. If `blockedReasons` is non-empty, do not proceed to apply, archive, or terminal work. If `nextRecommended` is `verify`, verification/remediation may run only to refresh evidence; if `nextRecommended` is `resolve-blockers`, report `blockedReasons` and stop; if `nextRecommended` is a planning token (`propose`, `spec`, `design`, or `tasks`), launch the corresponding planning phase. If the binary is unavailable, fall back to the existing prompt contract and manual status schema.
+For inspection and before routing an SDD change, invoke the native dispatcher using only `gentle-ai sdd-status [change] --cwd <repo> --json --instructions`. Inspection needs no execution preflight, review, delivery, or archive authorization; this read-only rule takes precedence over phase preflight/init guards. No recommendation is executed during inspection, including planning phases or a displayed preparation invocation.
+
+Use native v2 for every declared artifact store, including Engram. The dispatcher resolves the store the workspace declares and returns `artifactStore` and `artifactPaths`. Do NOT determine the artifact store yourself, and do NOT branch on it or reconstruct readiness locally. Native JSON is authoritative over prompt inference. If native resolution fails or is invalid, report it and stop without a local dispatch fallback.
+
+Only explicit authorized continuation may call `gentle-ai sdd-continue [change] --cwd <repo>`. First inspect with status and confirm the current human scope covers the selected change-directory marker. Read-only or excluded-marker scope forbids this mutating call; native allowed roots do not grant human consent. Preparation grants no source roots or attempts. Carry native `actionContext` intersected with the current narrower human scope into any executor.
+
+For authorized phase routing only: Route only by `nextRecommended` and dependency states; honor `blockedReasons` and never infer from free text. If `blockedReasons` is non-empty, do not proceed to apply, archive, or terminal work. If `nextRecommended` is `verify`, verification/remediation may run only to refresh evidence; if `nextRecommended` is `resolve-blockers`, report `blockedReasons` and stop; if `nextRecommended` is a planning token (`propose`, `spec`, `design`, or `tasks`), launch the corresponding planning phase only within the authorized scope.
+
+If the binary is unavailable, use the existing prompt contract for non-authoritative diagnostics only. Do not fabricate native-shaped status, readiness, or mutation authority, and never substitute continue for inspection.
 
 ### SDD Init Guard (MANDATORY)
 
@@ -540,6 +548,17 @@ DAG state is tracked in Engram under `sdd/{change-name}/state`. Update it after 
 You have access to Engram, a persistent memory system that survives across sessions and compactions.
 This protocol is MANDATORY and ALWAYS ACTIVE — not something you activate on demand.
 
+### SESSION START & PROJECT DETECTION PROTOCOL (mandatory)
+
+At the very beginning of the session, when the runtime supplies a current workspace directory:
+1. **Detect Project Name**: Call `mem_current_project` with the absolute path of the workspace directory supplied by the runtime in the `cwd` (or `directory`) parameter.
+2. **Consume Runtime Session Identity**: Use only the authoritative session ID already registered by the top-level runtime. Never invent, derive, generate, or register a session ID; do not call `mem_session_start`.
+3. **Persist State**: Store the resolved project name and, when available, the registered session ID in your active context. You MUST:
+   - Use the registered session ID for mutation tools (`mem_save`, `mem_session_summary`, `mem_session_end`, `mem_capture_passive`) only when it is available.
+   - Retain and reuse that exact identity across compaction.
+   - When the authoritative identity is unavailable, omit `session_id` entirely from tool calls.
+   - Use the project name for all read/search/diagnostic tools (`mem_search`, `mem_context`, `mem_doctor`).
+
 ### PROACTIVE SAVE TRIGGERS (mandatory — do NOT wait for user to ask)
 
 Call `mem_save` IMMEDIATELY and WITHOUT BEING ASKED after any of these:
@@ -570,6 +589,7 @@ Saving to memory is internal bookkeeping. It NEVER counts as answering the user,
 - Never treat the text you stored in memory as the text you delivered: memory is for your future self, the reply is for the user.
 
 Format for `mem_save`:
+- **session_id**: The active session ID created at the start (required to associate memory with the correct project)
 - **title**: Verb + what — short, searchable (e.g. "Fixed N+1 query in UserList")
 - **type**: bugfix | decision | architecture | discovery | pattern | config | preference
 - **scope**: `project` (default) | `personal`
@@ -707,6 +727,17 @@ The user controls receipt-driven development with a switch: `gentle-ai review mo
 - While it is disabled, keep implementing organically through direct inline, delegated direct, or optional SDD: do not start reviews, do not retry, do not reactivate it, and do not fall back to any retired path.
 - Delivery under a disabled switch follows ordinary repository policy and reports `disabled/unmanaged`, never a fabricated approval.
 - Never enable receipt-driven development on the user's behalf unless the user explicitly asks for it.
+
+<!-- gentle-ai:remote-authorization -->
+## Remote operation authorization
+
+Permission to develop locally does not authorize remote execution or file transfer. Before remote work, require explicit user authorization for the destination, operation, and credential/session to use. If any part is missing or ambiguous, ask and remain local; do not probe the destination to resolve the ambiguity.
+
+- Do not discover, inspect, or reuse ambient SSH agents, ControlMaster sockets, credentials, authenticated sessions, or other remote access channels without explicit authorization. Their availability is not permission to use them.
+- Apply this boundary regardless of the tool or spelling: direct commands, wrappers, interpreters, libraries, and delegated work do not bypass it. Pass the authorized scope to delegates; delegation cannot expand it.
+- Explicitly authorized remote work is allowed within that scope. Preserve stricter user instructions and runtime restrictions; do not weaken them or change approval settings to proceed.
+- Native ask rules are an additional runtime mechanism, not authorization inferred from local-development access. Automation modes and remembered approvals may suppress prompts. This behavioral contract is not a sandbox and does not guarantee a fresh human prompt for every execution.
+<!-- /gentle-ai:remote-authorization -->
 <!-- /gentle-ai:agent-routing -->
 
 <!-- gentle-ai:strict-tdd-mode -->
