@@ -8,3 +8,7 @@ gh/.config/gh/hosts.yml
 
 # Local agent/tooling cache
 .atl/
+
+# Claude app synced skills and deleted-skill trash
+opencode/.config/opencode/skills/synced/
+opencode/.config/opencode/skills/.trash/
