@@ -2,6 +2,7 @@ tap "gentleman-programming/tap", "https://github.com/Gentleman-Programming/homeb
 tap "gromgit/fuse", trusted: true
 tap "homebrew/bundle"
 tap "kitlangton/tap", trusted: true
+tap "wix-incubator/brew", "https://github.com/wix-incubator/homebrew-brew.git"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Static checker for GitHub Actions workflow files
@@ -28,6 +29,8 @@ brew "curl"
 brew "exiftool"
 # Modern, maintained replacement for ls
 brew "eza"
+# Easiest way to build and release mobile apps
+brew "fastlane"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Play, record, convert, and stream select audio and video codecs
@@ -140,6 +143,8 @@ cask "discord"
 cask "display-pilot"
 cask "font-caskaydia-cove-nerd-font"
 cask "font-fira-code-nerd-font"
+# Update maps and software, sync with Garmin Connect and register your device
+cask "garmin-express"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
 # Web browser
@@ -148,10 +153,10 @@ cask "google-chrome"
 cask "jellyfin-media-player"
 # File system integration
 cask "macfuse"
-# Screenshot and screen recording tool
-cask "macshot"
 # Re-mounts write-protected NTFS volumes
 cask "mounty"
+# Android file transfer
+cask "openmtp"
 # Replacement for Docker Desktop
 cask "orbstack"
 # VPN client
@@ -160,6 +165,8 @@ cask "private-internet-access"
 cask "raycast"
 # Team communication and collaboration software
 cask "slack"
+# Music streaming service
+cask "spotify"
 # Messaging app with a focus on speed and security
 cask "telegram"
 # Unpacks archive files
