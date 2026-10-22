@@ -15,6 +15,8 @@ path_append_if_exists() {
 # Session PATH entries
 path_add_if_exists "$HOME/.local/bin"
 path_add_if_exists "$HOME/.opencode/bin"
+# gentle-ai OpenCode launcher (enables background subagents); must precede ~/.opencode/bin
+path_add_if_exists "$HOME/.gentle-ai/bin"
 path_add_if_exists "$HOME/.cargo/bin"
 
 # Python / pyenv
