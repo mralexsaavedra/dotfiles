@@ -1,3 +1,4 @@
+tap "antoniolg/tap"
 tap "gentleman-programming/tap", "https://github.com/Gentleman-Programming/homebrew-tap", trusted: true
 tap "gromgit/fuse", trusted: true
 tap "homebrew/bundle"
@@ -5,6 +6,8 @@ tap "kitlangton/tap", trusted: true
 tap "wix-incubator/brew", "https://github.com/wix-incubator/homebrew-brew.git"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
+# OS-independent implementation of the ACPI specification
+brew "acpica"
 # Static checker for GitHub Actions workflow files
 brew "actionlint"
 # Improved shell history for zsh, bash, fish and nushell
@@ -51,6 +54,8 @@ brew "git"
 brew "git-delta"
 # Git extension for versioning large files
 brew "git-lfs"
+# OpenGL and OpenGL ES reference compiler for shading languages
+brew "glslang"
 # Improved top (interactive process viewer)
 brew "htop"
 # User-friendly cURL replacement (command-line HTTP client)
@@ -99,6 +104,8 @@ brew "uv"
 brew "watchman"
 # Tools for the WireGuard secure network tunnel
 brew "wireguard-tools"
+# Generate your Xcode project from a spec file and your folder structure
+brew "xcodegen"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
 # Shell extension to navigate your filesystem faster
@@ -111,6 +118,8 @@ brew "zsh-autocomplete"
 brew "zsh-autosuggestions"
 # Fish shell like syntax highlighting for zsh
 brew "zsh-syntax-highlighting"
+# Use your Claude Code sessions from your phone
+brew "antoniolg/tap/remote-sessions"
 # Persistent memory for AI coding agents. Agent-agnostic, single binary, zero dependencies.
 brew "gentleman-programming/tap/engram"
 # Gentle-AI — Ecosystem, Frameworks, Workflows for AI coding agents.
@@ -141,6 +150,8 @@ cask "claude-code@latest"
 cask "discord"
 # Display control utility
 cask "display-pilot"
+# Developer platform
+cask "dotnet-sdk"
 cask "font-caskaydia-cove-nerd-font"
 cask "font-fira-code-nerd-font"
 # Update maps and software, sync with Garmin Connect and register your device
