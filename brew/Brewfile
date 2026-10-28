@@ -147,10 +147,10 @@ cask "font-fira-code-nerd-font"
 cask "garmin-express"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
-# Web browser
-cask "google-chrome"
 # Jellyfin desktop client
 cask "jellyfin-media-player"
+# Open-source file archiver
+cask "keka"
 # File system integration
 cask "macfuse"
 # Re-mounts write-protected NTFS volumes
@@ -169,8 +169,6 @@ cask "slack"
 cask "spotify"
 # Messaging app with a focus on speed and security
 cask "telegram"
-# Unpacks archive files
-cask "the-unarchiver"
 # Open-source BitTorrent client
 cask "transmission"
 # Open-source code editor
