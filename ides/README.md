@@ -17,13 +17,6 @@
 - Keep Cursor `settings.json` / `keybindings.json` absent when there is no real delta.
 - Extensions are layered as: `vscode/extensions.txt` + optional `cursor/extensions.txt` + `ai/copilot/extensions.txt`.
 
-## OpenCode-first policy
+## AI policy
 
-AI policy remains canonical in `opencode/.config/opencode/`.
-
-Editor workspace instruction templates live in:
-
-- `opencode/.config/opencode/templates/workspace-overrides/.vscode/`
-- `opencode/.config/opencode/templates/workspace-overrides/.cursor/`
-
-`ides/` only references those templates and does not duplicate full rules.
+AI rules and skills live in the Claude Code package (`claude-code/.claude/`); `ides/` holds editor settings only.

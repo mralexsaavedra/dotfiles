@@ -11,14 +11,7 @@ echo "Syncing AI configs to dotfiles..."
 cp ~/.claude/CLAUDE.md "$DOTFILES/claude-code/.claude/CLAUDE.md"
 echo "  ✓ claude-code/.claude/CLAUDE.md"
 
-cp ~/.config/opencode/AGENTS.md "$DOTFILES/opencode/.config/opencode/AGENTS.md"
-echo "  ✓ opencode/.config/opencode/AGENTS.md"
-
-cp ~/.config/opencode/opencode.json "$DOTFILES/opencode/.config/opencode/opencode.json"
-echo "  ✓ opencode/.config/opencode/opencode.json"
-
-cp ~/.gemini/GEMINI.md "$DOTFILES/gemini-cli/.gemini/GEMINI.md"
-echo "  ✓ gemini-cli/.gemini/GEMINI.md"
+# Skills live in the dotfiles already (~/.claude/skills -> claude-code/.claude/skills).
 
 echo ""
 echo "Done. Run 'git -C $DOTFILES diff' to see changes."

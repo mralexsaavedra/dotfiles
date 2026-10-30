@@ -2,4 +2,4 @@
 
 Copilot is treated as an editor integration layer (not canonical policy).
 
-Canonical AI rules and skills remain in OpenCode (`opencode/.config/opencode/*`).
+AI rules and skills live in the Claude Code package (`claude-code/.claude/`).

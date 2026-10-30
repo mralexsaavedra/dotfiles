@@ -44,8 +44,6 @@ brew "fnm"
 brew "fzf"
 # GNU compiler collection
 brew "gcc"
-# Interact with Google Gemini AI models from the command-line
-brew "gemini-cli"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system
@@ -134,8 +132,6 @@ brew "gromgit/fuse/ntfs-3g-mac"
 brew "kitlangton/tap/ghui"
 # Tools for building Android applications
 cask "android-studio"
-# Terminal interface for Antigravity agents
-cask "antigravity-cli"
 # Desktop password and login vault
 cask "bitwarden"
 # Web browser focusing on privacy

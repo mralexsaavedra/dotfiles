@@ -12,7 +12,7 @@ This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to symlink configs
 - **Terminal**: Ghostty config included.
 - **Navigation/tools**: `zoxide`, `eza`, `bat`, `fzf`, etc.
 - **Editors**: layered sync flow for VSCode/Cursor + Copilot integration via `scripts/sync-ides.sh`.
-- **AI tooling**: canonical OpenCode + symlinked consumers (Claude/Gemini/Codex).
+- **AI tooling**: Claude Code only (config, skills and status line in `claude-code/`), kept in sync by gentle-ai.
 
 ## 🚀 Setup
 
@@ -74,9 +74,7 @@ Prefer keeping shared defaults in tracked files and machine-specific values in `
 - `scripts/` — setup/maintenance automation.
 - `ides/` — layered editor config (`base` + per-editor deltas + `ai/copilot`).
 - `git/`, `gh/`, `ghostty/`, `vim/`, `raycast/` — tool-specific configs.
-- `opencode/` — canonical AI source (`AGENTS.md`, `rules/`, `skills/`, templates).
-- `claude-code/` — `~/.claude` package consuming OpenCode via symlinks.
-- `gemini-cli/` — `~/.gemini` package consuming OpenCode via symlinks.
+- `claude-code/` — `~/.claude` package: `CLAUDE.md`, `skills/` (linked from `~/.claude/skills`) and `statusline.sh`.
 
 ## Acknowledgements
 

@@ -10,5 +10,5 @@ gh/.config/gh/hosts.yml
 .atl/
 
 # Claude app synced skills and deleted-skill trash
-opencode/.config/opencode/skills/synced/
-opencode/.config/opencode/skills/.trash/
+claude-code/.claude/skills/synced/
+claude-code/.claude/skills/.trash/

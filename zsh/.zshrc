@@ -18,10 +18,10 @@ if [[ $IS_TERMUX -eq 1 ]]; then
     # Termux - use PREFIX for binaries
     export PATH="$PREFIX/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 else
-    export PATH="$HOME/.local/bin:$HOME/.gentle-ai/bin:$HOME/.opencode/bin:$HOME/.cargo/bin:$HOME/.volta/bin:$HOME/.bun/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:$HOME/.config:$HOME/.cargo/bin:/usr/local/lib/*:$PATH"
+    export PATH="$HOME/.local/bin:$HOME/.gentle-ai/bin:$HOME/.cargo/bin:$HOME/.volta/bin:$HOME/.bun/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:$HOME/.config:$HOME/.cargo/bin:/usr/local/lib/*:$PATH"
 fi
 
-# Set nvim as default editor for opencode and other tools
+# Set nvim as default editor
 export EDITOR="nvim"
 export VISUAL="nvim"
 

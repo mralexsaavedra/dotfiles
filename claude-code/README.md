@@ -1,7 +1,7 @@
 # Claude Code consumer package
 
-`~/.claude/CLAUDE.md` is a symlink to OpenCode canonical `AGENTS.md`.
+Claude Code is the only AI agent configured here.
 
-Local override templates are centralized in OpenCode (`opencode/.config/opencode/templates`).
+- `.claude/CLAUDE.md`: copy of `~/.claude/CLAUDE.md`, managed by `gentle-ai sync`; refresh it with `make sync-ai`.
+- `.claude/skills/`: all skills (gentle-ai managed plus personal ones such as `vacaciones`); `~/.claude/skills` is a symlink to this folder.
 
-Keep files here only when they are real Claude-specific settings/examples.
