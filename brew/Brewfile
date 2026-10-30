@@ -58,6 +58,8 @@ brew "glslang"
 brew "htop"
 # User-friendly cURL replacement (command-line HTTP client)
 brew "httpie"
+# Read events from the macOS Calendar (Claude Code status line)
+brew "ical-buddy"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # Simple terminal UI for git commands
