@@ -51,5 +51,5 @@ Never write to `Styling Team Holidays`, `Festivos en España`, `Cumpleaños`, ot
 ## Rules
 
 - Never create, move or delete anything without the explicit yes in step 4.
-- Changing or deleting an existing event: find it first (work: `list_events` with `fullText`; personal: `icalBuddy`), show it, and act only after a yes.
+- Changing or deleting an existing event: find it first (work: `list_events` with `fullText`; personal: `icalBuddy`), show it, and act only after a yes. Personal delete by uid (JXA): `cal.events.whose({ uid: "<uid>" })().forEach(e => C.delete(e))`, then check it is gone.
 - Connector missing → say so and suggest `/mcp`; calendar not found by JXA → stop and report the calendars it sees.
