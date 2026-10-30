@@ -46,3 +46,43 @@ tre() {
     tree -I 'node_modules|.git|dist|build' --dirsfirst -L ${1:-2} -C
   fi
 }
+
+# Git worktrees under <repo-parent>/<repo>-worktrees/<name>
+#   wt                 list worktrees of the current repo
+#   wt <name> [base]   cd into worktree <name>, creating it (and the branch) if needed
+#   wt rm <name>       remove worktree <name> (git refuses if it has changes)
+wt() {
+    local common root repo dir
+    common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || {
+        echo "wt: not inside a git repository"
+        return 1
+    }
+    root="${common%/.git}"
+    repo="${root##*/}"
+    dir="${root%/*}/${repo}-worktrees"
+
+    if [[ -z "$1" ]]; then
+        git -C "$root" worktree list
+        return
+    fi
+
+    if [[ "$1" == "rm" ]]; then
+        [[ -z "$2" ]] && { echo "Usage: wt rm <name>"; return 1; }
+        git -C "$root" worktree remove "$dir/$2" && echo "Removed $dir/$2"
+        return
+    fi
+
+    local name="$1" base="$2"
+    if [[ ! -d "$dir/$name" ]]; then
+        git -C "$root" fetch --quiet origin || return
+        if git -C "$root" show-ref --quiet "refs/heads/$name"; then
+            git -C "$root" worktree add "$dir/$name" "$name" || return
+        elif git -C "$root" show-ref --quiet "refs/remotes/origin/$name"; then
+            git -C "$root" worktree add --track -b "$name" "$dir/$name" "origin/$name" || return
+        else
+            [[ -z "$base" ]] && base=$(git -C "$root" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)
+            git -C "$root" worktree add --no-track -b "$name" "$dir/$name" "${base:-origin/main}" || return
+        fi
+    fi
+    cd "$dir/$name" || return
+}
