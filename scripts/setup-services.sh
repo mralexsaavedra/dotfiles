@@ -12,27 +12,32 @@ print_in_purple "\n • Setting up LaunchAgents...\n"
 # Ensure LaunchAgents directory exists
 mkdir -p "$HOME/Library/LaunchAgents"
 
-PLIST_SRC="$DOTFILES_DIR/macos/com.alex.audiofix.plist"
-PLIST_DEST="$HOME/Library/LaunchAgents/com.alex.audiofix.plist"
+# launchd needs absolute paths in ProgramArguments, so each agent is generated from its
+# template (macos/*.plist, __DOTFILES_DIR__ placeholder) instead of being symlinked.
+install_agent() {
+    local name=$1 src="$DOTFILES_DIR/macos/$1.plist" dest="$HOME/Library/LaunchAgents/$1.plist"
+    if [ ! -f "$src" ]; then
+        print_error "$name plist not found at" "$src"
+        return 1
+    fi
+    local escaped
+    escaped=$(printf '%s\n' "$DOTFILES_DIR" | sed 's/[\/&]/\\&/g')
+    # The destination may be an old symlink to the template: writing through it would empty the template.
+    rm -f "$dest"
+    sed "s|__DOTFILES_DIR__|$escaped|g" "$src" > "$dest"
+    chmod 644 "$dest"
+    if ! plutil -lint "$dest" >/dev/null; then
+        print_error "Generated plist is invalid:" "$dest"
+        return 1
+    fi
+    # Reload it to ensure latest config is active
+    launchctl unload "$dest" 2>/dev/null || true
+    launchctl load -w "$dest"
+    print_success "$name configured and loaded"
+}
 
 # 1. Audio Fix Agent
-if [ -f "$PLIST_SRC" ]; then
-    # launchd needs absolute paths in ProgramArguments.
-    # We generate a machine-local plist from the template instead of symlinking it.
-    ESCAPED_DOTFILES_DIR=$(printf '%s\n' "$DOTFILES_DIR" | sed 's/[\/&]/\\&/g')
-    sed "s|__DOTFILES_DIR__|$ESCAPED_DOTFILES_DIR|g" "$PLIST_SRC" > "$PLIST_DEST"
-    chmod 644 "$PLIST_DEST"
+install_agent com.alex.audiofix
 
-    if ! plutil -lint "$PLIST_DEST" >/dev/null; then
-        print_error "Generated plist is invalid: $PLIST_DEST"
-        exit 1
-    fi
-    
-    # Reload it to ensure latest config is active
-    launchctl unload "$PLIST_DEST" 2>/dev/null
-    launchctl load -w "$PLIST_DEST"
-    
-    print_success "Audio Fix Agent configured and loaded"
-else
-    print_error "Audio Fix plist not found at $PLIST_SRC"
-fi
+# 2. Daily update (brew + gentle-ai, weekdays 08:00)
+install_agent com.alex.daily-update
