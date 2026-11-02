@@ -40,7 +40,8 @@ age() { [ -f "$1" ] && echo $(($(date +%s) - $(stat -f %m "$1"))) || echo 999999
 # Usage: cached <file> <ttl> <command...>
 cached() {
   local file=$1 ttl=$2; shift 2
-  if [ "$(age "$file")" -ge "$ttl" ] && [ ! -e "$file.lock" ]; then
+  # A lock older than 60 s belongs to a refresh that died (killed session): ignore it.
+  if [ "$(age "$file")" -ge "$ttl" ] && { [ ! -e "$file.lock" ] || [ "$(age "$file.lock")" -ge 60 ]; }; then
     # Detached from our stdout, or Claude Code would wait for it. Empty results are cached too.
     (touch "$file.lock"; "$@" > "$file.tmp" 2>/dev/null; mv -f "$file.tmp" "$file"; rm -f "$file.lock") </dev/null >/dev/null 2>&1 &
     disown 2>/dev/null
