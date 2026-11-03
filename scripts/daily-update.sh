@@ -1,23 +1,32 @@
 #!/bin/bash
-# Unattended morning update, run by the com.alex.daily-update LaunchAgent (weekdays 08:00,
-# or on wake if the Mac was asleep). Log: ~/Library/Logs/daily-update.log
+# Unattended morning update, weekdays 08:00 (or on wake/boot if missed):
+#   macOS: com.alex.daily-update LaunchAgent, log ~/Library/Logs/daily-update.log
+#   Linux: daily-update.timer systemd user unit, log ~/.local/state/daily-update.log
 #   1. brew update + upgrade (also updates gentle-ai, engram and gga from their taps)
 #   2. gentle-ai sync
 #   3. restart `engram serve` when the running daemon is older than the installed binary
 #   4. brew cleanup
-# Ends with a macOS notification summarising what changed or failed.
+# Ends with a notification summarising what changed or failed (macOS only; Linux logs it).
 # For the interactive version with Brewfile dump, use `make update`.
 
 set -uo pipefail
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export HOMEBREW_NO_ENV_HINTS=1
 
-LOG="$HOME/Library/Logs/daily-update.log"
+if [ "$(uname -s)" = Darwin ]; then
+  LOG="$HOME/Library/Logs/daily-update.log"
+else
+  LOG="${XDG_STATE_HOME:-$HOME/.local/state}/daily-update.log"
+  mkdir -p "$(dirname "$LOG")"
+fi
 exec >> "$LOG" 2>&1
 echo "=== $(date '+%Y-%m-%d %H:%M:%S') daily update ==="
 
 problems=()
-notify() { osascript -e "display notification \"$2\" with title \"$1\"" 2>/dev/null || true; }
+notify() {
+  [ "$(uname -s)" = Darwin ] || return 0
+  osascript -e "display notification \"$2\" with title \"$1\"" 2>/dev/null || true
+}
 
 # 1. Homebrew
 upgraded=0
@@ -57,7 +66,7 @@ brew cleanup >/dev/null 2>&1 || true
 summary="$upgraded paquete(s) actualizados · gentle-ai sincronizado"
 [ "$upgraded" -eq 0 ] && summary="Todo al día · gentle-ai sincronizado"
 if [ ${#problems[@]} -gt 0 ]; then
-  notify "Actualización diaria: revisar" "Fallo en: ${problems[*]}. Log: ~/Library/Logs/daily-update.log"
+  notify "Actualización diaria: revisar" "Fallo en: ${problems[*]}. Log: $LOG"
   echo "Problems: ${problems[*]}"
 else
   notify "Actualización diaria" "$summary"

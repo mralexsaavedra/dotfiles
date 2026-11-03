@@ -18,6 +18,9 @@ PURPLE='\033[38;5;183m'       # #C99AD6 púrpura
 BOLD='\033[1m'
 NC='\033[0m'
 
+# Started without a login shell (e.g. a Linux systemd agent), Homebrew may be missing from PATH.
+PATH="$PATH:/opt/homebrew/bin:/home/linuxbrew/.linuxbrew/bin"
+
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
 mkdir -p "$CACHE_DIR"
 ENGRAM_DB="$HOME/.engram/engram.db"
@@ -34,7 +37,9 @@ IFS=$'\x1f' read -r MODEL DIR ADDED REMOVED CTX_PERCENT SESSION_NAME CACHE_EXPIR
 [ "$CTX_PERCENT" -gt 100 ] 2>/dev/null && CTX_PERCENT=100
 
 # Seconds since a cache file was written (huge when missing).
-age() { [ -f "$1" ] && echo $(($(date +%s) - $(stat -f %m "$1"))) || echo 999999; }
+# GNU stat (Linux) first, BSD stat (macOS) as fallback.
+mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1"; }
+age() { [ -f "$1" ] && echo $(($(date +%s) - $(mtime "$1"))) || echo 999999; }
 
 # Refresh a cache file in the background when older than $2 seconds; print the current value.
 # Usage: cached <file> <ttl> <command...>
@@ -115,7 +120,7 @@ engram_segment() {
     "select lifecycle, last_enqueued_seq - last_acked_seq, coalesce(last_success_at, '') from sync_state where target_key = 'cloud'" 2>/dev/null)
   [ -n "$row" ] || return
   IFS='|' read -r lifecycle pending last <<< "$row"
-  epoch=$(date -j -u -f '%Y-%m-%d %H:%M:%S' "$last" +%s 2>/dev/null || echo 0)
+  epoch=$(date -j -u -f '%Y-%m-%d %H:%M:%S' "$last" +%s 2>/dev/null || date -u -d "$last" +%s 2>/dev/null || echo 0)
   # idle/pending/running/healthy are normal; only degraded is a failure.
   if [ "$lifecycle" = "degraded" ]; then
     printf '%b' "${ERROR}🧠 ✗ degraded${NC}"
@@ -144,7 +149,7 @@ pr_segment() {
   local branch=$BRANCH key out num st
   case "$branch" in master|main|develop|"") branch=$TICKET_BRANCH ;; esac
   [ -n "$branch" ] || return
-  key=$(printf '%s' "$REPO_ROOT:$branch" | shasum | cut -c1-12)
+  key=$(printf '%s' "$REPO_ROOT:$branch" | { shasum 2>/dev/null || sha1sum; } | cut -c1-12)
   out=$(cached "$CACHE_DIR/pr-$key" 120 pr_fetch "$REPO_ROOT" "$branch")
   [ -n "$out" ] || return
   read -r num st <<< "$out"
@@ -160,6 +165,7 @@ pr_segment() {
 
 # ── Next calendar event (macOS Calendar via icalBuddy) ──────────────────────
 calendar_fetch() {
+  [ "$(uname -s)" = Darwin ] || return 0
   command -v icalBuddy >/dev/null || return 0
   # Next timed event today, else in the next 3 days ("lun 09:30 Retro").
   icalBuddy -n -ea -nc -eed -iep "datetime,title" -po "datetime,title" -ps "| |" \
@@ -177,6 +183,7 @@ calendar_segment() {
 
 # ── Unread badges from the Dock (only apps that are running) ─────────────────
 badges_fetch() {
+  [ "$(uname -s)" = Darwin ] || return 0
   # By bundle id: some process names carry invisible characters (WhatsApp is "\u200eWhatsApp").
   local app asn label out=""
   for app in com.tinyspeck.slackmacgap:Slack net.whatsapp.WhatsApp:WA ru.keepcoder.Telegram:TG com.apple.mail:Mail; do
@@ -195,6 +202,7 @@ badges_segment() {
 
 # ── Spotify ──────────────────────────────────────────────────────────────────
 spotify_fetch() {
+  [ "$(uname -s)" = Darwin ] || return 0
   pgrep -xq Spotify || return 0   # never launch Spotify just to ask
   # Podcast episodes have no artist: show the podcast (album) instead.
   osascript -e 'tell application "Spotify"

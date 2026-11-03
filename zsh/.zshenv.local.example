@@ -1,8 +1,15 @@
 # Local secrets template (do NOT commit real values)
-# Copy to ~/.zshenv.local or zsh/.zshenv.local and replace placeholders.
+# Copy to ~/.zshenv.local or zsh/.zshenv.local and replace placeholders. Keep it chmod 600.
 
 # NPM token for private registries
 export NPM_TOKEN="<replace-with-your-npm-token>"
 
-# Jira API token
+# Jira (Claude Code status line ticket segment)
+export JIRA_URL="<replace-with-your-jira-site-url>"
+export JIRA_USERNAME="<replace-with-your-jira-email>"
 export JIRA_API_TOKEN="<replace-with-your-jira-api-token>"
+
+# Engram Cloud sync (server on the homelab apps LXC, see homelab/engram.md)
+export ENGRAM_CLOUD_SERVER="http://10.0.1.25:7437"
+export ENGRAM_CLOUD_TOKEN="<replace-with-your-engram-cloud-token>"
+export ENGRAM_CLOUD_AUTOSYNC="true"

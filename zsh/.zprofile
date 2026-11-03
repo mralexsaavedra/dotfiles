@@ -27,7 +27,11 @@ export BUN_INSTALL="$HOME/.bun"
 path_add_if_exists "$BUN_INSTALL/bin"
 
 # pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
+if [[ "$OSTYPE" == darwin* ]]; then
+  export PNPM_HOME="$HOME/Library/pnpm"
+else
+  export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+fi
 path_add_if_exists "$PNPM_HOME"
 
 # Android SDK
