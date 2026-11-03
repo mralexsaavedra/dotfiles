@@ -50,3 +50,5 @@ brew "gentleman-programming/tap/gga"
 # Multica CLI + agent daemon (homelab dev runtime)
 brew "multica-ai/tap/multica"
 npm "@colbymchenry/codegraph"
+# Node 25+ no longer ships corepack; projects pin pnpm/yarn through packageManager
+npm "corepack"

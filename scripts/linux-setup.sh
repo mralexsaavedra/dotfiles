@@ -52,6 +52,10 @@ machine_setup() {
     # One failed formula must not stop the rest of the setup; it is reported above.
     brew bundle install --file="$DOTFILES_DIR/brew/Brewfile.linux" ||
         print_warning "Some Brewfile.linux formulas failed; see the brew output above." ""
+    # pnpm/yarn shims that follow each project's packageManager pin (as on the Mac).
+    if command -v corepack >/dev/null 2>&1; then
+        corepack enable || print_warning "corepack enable failed; pnpm will be missing." ""
+    fi
 
     if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
         sudo chsh -s /usr/bin/zsh "$USER"
