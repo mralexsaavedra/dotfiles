@@ -97,6 +97,11 @@ if [[ $dry -eq 1 ]]; then
 fi
 
 cd "$dir"
+# Over SSH this runs without a login shell, so load Homebrew (engram, gentle-ai, rtk, codegraph)
+# like .zshrc does; otherwise Claude's SessionStart hooks fail with "not found".
+for brew in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [[ -x "$brew" ]]; then eval "$("$brew" shellenv)"; break; fi
+done
 export PATH="$HOME/.local/bin:$PATH"
 [[ -z "$sid" ]] && echo "ws: no previous session for $issue; starting a new one here." >&2
 exec $cmd
