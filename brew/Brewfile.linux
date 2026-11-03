@@ -2,6 +2,7 @@
 # Installed into the shared Homebrew prefix /home/linuxbrew/.linuxbrew by `./setup.sh --machine`.
 # Keep it in step with brew/Brewfile when a CLI tool is added there.
 tap "gentleman-programming/tap", "https://github.com/Gentleman-Programming/homebrew-tap", trusted: true
+tap "multica-ai/tap"
 brew "atuin"
 brew "bash"
 brew "bat"
@@ -46,4 +47,6 @@ brew "zsh-syntax-highlighting"
 brew "gentleman-programming/tap/engram"
 brew "gentleman-programming/tap/gentle-ai"
 brew "gentleman-programming/tap/gga"
+# Multica CLI + agent daemon (homelab dev runtime)
+brew "multica-ai/tap/multica"
 npm "@colbymchenry/codegraph"

@@ -3,6 +3,7 @@ tap "gentleman-programming/tap", "https://github.com/Gentleman-Programming/homeb
 tap "gromgit/fuse", trusted: true
 tap "homebrew/bundle"
 tap "kitlangton/tap", trusted: true
+tap "multica-ai/tap"
 tap "wix-incubator/brew", "https://github.com/wix-incubator/homebrew-brew.git"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
@@ -132,6 +133,8 @@ brew "gentleman-programming/tap/gga"
 brew "gromgit/fuse/ntfs-3g-mac"
 # Terminal UI for GitHub pull requests
 brew "kitlangton/tap/ghui"
+# Multica CLI + agent daemon (Mac runtime for iOS/Android tasks)
+brew "multica-ai/tap/multica"
 # Tools for building Android applications
 cask "android-studio"
 # Desktop password and login vault
