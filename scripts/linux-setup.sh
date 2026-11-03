@@ -160,6 +160,24 @@ install_plugins() {
     mv "$tmp" "$settings"
 }
 
+# The tracked .gitconfig uses the macOS keychain helper and signs commits with
+# ~/.ssh/id_ed25519. On Linux, GitHub credentials come from gh instead, written to
+# ~/.gitconfig.user (included by .gitconfig; never write to ~/.gitconfig, it is the repo file).
+configure_git() {
+    local user_cfg="$HOME/.gitconfig.user" gh_bin
+    gh_bin=$(command -v gh) || return 0
+    if ! git config --file "$user_cfg" --get-all credential.https://github.com.helper >/dev/null 2>&1; then
+        # The empty value resets the inherited osxkeychain helper for github.com.
+        git config --file "$user_cfg" --add credential.https://github.com.helper ""
+        git config --file "$user_cfg" --add credential.https://github.com.helper "!$gh_bin auth git-credential"
+        print_success "Git uses gh for GitHub credentials ($user_cfg)"
+    fi
+    if [[ ! -f "$HOME/.ssh/id_ed25519" ]]; then
+        print_warning "No ~/.ssh/id_ed25519: commits are signed with it (.gitconfig), so they will fail." \
+            "Create one and add it to GitHub as a signing key (see README)."
+    fi
+}
+
 # Engram Cloud reads ENGRAM_CLOUD_SERVER/TOKEN/AUTOSYNC from ~/.zshenv.local, as on the Mac.
 # The token is a secret: the owner writes that file (chmod 600); it is never in this repo.
 check_engram_cloud() {
@@ -186,6 +204,7 @@ user_setup() {
         rtk init -g --auto-patch --no-trust-filters || print_warning "rtk init failed; run: rtk init -g" ""
     fi
     install_plugins
+    configure_git
     check_engram_cloud
     if command -v gentle-ai >/dev/null 2>&1; then
         gentle-ai sync || print_warning "gentle-ai sync failed; run it again by hand." ""
