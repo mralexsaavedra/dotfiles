@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily update (brew upgrade, gentle-ai sync, engram restart)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash __DOTFILES_DIR__/scripts/daily-update.sh
+# Keep a restarted `engram serve` alive after the script exits.
+KillMode=process

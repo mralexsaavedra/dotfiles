@@ -11,6 +11,10 @@ echo "Syncing AI configs to dotfiles..."
 cp ~/.claude/CLAUDE.md "$DOTFILES/claude-code/.claude/CLAUDE.md"
 echo "  ✓ claude-code/.claude/CLAUDE.md"
 
+# Settings shared with the Linux dev LXC (applied there by scripts/linux-setup.sh).
+jq '{effortLevel, permissions}' ~/.claude/settings.json > "$DOTFILES/claude-code-settings/settings.shared.json"
+echo "  ✓ claude-code-settings/settings.shared.json"
+
 # Skills live in the dotfiles already (~/.claude/skills -> claude-code/.claude/skills).
 
 echo ""

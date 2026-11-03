@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily update, weekdays at 08:00
+
+[Timer]
+OnCalendar=Mon..Fri 08:00
+# Run at boot if the machine was off at 08:00 (like launchd on wake).
+Persistent=true
+
+[Install]
+WantedBy=timers.target

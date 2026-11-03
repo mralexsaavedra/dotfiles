@@ -1,8 +1,8 @@
 # Alexander Saavedra dotfiles
 
-> Personal dotfiles for a modular macOS dev setup, managed with Stow + Homebrew.
+> Personal dotfiles for a modular dev setup on macOS and Linux (the homelab `dev` LXC), managed with Stow + Homebrew.
 
-This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to symlink configs into `$HOME` and [Homebrew](https://brew.sh/) as the package source of truth (`brew/Brewfile`).
+This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to symlink configs into `$HOME` and [Homebrew](https://brew.sh/) as the package source of truth (`brew/Brewfile` on macOS, `brew/Brewfile.linux` on Linux).
 
 ## ✨ Current Stack
 
@@ -25,6 +25,19 @@ chmod u+x ./setup.sh
 
 `setup.sh` runs macOS defaults + Homebrew bootstrap, then stows the managed folders and syncs IDE configs.
 
+### Linux (homelab `dev` LXC)
+
+On Linux `setup.sh` hands over to `scripts/linux-setup.sh`. Run it as a normal user, never root (Homebrew and Claude Code both refuse root):
+
+```bash
+./setup.sh --machine   # once per machine, admin user with sudo
+./setup.sh             # once per extra user (agent users, no sudo)
+```
+
+- `--machine`: apt prerequisites, shared Homebrew in `/home/linuxbrew/.linuxbrew`, `brew/Brewfile.linux`, zsh as login shell, `loginctl enable-linger`, and the `daily-update.timer` systemd user unit (`linux/systemd/`, weekdays 08:00, log `~/.local/state/daily-update.log`). Then it runs the per-user steps.
+- Per user: Oh My Zsh, stow `git zsh gh vim claude-code bin` (no `--adopt`: a conflict stops the run), Claude Code, the status line plus `claude-code-settings/settings.shared.json` (effort level and permissions, exported from the Mac by `make sync-ai`) in `~/.claude/settings.json`, the engram/codegraph/context7 MCP servers, `rtk init -g`, the Mac's Claude Code plugins (minus Warp), `gentle-ai sync` (which adds its hooks and the output style). Engram Cloud needs `~/.zshenv.local` (chmod 600, see `zsh/.zshenv.local.example`); the script only warns when it is missing.
+- Mac only, not installed on Linux: Ghostty, IDE sync, Raycast, LaunchAgents, casks. The status line skips the calendar, Dock badges and Spotify segments there. The `evento` skill and the personal mail part of `bandeja` need macOS apps.
+
 ## 🛠 Maintenance (real workflow)
 
 Useful commands:
@@ -32,8 +45,8 @@ Useful commands:
 | Command | Description |
 | :--- | :--- |
 | `make update` | Runs maintenance + IDE sync (`scripts/maintenance.sh` + `scripts/sync-ides.sh`). |
-| `make install` | Installs dependencies from `brew/Brewfile`. |
-| `make dump` | Rebuilds `brew/Brewfile` from current brew state (removes vscode lines). |
+| `make install` | Installs dependencies from the Brewfile for this OS (`brew/Brewfile` or `brew/Brewfile.linux`). |
+| `make dump` | Rebuilds `brew/Brewfile` from current brew state (removes vscode lines). macOS only. |
 | `make clean` | Homebrew cleanup. |
 | `make sync-ides` | Syncs settings/extensions to VSCode and Cursor. |
 
@@ -69,11 +82,13 @@ Prefer keeping shared defaults in tracked files and machine-specific values in `
 
 ## 📂 Structure (high level)
 
-- `brew/` — Homebrew bundle (`Brewfile`).
+- `brew/` — Homebrew bundles (`Brewfile` for macOS, `Brewfile.linux` for Linux).
 - `zsh/` — split shell config and local override templates.
-- `scripts/` — setup/maintenance automation.
+- `scripts/` — setup/maintenance automation (`linux-setup.sh`, `setup-services-linux.sh` for Linux).
+- `macos/` — LaunchAgent templates. `linux/systemd/` — systemd user unit templates.
 - `ides/` — layered editor config (`base` + per-editor deltas + `ai/copilot`).
 - `git/`, `gh/`, `ghostty/`, `vim/`, `raycast/` — tool-specific configs.
+- `claude-code-settings/` — Claude Code settings shared with Linux (not stowed).
 - `claude-code/` — `~/.claude` package: `CLAUDE.md`, `skills/` (linked from `~/.claude/skills`) and `statusline.sh`.
 
 ## Acknowledgements

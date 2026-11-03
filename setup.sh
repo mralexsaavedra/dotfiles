@@ -22,6 +22,11 @@ install_gh_extension() {
     fi
 }
 
+# Linux (the homelab dev LXC) has its own flow: the macOS steps below would fail there.
+if [[ "$(uname -s)" == "Linux" ]]; then
+    exec "$SCRIPT_DIR/scripts/linux-setup.sh" "$@"
+fi
+
 clear
 print_in_purple '\nOS X Config Dotfiles - Alexander Saavedra\n\n'
 ask_for_sudo
