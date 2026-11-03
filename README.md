@@ -38,6 +38,10 @@ On Linux `setup.sh` hands over to `scripts/linux-setup.sh`. Run it as a normal u
 - Per user: Oh My Zsh, stow `git zsh gh vim claude-code bin` (no `--adopt`: a conflict stops the run), Claude Code, the status line plus `claude-code-settings/settings.shared.json` (effort level and permissions, exported from the Mac by `make sync-ai`) in `~/.claude/settings.json`, the engram/codegraph/context7 MCP servers, `rtk init -g`, the Mac's Claude Code plugins (minus Warp), `gentle-ai sync` (which adds its hooks and the output style). Git: GitHub credentials go through `gh` (`~/.gitconfig.user`, run `gh auth login` first); commits are signed with `~/.ssh/id_ed25519`, so each Linux machine needs its own key added to GitHub as a signing key (`gh auth refresh -s admin:ssh_signing_key`, then `gh ssh-key add --type signing ~/.ssh/id_ed25519.pub`). Engram Cloud needs `~/.zshenv.local` (chmod 600, see `zsh/.zshenv.local.example`); the script only warns when it is missing.
 - Mac only, not installed on Linux: Ghostty, IDE sync, Raycast, LaunchAgents, casks. The status line skips the calendar, Dock badges and Spotify segments there. The `evento` skill and the personal mail part of `bandeja` need macOS apps.
 
+## 🤖 Multica sessions (`bin/ws`)
+
+`ws WS-8` resumes the Claude Code session of a Multica issue in its run directory (`claude --continue` in `~/multica_workspaces/…/ws-8-…/workdir`): on this machine if the run happened here (Mac runtime), otherwise on the `dev` LXC over SSH. `ws` alone lists the issues with a run directory, `ws -n WS-8` only prints where it would open. It refuses while an agent run is using that directory, so two writers never share a session.
+
 ## 🛠 Maintenance (real workflow)
 
 Useful commands:

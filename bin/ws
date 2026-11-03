@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# ws — open the Claude Code session of a Multica issue in its run directory.
+#
+#   ws            list the issues that have a run directory (here and on dev)
+#   ws WS-8       resume WS-8's session (`claude --continue` in its workdir)
+#   ws -n WS-8    print where it would open, without starting Claude
+#
+# Looks on this machine first (the Mac runtime keeps its runs here too), then on the
+# dev LXC over SSH. Refuses to open a session while an agent run is using it.
+set -euo pipefail
+
+ROOT="$HOME/multica_workspaces"
+DEV_HOST="${WS_DEV_HOST:-dev}"
+ON_DEV=0; [[ "$(hostname -s 2>/dev/null || hostname)" == "dev" ]] && ON_DEV=1
+
+usage() { sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; }
+
+list_local() {
+    local d issue
+    for d in "$ROOT"/*/*/workdir; do
+        [[ -d "$d" ]] || continue
+        issue=$(basename "$(dirname "$d")")
+        printf '%s\t%s\n' "$(date -r "$d" '+%F %R')" "${issue%-*}"
+    done | sort -r | awk -F'\t' -v where="$1" '!seen[$2]++ {printf "%-8s %s  %s\n", toupper($2), $1, where}'
+}
+
+# Newest run directory of an issue on this machine (an issue can have several after retries).
+find_dir() {
+    local slug d
+    slug=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+    # shellcheck disable=SC2012  # glob paths have no spaces; ls -t sorts by mtime
+    d=$(ls -td "$ROOT"/*/"$slug"-*/workdir 2>/dev/null | head -1 || true)
+    [[ -n "$d" ]] && printf '%s\n' "$d"
+}
+
+# Is any process (the agent's Claude) running with its cwd inside this run directory?
+busy() {
+    local dir=$1 p
+    if [[ -d /proc ]]; then
+        for p in /proc/[0-9]*; do
+            [[ "$(readlink "$p/cwd" 2>/dev/null)" == "$dir"* ]] && return 0
+        done
+    else
+        lsof -a -d cwd -c claude -Fn 2>/dev/null | grep -q "^n$dir" && return 0
+    fi
+    return 1
+}
+
+dry=0
+[[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && { usage; exit 0; }
+[[ "${1:-}" == "-n" ]] && { dry=1; shift; }
+
+if [[ $# -eq 0 ]]; then
+    list_local "$([[ $ON_DEV -eq 1 ]] && echo dev || echo here)"
+    [[ $ON_DEV -eq 1 ]] || ssh -o ConnectTimeout=5 "$DEV_HOST" '$HOME/Developer/dotfiles/bin/ws' 2>/dev/null || true
+    exit 0
+fi
+
+issue=$1
+dir=$(find_dir "$issue" || true)
+if [[ -z "$dir" ]]; then
+    if [[ $ON_DEV -eq 0 ]]; then
+        flag=""; [[ $dry -eq 1 ]] && flag="-n"
+        exec ssh -t "$DEV_HOST" "\$HOME/Developer/dotfiles/bin/ws $flag $issue"
+    fi
+    echo "ws: no run directory for $issue on this machine." >&2
+    exit 1
+fi
+
+if busy "$dir"; then
+    echo "ws: an agent run is using $issue right now. Wait for it to finish (or comment on the issue instead)." >&2
+    exit 1
+fi
+
+if [[ $dry -eq 1 ]]; then
+    echo "$(hostname -s 2>/dev/null || hostname): cd $dir && claude --continue"
+    exit 0
+fi
+
+cd "$dir"
+export PATH="$HOME/.local/bin:$PATH"
+# --continue resumes the newest session of this directory; start a new one if there is none.
+claude --continue || exec claude
