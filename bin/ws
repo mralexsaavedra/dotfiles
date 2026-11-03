@@ -2,7 +2,7 @@
 # ws — open the Claude Code session of a Multica issue in its run directory.
 #
 #   ws            list the issues that have a run directory (here and on dev)
-#   ws WS-8       resume WS-8's session (`claude --continue` in its workdir)
+#   ws WS-8       resume WS-8's session (`claude --resume <newest session>` in its workdir)
 #   ws -n WS-8    print where it would open, without starting Claude
 #
 # Looks on this machine first (the Mac runtime keeps its runs here too), then on the
@@ -72,12 +72,31 @@ if busy "$dir"; then
     exit 1
 fi
 
+# Newest session of this directory with at least one answer. `claude --continue` is not enough:
+# it only considers interactive ("cli") sessions, and Multica runs are headless ("sdk-cli").
+# Claude Code stores them in ~/.claude/projects/<cwd with every non-alphanumeric char as '-'>.
+session_id() {
+    local proj f
+    proj="$HOME/.claude/projects/$(printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g')"
+    # shellcheck disable=SC2012,SC2045  # session file names are UUIDs; ls -t sorts by mtime
+    for f in $(ls -t "$proj"/*.jsonl 2>/dev/null); do
+        if grep -q '"type":"assistant"' "$f"; then
+            basename "$f" .jsonl
+            return 0
+        fi
+    done
+    return 1
+}
+
+sid=$(session_id "$dir" || true)
+cmd="claude --resume $sid"; [[ -z "$sid" ]] && cmd="claude"
+
 if [[ $dry -eq 1 ]]; then
-    echo "$(hostname -s 2>/dev/null || hostname): cd $dir && claude --continue"
+    echo "$(hostname -s 2>/dev/null || hostname): cd $dir && $cmd"
     exit 0
 fi
 
 cd "$dir"
 export PATH="$HOME/.local/bin:$PATH"
-# --continue resumes the newest session of this directory; start a new one if there is none.
-claude --continue || exec claude
+[[ -z "$sid" ]] && echo "ws: no previous session for $issue; starting a new one here." >&2
+exec $cmd

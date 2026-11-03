@@ -40,7 +40,7 @@ On Linux `setup.sh` hands over to `scripts/linux-setup.sh`. Run it as a normal u
 
 ## 🤖 Multica sessions (`bin/ws`)
 
-`ws WS-8` resumes the Claude Code session of a Multica issue in its run directory (`claude --continue` in `~/multica_workspaces/…/ws-8-…/workdir`): on this machine if the run happened here (Mac runtime), otherwise on the `dev` LXC over SSH. `ws` alone lists the issues with a run directory, `ws -n WS-8` only prints where it would open. It refuses while an agent run is using that directory, so two writers never share a session.
+`ws WS-8` resumes the Claude Code session of a Multica issue in its run directory (`claude --resume` with the newest session that has answers, in `~/multica_workspaces/…/ws-8-…/workdir`; `--continue` skips the headless sessions Multica creates): on this machine if the run happened here (Mac runtime), otherwise on the `dev` LXC over SSH. `ws` alone lists the issues with a run directory, `ws -n WS-8` only prints where it would open. It refuses while an agent run is using that directory, so two writers never share a session.
 
 ## 🛠 Maintenance (real workflow)
 
