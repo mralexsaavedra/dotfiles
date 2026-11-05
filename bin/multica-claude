@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Claude Code launcher for the Multica daemon, on the Mac and on the dev LXC (MULTICA_CLAUDE_PATH: systemd drop-in
 # homelab/lxc/dev/systemd/multica-daemon.service.d/ on dev, EnvironmentVariables in ~/Library/LaunchAgents/ai.multica.daemon.plist
-# on the Mac; `multica daemon autostart enable` rewrites that plist, so re-add it after running it).
+# on the Mac, where the ManagedBy key was removed so the daemon stops regenerating the plist; running
+# `multica daemon autostart enable` would refuse to touch it, so edit the plist by hand instead).
 #
 # Multica starts every run in a fresh directory named "workdir" that is not a git repository. Engram's
 # Claude hooks resolve the project from the cwd, so there they get "workdir" or an ambiguous answer, do not
