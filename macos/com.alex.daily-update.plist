@@ -18,6 +18,9 @@
         <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>8</integer><key>Minute</key><integer>0</integer></dict>
         <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>8</integer><key>Minute</key><integer>0</integer></dict>
     </array>
+    <!-- The script restarts `engram serve` after an upgrade; without this launchd kills it when the job ends. -->
+    <key>AbandonProcessGroup</key>
+    <true/>
     <key>StandardOutPath</key>
     <string>/tmp/com.alex.daily-update.out</string>
     <key>StandardErrorPath</key>

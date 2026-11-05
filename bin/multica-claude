@@ -18,5 +18,18 @@ if [[ -n "${ENGRAM_PROJECT:-}" && ! -e .engram/config.json ]] \
     printf '{\n  "project_name": "%s"\n}\n' "$ENGRAM_PROJECT" > .engram/config.json
 fi
 
+# engram serve is shared by every Claude session on the machine. When it is down, Engram's SessionStart hook
+# starts it from this run's environment, and its ENGRAM_PROJECT then becomes a process override that resolves
+# every directory to this agent's project (it happened on the Mac on 2026-11-05 after the daily update
+# restarted engram). Start it here first, without ENGRAM_PROJECT, detached from this run.
+if command -v engram >/dev/null 2>&1 \
+    && ! curl -s --max-time 1 "http://127.0.0.1:${ENGRAM_PORT:-7437}/health" >/dev/null 2>&1; then
+    (cd "$HOME" && nohup env -u ENGRAM_PROJECT ENGRAM_CLOUD_AUTOSYNC=1 engram serve >/dev/null 2>&1 &)
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+        curl -s --max-time 1 "http://127.0.0.1:${ENGRAM_PORT:-7437}/health" >/dev/null 2>&1 && break
+        sleep 0.3
+    done
+fi
+
 # The real claude is whatever the daemon PATH finds (this script is not named claude, so no recursion).
 exec "$(command -v claude)" "$@"
