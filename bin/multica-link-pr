@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# multica-link-pr <issue> <pr-url> — link a GitHub pull request to a Multica issue (e.g. WS-15).
+#
+# The multica CLI can list linked PRs but not link one; this calls the same API the issue page uses, with
+# the CLI's own login (~/.multica/config.json). Multica only knows PRs from repositories where the GitHub
+# App "multica-mralexsaavedra" is installed (the owner's account and lookiero/sty-sp-front as of 2026-11-05),
+# and only after GitHub sent their events: opened before the install = not linkable. Once linked,
+# `multica issue wakeup create <issue> --until-pr checks|merged` works.
+# Exit codes: 0 linked, 2 usage, 3 PR unknown to Multica (repo not in the App or not synced yet), 1 other error.
+set -euo pipefail
+[[ $# -eq 2 ]] || { sed -n 2,9p "$0" | sed 's/^# \{0,1\}//'; exit 2; }
+python3 -I - "$1" "$2" <<'PY'
+import json, os, sys, urllib.request, urllib.error
+issue, url = sys.argv[1], sys.argv[2]
+c = json.load(open(os.path.expanduser("~/.multica/config.json")))
+req = urllib.request.Request(f"{c['server_url']}/api/issues/{issue}/pull-requests", method="POST",
+        data=json.dumps({"url": url}).encode(),
+        headers={"Authorization": "Bearer " + c["token"], "Content-Type": "application/json",
+                 "X-Workspace-ID": c["workspace_id"]})
+try:
+    urllib.request.urlopen(req, timeout=20).read()
+    print(f"linked {url} to {issue}")
+except urllib.error.HTTPError as e:
+    msg = e.read().decode(errors="replace").strip()
+    print(f"multica-link-pr: {e.code} {msg}", file=sys.stderr)
+    sys.exit(3 if e.code == 404 else 1)
+PY
