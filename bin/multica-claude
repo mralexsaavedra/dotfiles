@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Claude Code launcher for the Multica daemon, on the Mac and on the dev LXC (MULTICA_CLAUDE_PATH: systemd drop-in
+# homelab/lxc/dev/systemd/multica-daemon.service.d/ on dev, EnvironmentVariables in ~/Library/LaunchAgents/ai.multica.daemon.plist
+# on the Mac; `multica daemon autostart enable` rewrites that plist, so re-add it after running it).
+#
+# Multica starts every run in a fresh directory named "workdir" that is not a git repository. Engram's
+# Claude hooks resolve the project from the cwd, so there they get "workdir" or an ambiguous answer, do not
+# register the session, and later reject mem_save ("identity unconfirmed" on the first run, "host session
+# ... already ended" when Multica resumes the session in a follow-up run). Each agent already sets
+# ENGRAM_PROJECT in its Multica custom env; pin it in the run directory before Claude and its hooks start.
+# Directories inside a git repository are left alone: they resolve through the repo (or its own config).
+set -euo pipefail
+
+if [[ -n "${ENGRAM_PROJECT:-}" && ! -e .engram/config.json ]] \
+    && ! git -C "$PWD" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    mkdir -p .engram
+    printf '{\n  "project_name": "%s"\n}\n' "$ENGRAM_PROJECT" > .engram/config.json
+fi
+
+# The real claude is whatever the daemon PATH finds (this script is not named claude, so no recursion).
+exec "$(command -v claude)" "$@"
