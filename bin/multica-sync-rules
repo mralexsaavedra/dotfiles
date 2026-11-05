@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# multica-sync-rules [-n] — apply the shared rules in dotfiles/multica/shared-rules.md to EVERY Multica agent.
+#
+# Each agent's instructions keep their own text; the shared rules live in one block between
+#   <!-- shared-rules:start --> and <!-- shared-rules:end -->
+# which is replaced (or appended) on every run. Bullets copied by hand before this existed (lines starting
+# with "- User-level skills", "- Use gh for everything" or "- After opening a pull request, link it") are
+# removed so nothing is duplicated. Edit shared-rules.md, commit it, then run this; run it after creating an
+# agent too. -n prints what would change without updating anything.
+set -euo pipefail
+dry=0; [[ "${1:-}" == "-n" ]] && dry=1
+RULES="$(cd "$(dirname "$0")/.." && pwd)/multica/shared-rules.md"
+python3 -I - "$RULES" "$dry" <<'PY'
+import json, re, subprocess, sys
+rules_path, dry = sys.argv[1], sys.argv[2] == "1"
+rules = open(rules_path).read().strip()
+block = f"<!-- shared-rules:start -->\n{rules}\n<!-- shared-rules:end -->"
+LEGACY = ("- User-level skills", "- Use gh for everything", "- After opening a pull request, link it")
+def cli(*a, stdin=None):
+    r = subprocess.run(["multica", *a], capture_output=True, text=True, input=stdin)
+    if r.returncode: sys.exit(f"multica {' '.join(a[:2])}: {r.stderr.strip()[:200]}")
+    return r.stdout
+agents = json.loads(cli("agent", "list", "--output", "json"), strict=False)
+agents = agents if isinstance(agents, list) else next(v for v in agents.values() if isinstance(v, list))
+for a in sorted(agents, key=lambda x: x["name"]):
+    cur = json.loads(cli("agent", "get", a["id"], "--output", "json"), strict=False)["instructions"] or ""
+    body = re.sub(r"\n*<!-- shared-rules:start -->.*?<!-- shared-rules:end -->\n*", "\n", cur, flags=re.S)
+    body = "\n".join(l for l in body.splitlines() if not l.startswith(LEGACY)).rstrip()
+    new = f"{body}\n{block}"
+    if new == cur:
+        print(f"{a['name']:<20} up to date"); continue
+    print(f"{a['name']:<20} {'would update' if dry else 'updated'}")
+    if not dry:
+        cli("agent", "update", a["id"], "--instructions", new)
+PY
