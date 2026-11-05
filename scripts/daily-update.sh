@@ -2,6 +2,8 @@
 # Unattended morning update, weekdays 08:00 (or on wake/boot if missed):
 #   macOS: com.alex.daily-update LaunchAgent, log ~/Library/Logs/daily-update.log
 #   Linux: daily-update.timer systemd user unit, log ~/.local/state/daily-update.log
+#   0. git pull --ff-only of ~/Developer/dotfiles, so skill and config changes made on the other machine
+#      (Mac or the dev LXC, including Multica agents) arrive here; a diverged or blocked pull is reported
 #   1. brew update + upgrade (also updates gentle-ai, engram and gga from their taps)
 #   2. gentle-ai sync
 #   3. restart `engram serve` when the running daemon is older than the installed binary
@@ -27,6 +29,12 @@ notify() {
   [ "$(uname -s)" = Darwin ] || return 0
   osascript -e "display notification \"$2\" with title \"$1\"" 2>/dev/null || true
 }
+
+# 0. dotfiles (skills, Claude config and bin/ are symlinked from here)
+DOTFILES="$HOME/Developer/dotfiles"
+if [ -d "$DOTFILES/.git" ]; then
+  git -C "$DOTFILES" pull --ff-only --quiet || problems+=("dotfiles pull (diverged or local changes in the way)")
+fi
 
 # 1. Homebrew
 upgraded=0
