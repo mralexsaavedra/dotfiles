@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# claude-ctx [session-id] — how much context a Claude Code session is carrying right now.
+#
+# Reads the session transcript (~/.claude/projects/*/<session-id>.jsonl) and reports the prompt size of its
+# last main-thread reply (input + cache read + cache write tokens), which is what every next turn re-reads.
+# Without an argument it uses CLAUDE_CODE_SESSION_ID, so an agent can run it on itself (Multica agents do
+# when the owner asks "¿cuánto contexto llevas?"). The auto-compact threshold comes from
+# CLAUDE_CODE_AUTO_COMPACT_WINDOW, which multica-claude sets for Multica runs.
+set -euo pipefail
+sid="${1:-${CLAUDE_CODE_SESSION_ID:-}}"
+[[ -n "$sid" ]] || { echo "usage: claude-ctx [session-id] (or run it inside a Claude Code session)" >&2; exit 2; }
+python3 -I - "$sid" "${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-}" <<'PY'
+import glob, json, os, sys
+sid, window = sys.argv[1], sys.argv[2]
+files = glob.glob(os.path.expanduser(f"~/.claude/projects/*/{sid}.jsonl"))
+if not files:
+    sys.exit(f"claude-ctx: no transcript for session {sid}")
+last, turns, compactions = None, 0, 0
+for line in open(files[0], errors="ignore"):
+    try:
+        d = json.loads(line)
+    except ValueError:
+        continue
+    if d.get("type") == "system" and d.get("subtype") == "compact_boundary":
+        compactions += 1
+    if d.get("type") != "assistant" or d.get("isSidechain"):
+        continue
+    u = (d.get("message") or {}).get("usage") or {}
+    if u:
+        last, turns = u, turns + 1
+if not last:
+    sys.exit("claude-ctx: the session has no replies yet")
+ctx = last.get("input_tokens", 0) + last.get("cache_read_input_tokens", 0) + last.get("cache_creation_input_tokens", 0)
+print(f"context: {ctx/1000:.0f}k tokens ({ctx/1e6:.0%} of 1M)")
+if window.isdigit():
+    print(f"auto-compact at ~{int(window)//1000}k tokens: {ctx/int(window):.0%} of the way there")
+else:
+    print("auto-compact: Claude Code default (near the 1M limit)")
+print(f"session: {sid}, {turns} model calls, {compactions} compaction(s) so far")
+PY

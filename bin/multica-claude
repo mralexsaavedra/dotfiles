@@ -35,5 +35,10 @@ if command -v engram >/dev/null 2>&1 \
     done
 fi
 
+# Compact automatically at ~300k tokens (30% of the 1M window) instead of near 1M. Multica resumes the same
+# session on every comment, and each turn re-reads the whole context: on 2026-11-16 two sessions reached ~966k
+# and drained the shared 5h Claude quota (WS-74). An explicit value in the daemon environment still wins.
+export CLAUDE_CODE_AUTO_COMPACT_WINDOW="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-300000}"
+
 # The real claude is whatever the daemon PATH finds (this script is not named claude, so no recursion).
 exec "$(command -v claude)" "$@"
