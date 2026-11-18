@@ -1,0 +1,5 @@
+{
+  "name": "alex-mods",
+  "owner": { "name": "mralexsaavedra" },
+  "plugins": [{ "name": "alex-look", "source": "./alex-look", "description": "Cool slate with a teal accent for the Claude desktop and mobile apps" }]
+}
