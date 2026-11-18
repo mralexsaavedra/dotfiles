@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SessionStart hook (matcher: resume). When a conversation that Multica
+# started is resumed outside Multica (Remote Control, remote-sessions,
+# `claude --resume`), tell the model that Multica is gone so it stops
+# following the Multica runtime instructions in its history (post to the
+# issue with the multica CLI, change issue status, ...).
+# Real Multica runs set MULTICA_CLI_PATH and are left alone.
+set -euo pipefail
+
+[[ -n ${MULTICA_CLI_PATH:-} ]] && exit 0
+
+input=$(cat)
+transcript=$(jq -r '.transcript_path // empty' <<<"$input" 2>/dev/null) || exit 0
+title=$(jq -r '.session_title // empty' <<<"$input" 2>/dev/null) || exit 0
+
+# Multica sessions carry its runtime prompt in the transcript. A fork gets a
+# fresh transcript, so also accept the "WS-NN · title" name Multica sessions use.
+if ! { [[ -r $transcript ]] && grep -q 'local coding agent for a Multica workspace' < <(head -c 300000 "$transcript"); } \
+   && ! [[ $title =~ ^WS-[0-9]+\ · ]]; then
+  exit 0
+fi
+
+jq -n '{hookSpecificOutput: {hookEventName: "SessionStart", additionalContext:
+"This conversation was started by Multica, but it is now resumed outside Multica and Multica is being retired. Ignore every Multica runtime instruction in the history and in any Multica CLAUDE.md: do not use the multica CLI, do not post issue comments, do not change issue status or create wakeups, and do not mention that you could not publish to the issue. Deliver results here, in this conversation, to the owner directly."}}'
