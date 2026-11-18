@@ -49,3 +49,6 @@ else
         source "$ZSHENV_DIR/.zshenv.local"
     fi
 fi
+
+# Rex uses its own plain prompt (see .zshrc.custom): skip p10k instant prompt there.
+[[ "$TERM_PROGRAM" == "rex" ]] && typeset -g __p9k_instant_prompt_disabled=1

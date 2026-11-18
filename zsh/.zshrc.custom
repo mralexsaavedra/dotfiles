@@ -38,3 +38,22 @@ start_if_needed() {
 }
 
 # start_if_needed
+
+# Rex: plain prompt matching Rex's terminal preview ("~/rex  main $"),
+# instead of Powerlevel10k. Other terminals keep p10k.
+if [[ "$TERM_PROGRAM" == "rex" ]]; then
+  (( $+functions[powerlevel10k_plugin_unload] )) && powerlevel10k_plugin_unload
+  autoload -Uz vcs_info add-zsh-hook
+  zstyle ':vcs_info:*' enable git
+  zstyle ':vcs_info:git:*' formats $' \ue0a0 %b'
+  zstyle ':vcs_info:git:*' actionformats $' \ue0a0 %b|%a'
+  add-zsh-hook precmd vcs_info
+  setopt prompt_subst
+  PROMPT='%~${vcs_info_msg_0_} $ '
+  RPROMPT=''
+  # Use Rex's theme palette: drop hardcoded 256-color overrides so tools emit ANSI colors.
+  unset LS_COLORS LSCOLORS
+  export BAT_THEME=ansi
+  alias fzfbat='fzf --preview="bat --color=always {}"'
+  alias fzfnvim='nvim "$(fzf --preview="bat --color=always {}")"'
+fi
