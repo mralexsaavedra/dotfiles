@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""Give readable titles to headless Claude Code sessions started by Multica.
+
+Multica runs `claude -p`, and headless sessions never get a title, so session
+browsers (remote-sessions, the Claude app) show the raw first prompt. This
+script appends the same `custom-title` record that `/rename` writes:
+
+  issue runs      -> "WS-12 · <issue title>"  (looked up with the multica CLI)
+  autopilot runs  -> "Autopilot · <autopilot title> · <date>"
+  chat runs       -> "Chat · <start of the user message>"
+
+Sessions that already have a title, have no prompt, were touched in the last
+--idle minutes (probably still running) or started some other way are left
+alone. The file's modification time is kept, so lists ordered by date do not
+change. Dry run by default; --apply first archives ~/.claude/projects.
+
+Usage: claude-name-sessions [--apply] [--idle MINUTES] [--projects DIR]
+"""
+import argparse
+import datetime
+import glob
+import json
+import os
+import re
+import subprocess
+import sys
+import tarfile
+import time
+
+ISSUE = re.compile(r"issue ID is: ([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
+AUTOPILOT = re.compile(r"^Autopilot title: (.+)$", re.M)
+CHAT = re.compile(r"User message:\n(.+)", re.S)
+
+
+def first_prompt(path):
+    """Return (prompt text, first timestamp, has title) for a transcript."""
+    text, stamp, titled = None, None, False
+    with open(path, errors="replace") as lines:
+        for line in lines:
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if record.get("type") == "custom-title":
+                titled = True
+            if text is None and record.get("type") == "user" and not record.get("isMeta"):
+                content = record.get("message", {}).get("content")
+                if isinstance(content, list):
+                    content = " ".join(part.get("text", "") for part in content if isinstance(part, dict))
+                text, stamp = content or "", record.get("timestamp")
+    return text, stamp, titled
+
+
+def shorten(text, limit=60):
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", text)  # drop image links
+    text = " ".join(text.split())
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def issue_title(issue_id, cache):
+    if issue_id not in cache:
+        cli = os.environ.get("MULTICA_CLI_PATH", "multica")
+        result = subprocess.run([cli, "issue", "get", issue_id, "--output", "json"],
+                                capture_output=True, text=True)
+        cache[issue_id] = None
+        if result.returncode == 0:
+            issue = json.loads(result.stdout)
+            cache[issue_id] = f"{issue['identifier']} · {issue['title']}"
+    return cache[issue_id]
+
+
+def title_for(text, stamp, cache):
+    match = ISSUE.search(text)
+    if match:
+        return issue_title(match.group(1), cache)
+    match = AUTOPILOT.search(text)
+    if match and "triggered by an Autopilot" in text:
+        day = (stamp or "")[:10]
+        return f"Autopilot · {match.group(1).strip()}" + (f" · {day}" if day else "")
+    match = CHAT.search(text)
+    if match and "chat assistant for a Multica workspace" in text:
+        return f"Chat · {shorten(match.group(1).split('Attachments on this message:')[0]) or 'image'}"
+    return None
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--apply", action="store_true", help="write the titles (default: only list them)")
+    parser.add_argument("--idle", type=int, default=30, help="skip sessions touched in the last N minutes")
+    parser.add_argument("--projects", default=os.path.expanduser("~/.claude/projects"))
+    args = parser.parse_args()
+
+    now, cache, plan = time.time(), {}, []
+    for path in sorted(glob.glob(os.path.join(args.projects, "*", "*.jsonl"))):
+        if now - os.path.getmtime(path) < args.idle * 60:
+            continue
+        text, stamp, titled = first_prompt(path)
+        if titled or not text:
+            continue
+        title = title_for(text, stamp, cache)
+        if title:
+            plan.append((path, title))
+
+    for path, title in plan:
+        print(f"{os.path.basename(path)[:8]}  {title}")
+    print(f"{len(plan)} sessions to rename", file=sys.stderr)
+    if not args.apply or not plan:
+        return
+
+    stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup = f"{args.projects.rstrip('/')}-backup-{stamp}.tar.gz"
+    with tarfile.open(backup, "w:gz") as archive:
+        archive.add(args.projects, arcname=os.path.basename(args.projects.rstrip("/")))
+    print(f"backup: {backup}", file=sys.stderr)
+
+    for path, title in plan:
+        times = os.stat(path)
+        session = os.path.splitext(os.path.basename(path))[0]
+        with open(path, "a") as transcript:
+            transcript.write(json.dumps({"type": "custom-title", "customTitle": title, "sessionId": session},
+                                        ensure_ascii=False, separators=(",", ":")) + "\n")
+        os.utime(path, ns=(times.st_atime_ns, times.st_mtime_ns))
+    print(f"renamed {len(plan)} sessions", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
