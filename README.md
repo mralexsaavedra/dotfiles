@@ -89,7 +89,8 @@ Prefer keeping shared defaults in tracked files and machine-specific values in `
 - `brew/` — Homebrew bundles (`Brewfile` for macOS, `Brewfile.linux` for Linux).
 - `zsh/` — split shell config and local override templates.
 - `scripts/` — setup/maintenance automation (`linux-setup.sh`, `setup-services-linux.sh` for Linux).
-- `macos/` — LaunchAgent templates. `linux/systemd/` — systemd user unit templates. - Claude Code Remote Control (macOS): `scripts/setup-claude-rc.sh` installs one LaunchAgent per repository listed in it (`com.alex.claude-rc.<repo>`, from `macos/com.alex.claude-rc.plist`), so each folder appears under Code > Devices in the Claude app and new sessions start in their own worktree. Untrusted folders are skipped: run `claude` once there and accept the trust dialog first. `-n` is a dry run; unchanged agents keep running.
+- `macos/` — LaunchAgent templates. `linux/systemd/` — systemd user unit templates.
+- Claude Code Remote Control (macOS): `scripts/setup-claude-rc.sh` installs one LaunchAgent per repository listed in it (`com.alex.claude-rc.<repo>`, from `macos/com.alex.claude-rc.plist`), so each folder appears under Code > Devices in the Claude app and new sessions start in their own worktree. Untrusted folders are skipped: run `claude` once there and accept the trust dialog first. `-n` is a dry run; unchanged agents keep running.
 - `ides/` — layered editor config (`base` + per-editor deltas + `ai/copilot`).
 - `git/`, `gh/`, `ghostty/`, `vim/`, `raycast/` — tool-specific configs.
 - `claude-code-settings/` — Claude Code settings shared with Linux (not stowed).
