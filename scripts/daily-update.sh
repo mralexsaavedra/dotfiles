@@ -3,7 +3,7 @@
 #   macOS: Claude desktop app scheduled task `daily-update` (scripts/daily-update-task.md), log ~/Library/Logs/daily-update.log
 #   Linux: daily-update.timer systemd user unit, log ~/.local/state/daily-update.log
 #   0. git pull --ff-only of ~/Developer/dotfiles, so skill and config changes made on the other machine
-#      (Mac or the dev LXC, including Multica agents) arrive here; a diverged or blocked pull is reported
+#      (Mac or the dev LXC) arrive here; a diverged or blocked pull is reported
 #   1. brew update + upgrade (also updates gentle-ai, engram and gga from their taps)
 #   2. gentle-ai sync
 #   3. restart `engram serve` when the running daemon is older than the installed binary

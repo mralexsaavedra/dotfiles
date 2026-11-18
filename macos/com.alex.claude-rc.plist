@@ -5,7 +5,7 @@
   scripts/setup-claude-rc.sh generates one agent per repository by filling in the placeholders.
   The folder appears under Code > Devices in the Claude app and each
   new session starts in its own git worktree (.claude/worktrees/), so it never touches the main
-  checkout where Multica runs work in place.
+  checkout.
 -->
 <plist version="1.0">
 <dict>

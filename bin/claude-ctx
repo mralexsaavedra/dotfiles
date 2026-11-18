@@ -3,9 +3,9 @@
 #
 # Reads the session transcript (~/.claude/projects/*/<session-id>.jsonl) and reports the prompt size of its
 # last main-thread reply (input + cache read + cache write tokens), which is what every next turn re-reads.
-# Without an argument it uses CLAUDE_CODE_SESSION_ID, so an agent can run it on itself (Multica agents do
-# when the owner asks "¿cuánto contexto llevas?"). The auto-compact threshold comes from
-# CLAUDE_CODE_AUTO_COMPACT_WINDOW, which multica-claude sets for Multica runs.
+# Without an argument it uses CLAUDE_CODE_SESSION_ID, so an agent can run it on itself (for example when
+# the owner asks "¿cuánto contexto llevas?"). The auto-compact threshold comes from
+# CLAUDE_CODE_AUTO_COMPACT_WINDOW when it is set.
 set -euo pipefail
 sid="${1:-${CLAUDE_CODE_SESSION_ID:-}}"
 [[ -n "$sid" ]] || { echo "usage: claude-ctx [session-id] (or run it inside a Claude Code session)" >&2; exit 2; }

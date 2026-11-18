@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# ws — open the Claude Code session of a Multica issue in its run directory.
+# ws — open the Claude Code session of a former Multica issue in its run directory
+# (Multica was removed on 2026-11-18; its run directories in ~/multica_workspaces stay resumable).
 #
 #   ws            list the issues that have a run directory (here and on dev)
 #   ws WS-8       resume WS-8's session (`claude --resume <newest session>` in its workdir)
