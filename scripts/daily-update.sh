@@ -1,5 +1,5 @@
 #!/bin/bash
-# Unattended morning update, weekdays 08:00 (or on wake/boot if missed):
+# Unattended morning update, weekdays (macOS 09:00 Claude task, Linux 08:00 timer; on wake/boot if missed):
 #   macOS: Claude desktop app scheduled task `daily-update` (scripts/daily-update-task.md), log ~/Library/Logs/daily-update.log
 #   Linux: daily-update.timer systemd user unit, log ~/.local/state/daily-update.log
 #   0. git pull --ff-only of ~/Developer/dotfiles, so skill and config changes made on the other machine

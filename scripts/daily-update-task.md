@@ -1,6 +1,6 @@
 # Daily update — Claude scheduled task (macOS)
 
-Run by the Claude desktop app's local scheduled task `daily-update` (weekdays 08:00, "Solo en este ordenador", folder `~/Developer/dotfiles`). It replaced the `com.alex.daily-update` LaunchAgent on 2026-11-18. The dev LXC keeps its systemd timer (there is no Claude desktop app for Linux).
+Run by the Claude desktop app's local scheduled task `daily-update` (weekdays 09:00, "Solo en este ordenador", folder `~/Developer/dotfiles`). It replaced the `com.alex.daily-update` LaunchAgent on 2026-11-18. The dev LXC keeps its systemd timer (there is no Claude desktop app for Linux).
 
 Talk to the owner in Spanish (Spain). Keep it short.
 
