@@ -39,8 +39,14 @@ install_agent() {
 # 1. Audio Fix Agent
 install_agent com.alex.audiofix
 
-# 2. Daily update (brew + gentle-ai, weekdays 08:00)
-install_agent com.alex.daily-update
+# 2. Daily update: since 2026-11-18 a Claude desktop app scheduled task runs scripts/daily-update.sh
+#    (see scripts/daily-update-task.md). Remove the LaunchAgent that used to run it.
+old_agent="$HOME/Library/LaunchAgents/com.alex.daily-update.plist"
+if [ -f "$old_agent" ]; then
+    launchctl bootout "gui/$(id -u)/com.alex.daily-update" 2>/dev/null || true
+    rm -f "$old_agent"
+    print_success "com.alex.daily-update LaunchAgent removed (now a Claude scheduled task)"
+fi
 
 # 3. Claude Code Remote Control, one server per repository (Code > Devices in the Claude app)
 "$SCRIPT_DIR/setup-claude-rc.sh"

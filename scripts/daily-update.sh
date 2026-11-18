@@ -1,6 +1,6 @@
 #!/bin/bash
 # Unattended morning update, weekdays 08:00 (or on wake/boot if missed):
-#   macOS: com.alex.daily-update LaunchAgent, log ~/Library/Logs/daily-update.log
+#   macOS: Claude desktop app scheduled task `daily-update` (scripts/daily-update-task.md), log ~/Library/Logs/daily-update.log
 #   Linux: daily-update.timer systemd user unit, log ~/.local/state/daily-update.log
 #   0. git pull --ff-only of ~/Developer/dotfiles, so skill and config changes made on the other machine
 #      (Mac or the dev LXC, including Multica agents) arrive here; a diverged or blocked pull is reported

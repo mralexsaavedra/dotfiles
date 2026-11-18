@@ -90,6 +90,7 @@ Prefer keeping shared defaults in tracked files and machine-specific values in `
 - `zsh/` — split shell config and local override templates.
 - `scripts/` — setup/maintenance automation (`linux-setup.sh`, `setup-services-linux.sh` for Linux).
 - `macos/` — LaunchAgent templates. `linux/systemd/` — systemd user unit templates.
+- Daily update (macOS): a local scheduled task of the Claude desktop app (`daily-update`, weekdays 08:00, folder `~/Developer/dotfiles`, prompt «Lee scripts/daily-update-task.md y síguelo») runs `scripts/daily-update.sh` and reports or diagnoses it. It replaced the `com.alex.daily-update` LaunchAgent; `scripts/setup-services.sh` removes that agent if present.
 - Claude Code Remote Control (macOS): `scripts/setup-claude-rc.sh` installs one LaunchAgent per repository listed in it (`com.alex.claude-rc.<repo>`, from `macos/com.alex.claude-rc.plist`), so each folder appears under Code > Devices in the Claude app and new sessions start in their own worktree. Untrusted folders are skipped: run `claude` once there and accept the trust dialog first. `-n` is a dry run; unchanged agents keep running.
 - `ides/` — layered editor config (`base` + per-editor deltas + `ai/copilot`).
 - `git/`, `gh/`, `ghostty/`, `vim/`, `raycast/` — tool-specific configs.
