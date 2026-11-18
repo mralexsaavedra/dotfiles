@@ -40,5 +40,18 @@ fi
 # and drained the shared 5h Claude quota (WS-74). An explicit value in the daemon environment still wins.
 export CLAUDE_CODE_AUTO_COMPACT_WINDOW="${CLAUDE_CODE_AUTO_COMPACT_WINDOW:-500000}"
 
+# Headless sessions (`claude -p`) never get a title, so session lists (the Claude app, remote-sessions) show the
+# raw Multica prompt. Issue runs start in .../<prefix>-<number>-<hash>/workdir: name the session after the issue
+# with --name, which also renames a resumed session if the issue title changed. Autopilot and chat runs
+# (task-<hash>) carry no issue; `claude-name-sessions` names those afterwards. Any failure only skips the name.
+args=("$@")
+if [[ "$PWD" =~ /([a-z]+-[0-9]+)-[0-9a-f]+/workdir$ ]] && [[ " $* " != *" --name "* && " $* " != *" -n "* ]]; then
+    issue=$(printf '%s' "${BASH_REMATCH[1]}" | tr '[:lower:]' '[:upper:]')
+    title=$(perl -e 'alarm 5; exec @ARGV' "${MULTICA_CLI_PATH:-multica}" issue get "$issue" --output json 2>/dev/null \
+        | python3 -c 'import json, sys; issue = json.load(sys.stdin, strict=False); print(issue["identifier"] + " · " + issue["title"])' \
+        2>/dev/null) || title=""
+    [[ -n "$title" ]] && args=(--name "$title" "${args[@]}")
+fi
+
 # The real claude is whatever the daemon PATH finds (this script is not named claude, so no recursion).
-exec "$(command -v claude)" "$@"
+exec "$(command -v claude)" "${args[@]}"
