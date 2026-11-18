@@ -12,3 +12,6 @@ gh/.config/gh/hosts.yml
 # Claude app synced skills and deleted-skill trash
 claude-code/.claude/skills/synced/
 claude-code/.claude/skills/.trash/
+
+# Python bytecode cache
+__pycache__/
