@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Claude Code Remote Control server for one repository under ~/Developer (template).
+  scripts/setup-claude-rc.sh generates one agent per repository by filling in the placeholders.
+  The folder appears under Code > Devices in the Claude app and each
+  new session starts in its own git worktree (.claude/worktrees/), so it never touches the main
+  checkout where Multica runs work in place.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>__LABEL__</string>
+    <key>WorkingDirectory</key>
+    <string>__HOME__/Developer/__REPO__</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/claude</string>
+        <string>remote-control</string>
+        <string>--spawn</string>
+        <string>worktree</string>
+        <!-- No idle session kept in the main checkout (it would not use a worktree and costs ~400 MB). -->
+        <string>--no-create-session-in-dir</string>
+        <string>--remote-control-session-name-prefix</string>
+        <string>mac-__REPO__</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:__HOME__/.local/bin:__DOTFILES_DIR__/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <!-- The server exits after ~10 min without network (for example after sleep); start it again. -->
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+    <!-- The status line is redrawn every second; errors still go to stderr. -->
+    <key>StandardOutPath</key>
+    <string>/dev/null</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/__LABEL__.err</string>
+</dict>
+</plist>

@@ -41,3 +41,6 @@ install_agent com.alex.audiofix
 
 # 2. Daily update (brew + gentle-ai, weekdays 08:00)
 install_agent com.alex.daily-update
+
+# 3. Claude Code Remote Control, one server per repository (Code > Devices in the Claude app)
+"$SCRIPT_DIR/setup-claude-rc.sh"
