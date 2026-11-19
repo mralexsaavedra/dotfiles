@@ -618,3 +618,14 @@ Permission to develop locally does not authorize remote execution or file transf
 - Native ask rules are an additional runtime mechanism, not authorization inferred from local-development access. Automation modes and remembered approvals may suppress prompts. This behavioral contract is not a sandbox and does not guarantee a fresh human prompt for every execution.
 <!-- /gentle-ai:remote-authorization -->
 <!-- /gentle-ai:agent-routing -->
+## Vault (notes and task board)
+
+The owner's notes and task board live in the Obsidian vault at `~/Developer/vault` (private repo
+`github.com/mralexsaavedra/vault`, synced to the Mac and iPhone with the Obsidian Git plugin).
+It replaces Multica. Kanban boards per area in `boards/` (homelab, loop, lookiero, personal) with
+columns Pendiente / En curso / Revisar / Hecho; loose items in `Inbox.md`.
+
+- Run `git -C ~/Developer/vault pull --rebase` before reading or editing; commit and push right after.
+- Read the vault's own `CLAUDE.md` before changing a board: it holds the card format and rules.
+- Claude moves cards up to Revisar with a short note and a PR or session link; only the owner moves
+  cards to Hecho. No health data on any board.
