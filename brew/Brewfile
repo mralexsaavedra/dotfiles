@@ -3,7 +3,6 @@ tap "gentleman-programming/tap", "https://github.com/Gentleman-Programming/homeb
 tap "gromgit/fuse", trusted: true
 tap "homebrew/bundle"
 tap "kitlangton/tap", trusted: true
-tap "wix-incubator/brew", "https://github.com/wix-incubator/homebrew-brew.git"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # OS-independent implementation of the ACPI specification
@@ -16,6 +15,8 @@ brew "atuin"
 brew "bash"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Secure and free password manager for all of your devices
+brew "bitwarden-cli"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
 # Multi-shell multi-command argument completer
@@ -70,6 +71,8 @@ brew "mole"
 brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# Install and run Python applications in isolated environments
+brew "pipx"
 # Python package management tool
 brew "poetry"
 # Theme for zsh
@@ -134,10 +137,10 @@ brew "gromgit/fuse/ntfs-3g-mac"
 brew "kitlangton/tap/ghui"
 # Tools for building Android applications
 cask "android-studio"
-# Desktop password and login vault
-cask "bitwarden"
 # Web browser focusing on privacy
 cask "brave-browser"
+# Keeps your Mac awake, with the lid closed too, while your AI agents work
+cask "double-shot"
 # Communication with Canon EOS cameras
 cask "canon-eos-utility"
 # Anthropic's official Claude AI desktop app
@@ -164,6 +167,8 @@ cask "keka"
 cask "macfuse"
 # Re-mounts write-protected NTFS volumes
 cask "mounty"
+# Knowledge base that works on top of a local folder of plain text Markdown files
+cask "obsidian"
 # Android file transfer
 cask "openmtp"
 # Replacement for Docker Desktop
@@ -178,8 +183,6 @@ cask "slack"
 cask "spotify"
 # Messaging app with a focus on speed and security
 cask "telegram"
-# Open-source BitTorrent client
-cask "transmission"
 # Open-source code editor
 cask "visual-studio-code"
 # Rust-based terminal
