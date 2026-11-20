@@ -623,8 +623,10 @@ Permission to develop locally does not authorize remote execution or file transf
 
 The owner's tasks for every project live in the private artifact "Cola de trabajo":
 https://claude.ai/artifact/4SpHkPvRAM3jDjgeW11k3K. Read and write it with the `ArtifactData` tool
-(load it with ToolSearch), collection `tasks`. Fields: `title`, `project` (lowercase: personal,
-loop, lookiero, homelab, mac, ...), `status` (`pendiente` | `en_curso` | `revisar` | `hecho`),
+(load it with ToolSearch), collection `tasks`. Fields: `title`, `project` (a doc id from collection
+`projects`: personal, lookiero, loop, homelab, mac, tesla, dotfiles, mralexsaavedra.com,
+remote-sessions), `component` (optional; one of that project's `components`, e.g. lookiero:
+sty-sp-front, bo-front, labs-legacy, user-area; set it from the repo you work in), `status` (`pendiente` | `en_curso` | `revisar` | `hecho`),
 `priority` (`alta` | `media` | `baja`), `ref` (Jira key such as LK-45879, or empty), `link`, `note`, `created`,
 `updated` (ISO 8601 UTC). New ids: `t-<short slug>`. A task link is the board URL plus
 `#<doc id>` (e.g. `...4SpHkPvRAM3jDjgeW11k3K#t-sillines`): the part after `#` is the document id. Pass `if_version` on every write to an
