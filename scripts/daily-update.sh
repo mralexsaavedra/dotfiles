@@ -8,7 +8,8 @@
 #   2. gentle-ai sync
 #   3. restart `engram serve` when the running daemon is older than the installed binary
 #   4. brew cleanup
-# Ends with a notification summarising what changed or failed (macOS only; Linux logs it).
+# Ends with a summary line in the log ("Done: …", plus "Problems: …" on failure); on macOS the
+# Claude scheduled task reads it and reports.
 # For the interactive version with Brewfile dump, use `make update`.
 
 set -uo pipefail
@@ -25,10 +26,6 @@ exec >> "$LOG" 2>&1
 echo "=== $(date '+%Y-%m-%d %H:%M:%S') daily update ==="
 
 problems=()
-notify() {
-  [ "$(uname -s)" = Darwin ] || return 0
-  osascript -e "display notification \"$2\" with title \"$1\"" 2>/dev/null || true
-}
 
 # 0. dotfiles (skills, Claude config and bin/ are symlinked from here)
 DOTFILES="$HOME/Developer/dotfiles"
@@ -73,10 +70,5 @@ brew cleanup >/dev/null 2>&1 || true
 # Summary
 summary="$upgraded paquete(s) actualizados · gentle-ai sincronizado"
 [ "$upgraded" -eq 0 ] && summary="Todo al día · gentle-ai sincronizado"
-if [ ${#problems[@]} -gt 0 ]; then
-  notify "Actualización diaria: revisar" "Fallo en: ${problems[*]}. Log: $LOG"
-  echo "Problems: ${problems[*]}"
-else
-  notify "Actualización diaria" "$summary"
-fi
+[ ${#problems[@]} -gt 0 ] && echo "Problems: ${problems[*]}"
 echo "Done: $summary"
