@@ -626,7 +626,8 @@ https://claude.ai/artifact/4SpHkPvRAM3jDjgeW11k3K. Read and write it with the `A
 (load it with ToolSearch), collection `tasks`. Fields: `title`, `project` (lowercase: personal,
 loop, lookiero, homelab, mac, ...), `status` (`pendiente` | `en_curso` | `revisar` | `hecho`),
 `priority` (`alta` | `media` | `baja`), `ref` (WS-xx, LK-xxxxx), `link`, `note`, `created`,
-`updated` (ISO 8601 UTC). New ids: `t-<short slug>`. Pass `if_version` on every write to an
+`updated` (ISO 8601 UTC). New ids: `t-<short slug>`. A task link is the board URL plus
+`#<doc id>` (e.g. `...4SpHkPvRAM3jDjgeW11k3K#ws-54`): the part after `#` is the document id. Pass `if_version` on every write to an
 existing task.
 
 Keep the board current without being asked:
