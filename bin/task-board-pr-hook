@@ -4,6 +4,7 @@
 set -euo pipefail
 input=$(cat)
 cmd=$(jq -r '.tool_input.command // ""' <<<"$input" 2>/dev/null || true)
-[[ "$cmd" =~ (^|[[:space:];&|])gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$) ]] || exit 0
+re='(^|[;&|(])[[:space:]]*gh[[:space:]]+pr[[:space:]]+create([[:space:]]|$)'
+[[ "$cmd" =~ $re ]] || exit 0
 jq -n '{hookSpecificOutput: {hookEventName: "PostToolUse",
   additionalContext: "A pull request was just created. Per the Task board rules in your user CLAUDE.md: find the task for this work on the task board, set status to \"revisar\", put the PR URL in \"link\", add one dated line to \"note\" saying what the PR does, and set \"updated\". If no task matches, create one in \"revisar\"."}}'
