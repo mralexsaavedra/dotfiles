@@ -625,9 +625,9 @@ The owner's tasks for every project live in the private artifact "Cola de trabaj
 https://claude.ai/artifact/4SpHkPvRAM3jDjgeW11k3K. Read and write it with the `ArtifactData` tool
 (load it with ToolSearch), collection `tasks`. Fields: `title`, `project` (lowercase: personal,
 loop, lookiero, homelab, mac, ...), `status` (`pendiente` | `en_curso` | `revisar` | `hecho`),
-`priority` (`alta` | `media` | `baja`), `ref` (WS-xx, LK-xxxxx), `link`, `note`, `created`,
+`priority` (`alta` | `media` | `baja`), `ref` (Jira key such as LK-45879, or empty), `link`, `note`, `created`,
 `updated` (ISO 8601 UTC). New ids: `t-<short slug>`. A task link is the board URL plus
-`#<doc id>` (e.g. `...4SpHkPvRAM3jDjgeW11k3K#ws-54`): the part after `#` is the document id. Pass `if_version` on every write to an
+`#<doc id>` (e.g. `...4SpHkPvRAM3jDjgeW11k3K#t-sillines`): the part after `#` is the document id. Pass `if_version` on every write to an
 existing task.
 
 Keep the board current without being asked:
