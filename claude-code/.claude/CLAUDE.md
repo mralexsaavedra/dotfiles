@@ -618,3 +618,25 @@ Permission to develop locally does not authorize remote execution or file transf
 - Native ask rules are an additional runtime mechanism, not authorization inferred from local-development access. Automation modes and remembered approvals may suppress prompts. This behavioral contract is not a sandbox and does not guarantee a fresh human prompt for every execution.
 <!-- /gentle-ai:remote-authorization -->
 <!-- /gentle-ai:agent-routing -->
+
+## Task board
+
+The owner's tasks for every project live in the private artifact "Cola de trabajo":
+https://claude.ai/artifact/4SpHkPvRAM3jDjgeW11k3K. Read and write it with the `ArtifactData` tool
+(load it with ToolSearch), collection `tasks`. Fields: `title`, `project` (lowercase: personal,
+loop, lookiero, homelab, mac, ...), `status` (`pendiente` | `en_curso` | `revisar` | `hecho`),
+`priority` (`alta` | `media` | `baja`), `ref` (WS-xx, LK-xxxxx), `link`, `note`, `created`,
+`updated` (ISO 8601 UTC). New ids: `t-<short slug>`. Pass `if_version` on every write to an
+existing task.
+
+Keep the board current without being asked:
+- **Start:** when a session starts real work (not a quick question), list the open tasks once.
+  If one matches, set it to `en_curso`; if none does, create one in `en_curso`.
+- **PR:** after `gh pr create`, set the task to `revisar`, put the PR URL in `link` (a hook
+  reminds you).
+- **Hand-over:** when work stops waiting on the owner (review, a decision, a test on the
+  phone), set `revisar` and add one dated line to `note`: what was done and what is needed.
+- **Close:** set `hecho` only when the owner says the task is done or closed.
+- Notes: one short line per change, dated, appended at the end. Titles in Spanish.
+- Scheduled jobs: update only the task they belong to (note + `updated`); never create tasks.
+- `loop` tasks: titles and status only. Never health figures or medical data on the board.
