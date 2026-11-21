@@ -643,5 +643,7 @@ Keep the board current without being asked:
 - Notes: one short line per change, dated, appended at the end. Titles in Spanish.
 - Scheduled jobs: update only the task they belong to (note + `updated`); never create tasks.
 - `loop` tasks: titles and status only. Never health figures or medical data on the board.
-- If `ArtifactData` is not available (headless `claude -p` runs lack it), skip the board and
+- If `ArtifactData` is not available (headless `claude -p` runs and sessions started from
+  claude.ai/code lack it; sessions started with `claude` on dev, Remote Control included, have
+  it), skip the board and
   end your reply with the board change the owner should make by hand.
